@@ -1,0 +1,77 @@
+---
+jobs:
+- name: deploy-concourse
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse-private
+      trigger: false
+    - get: concourse-release
+      trigger: false
+      params:
+        globs:
+          - concourse-*.tgz
+          - garden-linux-*.tgz
+    - get: concourse-config
+      trigger: true
+    - get: concourse-stemcell
+      trigger: false
+  - aggregate:
+    - task: concourse-manifest
+      config:
+        platform: linux
+        image: docker:///drnic/spiff
+        inputs:
+          - name: concourse-private
+          - name: concourse-config
+        run:
+          path: spiff-merge-and-save
+          args:
+            - manifest.yml
+            - concourse-config/concourse/concourse.yml
+            - concourse-private/concourse.yml
+  - put: concourse-deployment
+    params:
+      manifest: concourse-manifest/manifest.yml
+      releases:
+        - concourse-release/concourse-*.tgz
+        - concourse-release/garden-linux-*.tgz
+      stemcells:
+        - concourse-stemcell/*.tgz
+
+resources:
+- name: concourse-private
+  type: s3
+  source:
+    bucket: {{concourse-private-bucket}}
+    regexp: {{concourse-private-regexp}}
+    access_key_id: {{concourse-private-access-key-id}}
+    secret_access_key: {{concourse-private-secret-access-key}}
+    region-name: {{concourse-private-region-name}}
+    private: true
+
+- name: concourse-config
+  type: git
+  source:
+    uri: {{concourse-config-git-url}}
+    branch: {{concourse-config-git-branch}}
+
+- name: concourse-stemcell
+  type: bosh-io-stemcell
+  source:
+    name: {{concourse-stemcell}}
+
+- name: concourse-release
+  type: github-release
+  source:
+    repository: concourse
+    user: concourse
+
+- name: concourse-deployment
+  type: bosh-deployment
+  source:
+    target: {{concourse-deployment-bosh-target}}
+    username: {{concourse-deployment-bosh-username}}
+    password: {{concourse-deployment-bosh-password}}
+    deployment: {{concourse-deployment-bosh-deployment}}
+    ignore_ssl: true
