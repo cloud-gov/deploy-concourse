@@ -16,20 +16,34 @@ jobs:
       trigger: true
     - get: concourse-stemcell
       trigger: false
-  - aggregate:
-    - task: concourse-manifest
-      config:
-        platform: linux
-        image: docker:///drnic/spiff
-        inputs:
-          - name: concourse-private
-          - name: concourse-config
-        run:
-          path: spiff-merge-and-save
-          args:
-            - manifest.yml
-            - concourse-config/concourse/concourse.yml
-            - concourse-private/concourse.yml
+  - task: concourse-decrypt
+    config:
+      platform: linux
+      image: docker:///ubuntu:14.04
+      inputs:
+        - name: concourse-private
+      run:
+        path: openssl
+        args:
+          - enc
+          - -aes-256-cbc
+          - -d
+          - -in concourse-private/concourse.yml
+          - -out concourse.yml
+          - -pass pass:{{concourse-private-password}}
+  - task: concourse-manifest
+    config:
+      platform: linux
+      image: docker:///drnic/spiff
+      inputs:
+        - name: concourse-private
+        - name: concourse-config
+      run:
+        path: spiff-merge-and-save
+        args:
+          - manifest.yml
+          - concourse-config/concourse/concourse.yml
+          - concourse-decrypt/concourse.yml
   - put: concourse-deployment
     params:
       manifest: concourse-manifest/manifest.yml
