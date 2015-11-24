@@ -5,7 +5,7 @@ jobs:
   plan:
   - aggregate:
     - get: concourse-private
-      trigger: false
+      trigger: true
     - get: concourse-release
       trigger: false
       params:
