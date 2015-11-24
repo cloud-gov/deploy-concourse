@@ -19,7 +19,7 @@ jobs:
   - task: concourse-decrypt
     config:
       platform: linux
-      image: docker:///ubuntu:14.04
+      image: docker:///ubuntu#14.04
       inputs:
         - name: concourse-private
       run:
