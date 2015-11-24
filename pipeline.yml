@@ -4,6 +4,8 @@ jobs:
   serial: true
   plan:
   - aggregate:
+    - get: pipelines
+      trigger: false
     - get: concourse-private
       trigger: true
     - get: concourse-release
@@ -17,33 +19,19 @@ jobs:
     - get: concourse-stemcell
       trigger: false
   - task: concourse-decrypt
+    file: pipelines/tasks/decrypt.yml
     config:
-      platform: linux
-      image: docker:///ubuntu#14.04
-      inputs:
-        - name: concourse-private
-      run:
-        path: openssl
-        args:
-          - enc
-          - -aes-256-cbc
-          - -d
-          - -in concourse-private/concourse.yml
-          - -out concourse.yml
-          - -pass pass:{{concourse-private-password}}
+      params:
+        INPUT_FILE: concourse-private/concourse.yml
+        OUTPUT_FILE: concourse.yml
+        PASSPHRASE: {{concourse-private-passphrase}}
   - task: concourse-manifest
+    file: pipelines/tasks/spiff-merge.yml
     config:
-      platform: linux
-      image: docker:///drnic/spiff
-      inputs:
-        - name: concourse-private
-        - name: concourse-config
-      run:
-        path: spiff-merge-and-save
-        args:
-          - manifest.yml
-          - concourse-config/concourse/concourse.yml
-          - concourse-decrypt/concourse.yml
+      params:
+        OUTPUT_FILE: manifest.yml
+        SOURCE_FILE: concourse-config/concourse/concourse.yml
+        MERGE_FILES: concourse-decrypt/concourse.yml
   - put: concourse-deployment
     params:
       manifest: concourse-manifest/manifest.yml
@@ -54,6 +42,11 @@ jobs:
         - concourse-stemcell/*.tgz
 
 resources:
+- name: pipelines
+  type: git
+  source:
+    uri: https://github.com/18f/cg-pipelines.git
+
 - name: concourse-private
   type: s3
   source:
