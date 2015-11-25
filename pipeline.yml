@@ -52,7 +52,7 @@ resources:
   type: s3
   source:
     bucket: {{concourse-private-bucket}}
-    regexp: {{concourse-private-regexp}}
+    versioned_file: {{concourse-private-manifest-file}}
     access_key_id: {{concourse-private-access-key-id}}
     secret_access_key: {{concourse-private-secret-access-key}}
     region-name: {{concourse-private-region-name}}
