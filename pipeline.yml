@@ -45,7 +45,8 @@ resources:
 - name: pipelines
   type: git
   source:
-    uri: https://github.com/18f/cg-pipelines.git
+    uri: {{pipelines-git-url}}
+    branch: {{pipelines-branch}}
 
 - name: concourse-private
   type: s3
