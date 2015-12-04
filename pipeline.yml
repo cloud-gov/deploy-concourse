@@ -68,9 +68,11 @@ jobs:
         BOSH_TARGET: {{concourse-deployment-bosh-target}}
         BOSH_USERNAME: {{concourse-deployment-bosh-username}}
         BOSH_PASSWORD: {{concourse-deployment-bosh-password}}
+        RELEASE_NAME: slack-notification-resource
+        RELEASE_URL_FILE: slack-notification-release/url
+        RELEASE_VERSION_FILE: slack-notification-release/version
       run:
         path: pipelines/tasks/upload-release.sh
-        args: ["slack-notification-release/url"]
 
 resources:
 - name: pipelines
