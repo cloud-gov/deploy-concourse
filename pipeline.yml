@@ -47,6 +47,30 @@ jobs:
         - concourse-release/garden-linux-*.tgz
       stemcells:
         - concourse-stemcell/*.tgz
+- name: upload-slack-notifications-release
+  serial: true
+  plan:
+  - aggregate:
+    - get: pipelines
+      trigger: false
+    - get: slack-notification-release
+      trigger: true
+      params:
+        tarball: false
+  - task: upload-release
+    config:
+      platform: linux
+      image: docker:///18fgsa/concourse-task
+      inputs:
+      - name: pipelines
+      - name: slack-notification-release
+      params:
+        BOSH_TARGET: {{concourse-deployment-bosh-target}}
+        BOSH_USERNAME: {{concourse-deployment-bosh-username}}
+        BOSH_PASSWORD: {{concourse-deployment-bosh-password}}
+      run:
+        path: pipelines/tasks/upload-release.sh
+        args: ["slack-notification-release/url"]
 
 resources:
 - name: pipelines
@@ -90,3 +114,8 @@ resources:
     password: {{concourse-deployment-bosh-password}}
     deployment: {{concourse-deployment-bosh-deployment}}
     ignore_ssl: true
+
+- name: slack-notification-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry-community/slack-notification-resource-boshrelease
