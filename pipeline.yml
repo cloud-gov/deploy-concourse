@@ -1,11 +1,37 @@
 ---
 jobs:
+- name: upload-slack-notifications-release
+  plan:
+  - aggregate:
+    - get: pipelines
+      trigger: false
+    - get: slack-notification-release
+      trigger: true
+      params:
+        tarball: false
+  - task: upload-release
+    config:
+      platform: linux
+      image: docker:///18fgsa/concourse-task
+      inputs:
+      - name: pipelines
+      - name: slack-notification-release
+      params:
+        BOSH_TARGET: {{concourse-deployment-bosh-target}}
+        BOSH_USERNAME: {{concourse-deployment-bosh-username}}
+        BOSH_PASSWORD: {{concourse-deployment-bosh-password}}
+        RELEASE_NAME: slack-notification-resource
+        RELEASE_URL_FILE: slack-notification-release/url
+        RELEASE_VERSION_FILE: slack-notification-release/version
+      run:
+        path: pipelines/tasks/upload-release.sh
 - name: deploy-concourse
   serial: true
   plan:
   - aggregate:
     - get: pipelines
       trigger: false
+      passed: [upload-slack-notifications-release]
     - get: concourse-config
       trigger: true
     - get: concourse-private
@@ -47,32 +73,6 @@ jobs:
         - concourse-release/garden-linux-*.tgz
       stemcells:
         - concourse-stemcell/*.tgz
-- name: upload-slack-notifications-release
-  serial: true
-  plan:
-  - aggregate:
-    - get: pipelines
-      trigger: false
-    - get: slack-notification-release
-      trigger: true
-      params:
-        tarball: false
-  - task: upload-release
-    config:
-      platform: linux
-      image: docker:///18fgsa/concourse-task
-      inputs:
-      - name: pipelines
-      - name: slack-notification-release
-      params:
-        BOSH_TARGET: {{concourse-deployment-bosh-target}}
-        BOSH_USERNAME: {{concourse-deployment-bosh-username}}
-        BOSH_PASSWORD: {{concourse-deployment-bosh-password}}
-        RELEASE_NAME: slack-notification-resource
-        RELEASE_URL_FILE: slack-notification-release/url
-        RELEASE_VERSION_FILE: slack-notification-release/version
-      run:
-        path: pipelines/tasks/upload-release.sh
 
 resources:
 - name: pipelines
