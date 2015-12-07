@@ -1,37 +1,11 @@
 ---
 jobs:
-- name: upload-slack-notifications-release
-  plan:
-  - aggregate:
-    - get: pipelines
-      trigger: false
-    - get: slack-notification-release
-      trigger: true
-      params:
-        tarball: false
-  - task: upload-release
-    config:
-      platform: linux
-      image: docker:///18fgsa/concourse-task
-      inputs:
-      - name: pipelines
-      - name: slack-notification-release
-      params:
-        BOSH_TARGET: {{concourse-deployment-bosh-target}}
-        BOSH_USERNAME: {{concourse-deployment-bosh-username}}
-        BOSH_PASSWORD: {{concourse-deployment-bosh-password}}
-        RELEASE_NAME: slack-notification-resource
-        RELEASE_URL_FILE: slack-notification-release/url
-        RELEASE_VERSION_FILE: slack-notification-release/version
-      run:
-        path: pipelines/tasks/upload-release.sh
 - name: deploy-concourse
   serial: true
   plan:
   - aggregate:
     - get: pipelines
       trigger: false
-      passed: [upload-slack-notifications-release]
     - get: concourse-config
       trigger: true
     - get: concourse-private
@@ -44,6 +18,8 @@ jobs:
         globs:
           - concourse-*.tgz
           - garden-linux-*.tgz
+    - get: slack-notification-release
+      trigger: true
   - task: concourse-decrypt
     file: pipelines/tasks/decrypt.yml
     config:
@@ -71,6 +47,7 @@ jobs:
       releases:
         - concourse-release/concourse-*.tgz
         - concourse-release/garden-linux-*.tgz
+        - slack-notification-release/release.tgz
       stemcells:
         - concourse-stemcell/*.tgz
 
