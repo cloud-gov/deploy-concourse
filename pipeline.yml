@@ -1,6 +1,6 @@
 ---
 jobs:
-- name: deploy-concourse
+- name: deploy-concourse-stage
   serial: true
   plan:
   - aggregate:
@@ -8,7 +8,7 @@ jobs:
       trigger: false
     - get: concourse-config
       trigger: true
-    - get: concourse-private
+    - get: concourse-private-stage
       trigger: true
     - get: concourse-stemcell
       trigger: false
@@ -25,9 +25,9 @@ jobs:
     config:
       inputs:
         - name: pipelines
-        - name: concourse-private
+        - name: concourse-private-stage
       params:
-        INPUT_FILE: concourse-private/concourse.yml
+        INPUT_FILE: concourse-private-stage/concourse.yml
         OUTPUT_FILE: concourse.yml
         PASSPHRASE: {{concourse-private-passphrase}}
   - task: concourse-manifest
@@ -50,6 +50,93 @@ jobs:
         - slack-notification-release/release.tgz
       stemcells:
         - concourse-stemcell/*.tgz
+    on_failure:
+      put: slack
+      params:
+        channel: {{concourse-slack-channel}}
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        text: |
+          :x: FAILED to deploy Concourse on staging
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        username: concourse
+    on_success:
+      put: slack
+      params:
+        channel: {{concourse-slack-channel}}
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        text: |
+          :white_check_mark: Successfully deployed Concourse on staging
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        username: concourse
+
+- name: deploy-concourse-production
+  serial: true
+  plan:
+  - aggregate:
+    - get: pipelines
+      trigger: false
+    - get: concourse-config
+      trigger: true
+    - get: concourse-private-production
+      trigger: true
+    - get: concourse-stemcell
+      trigger: false
+    - get: concourse-release
+      trigger: false
+      params:
+        globs:
+          - concourse-*.tgz
+          - garden-linux-*.tgz
+    - get: slack-notification-release
+      trigger: true
+  - task: concourse-decrypt
+    file: pipelines/tasks/decrypt.yml
+    config:
+      inputs:
+        - name: pipelines
+        - name: concourse-private-production
+      params:
+        INPUT_FILE: concourse-private-production/concourse.yml
+        OUTPUT_FILE: concourse.yml
+        PASSPHRASE: {{concourse-private-passphrase}}
+  - task: concourse-manifest
+    file: pipelines/tasks/spiff-merge.yml
+    config:
+      inputs:
+        - name: pipelines
+        - name: concourse-config
+        - name: concourse-decrypt
+      params:
+        OUTPUT_FILE: manifest.yml
+        SOURCE_FILE: concourse-config/concourse/concourse.yml
+        MERGE_FILES: concourse-decrypt/concourse.yml
+  - put: concourse-deployment
+    params:
+      manifest: concourse-manifest/manifest.yml
+      releases:
+        - concourse-release/concourse-*.tgz
+        - concourse-release/garden-linux-*.tgz
+        - slack-notification-release/release.tgz
+      stemcells:
+        - concourse-stemcell/*.tgz
+    on_failure:
+      put: slack
+      params:
+        channel: {{concourse-slack-channel}}
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        text: |
+          :x: FAILED to deploy Concourse on production
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        username: concourse
+    on_success:
+      put: slack
+      params:
+        channel: {{concourse-slack-channel}}
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        text: |
+          :white_check_mark: Successfully deployed Concourse on production
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        username: concourse
 
 resources:
 - name: pipelines
@@ -64,14 +151,24 @@ resources:
     uri: {{concourse-config-git-url}}
     branch: {{concourse-config-git-branch}}
 
-- name: concourse-private
+- name: concourse-private-stage
   type: s3
   source:
-    bucket: {{concourse-private-bucket}}
+    bucket: {{concourse-stage-private-bucket}}
     versioned_file: concourse.yml
-    access_key_id: {{concourse-private-access-key-id}}
-    secret_access_key: {{concourse-private-secret-access-key}}
-    region_name: {{concourse-private-region-name}}
+    access_key_id: {{concourse-stage-private-access-key-id}}
+    secret_access_key: {{concourse-stage-private-secret-access-key}}
+    region_name: {{concourse-stage-private-region-name}}
+    private: true
+
+- name: concourse-private-production
+  type: s3
+  source:
+    bucket: {{concourse-production-private-bucket}}
+    versioned_file: concourse.yml
+    access_key_id: {{concourse-production-private-access-key-id}}
+    secret_access_key: {{concourse-production-private-secret-access-key}}
+    region_name: {{concourse-production-private-region-name}}
     private: true
 
 - name: concourse-stemcell
