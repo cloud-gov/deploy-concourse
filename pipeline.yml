@@ -69,56 +69,56 @@ jobs:
 #          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
 #        username: concourse
 
-- name: deploy-concourse-production
-  serial: true
-  plan:
-  - aggregate:
-    - get: pipelines
-      trigger: false
-    - get: concourse-config
-      trigger: true
-    - get: concourse-private-production
-      trigger: true
-    - get: concourse-stemcell
-      trigger: false
-    - get: concourse-release
-      trigger: false
-      params:
-        globs:
-          - concourse-*.tgz
-          - garden-linux-*.tgz
-    - get: slack-notification-release
-      trigger: true
-  - task: concourse-decrypt
-    file: pipelines/tasks/decrypt.yml
-    config:
-      inputs:
-        - name: pipelines
-        - name: concourse-private-production
-      params:
-        INPUT_FILE: concourse-private-production/concourse.yml
-        OUTPUT_FILE: concourse.yml
-        PASSPHRASE: {{concourse-production-private-passphrase}}
-  - task: concourse-manifest
-    file: pipelines/tasks/spiff-merge.yml
-    config:
-      inputs:
-        - name: pipelines
-        - name: concourse-config
-        - name: concourse-decrypt
-      params:
-        OUTPUT_FILE: manifest.yml
-        SOURCE_FILE: concourse-config/concourse/concourse.yml
-        MERGE_FILES: concourse-decrypt/concourse.yml
-  - put: concourse-deployment
-    params:
-      manifest: concourse-manifest/manifest.yml
-      releases:
-        - concourse-release/concourse-*.tgz
-        - concourse-release/garden-linux-*.tgz
-        - slack-notification-release/release.tgz
-      stemcells:
-        - concourse-stemcell/*.tgz
+#- name: deploy-concourse-production
+#  serial: true
+#  plan:
+#  - aggregate:
+#    - get: pipelines
+#      trigger: false
+#    - get: concourse-config
+#      trigger: true
+#    - get: concourse-private-production
+#      trigger: true
+#    - get: concourse-stemcell
+#      trigger: false
+#    - get: concourse-release
+#      trigger: false
+#      params:
+#        globs:
+#          - concourse-*.tgz
+#          - garden-linux-*.tgz
+#    - get: slack-notification-release
+#      trigger: true
+#  - task: concourse-decrypt
+#    file: pipelines/tasks/decrypt.yml
+#    config:
+#      inputs:
+#        - name: pipelines
+#        - name: concourse-private-production
+#      params:
+#        INPUT_FILE: concourse-private-production/concourse.yml
+#        OUTPUT_FILE: concourse.yml
+#        PASSPHRASE: {{concourse-production-private-passphrase}}
+#  - task: concourse-manifest
+#    file: pipelines/tasks/spiff-merge.yml
+#    config:
+#      inputs:
+#        - name: pipelines
+#        - name: concourse-config
+#        - name: concourse-decrypt
+#      params:
+#        OUTPUT_FILE: manifest.yml
+#        SOURCE_FILE: concourse-config/concourse/concourse.yml
+#        MERGE_FILES: concourse-decrypt/concourse.yml
+#  - put: concourse-deployment
+#    params:
+#      manifest: concourse-manifest/manifest.yml
+#      releases:
+#        - concourse-release/concourse-*.tgz
+#        - concourse-release/garden-linux-*.tgz
+#        - slack-notification-release/release.tgz
+#      stemcells:
+#        - concourse-stemcell/*.tgz
 #    on_failure:
 #      put: slack-notification-release
 #      params:
