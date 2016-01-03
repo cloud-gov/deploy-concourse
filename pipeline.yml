@@ -41,6 +41,12 @@ jobs:
         OUTPUT_FILE: manifest.yml
         SOURCE_FILE: concourse-config/concourse/concourse.yml
         MERGE_FILES: concourse-decrypt/concourse.yml
+  - task: bosh-ssl-cert
+    file: pipelines/tasks/write_file.yml
+    config:
+      params:
+        FILE_NAME: {{concourse-deployment-bosh-cert-file}}
+        CONTENT: {{concourse-deployment-bosh-cert}}
   - put: concourse-deployment
     params:
       manifest: concourse-manifest/manifest.yml
