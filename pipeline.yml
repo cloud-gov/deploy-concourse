@@ -50,24 +50,24 @@ jobs:
         - slack-notification-release/release.tgz
       stemcells:
         - concourse-stemcell/*.tgz
-    on_failure:
-      put: slack
-      params:
-        channel: {{concourse-slack-channel}}
-        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        text: |
-          :x: FAILED to deploy Concourse on staging
-          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-        username: concourse
-    on_success:
-      put: slack
-      params:
-        channel: {{concourse-slack-channel}}
-        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        text: |
-          :white_check_mark: Successfully deployed Concourse on staging
-          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-        username: concourse
+#    on_failure:
+#      put: slack-notification-release
+#      params:
+#        channel: {{concourse-slack-channel}}
+#        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+#        text: |
+#          :x: FAILED to deploy Concourse on staging
+#          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+#        username: concourse
+#    on_success:
+#      put: slack-notification-release
+#      params:
+#        channel: {{concourse-slack-channel}}
+#        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+#        text: |
+#          :white_check_mark: Successfully deployed Concourse on staging
+#          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+#        username: concourse
 
 - name: deploy-concourse-production
   serial: true
@@ -119,24 +119,24 @@ jobs:
         - slack-notification-release/release.tgz
       stemcells:
         - concourse-stemcell/*.tgz
-    on_failure:
-      put: slack
-      params:
-        channel: {{concourse-slack-channel}}
-        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        text: |
-          :x: FAILED to deploy Concourse on production
-          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-        username: concourse
-    on_success:
-      put: slack
-      params:
-        channel: {{concourse-slack-channel}}
-        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-        text: |
-          :white_check_mark: Successfully deployed Concourse on production
-          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-        username: concourse
+#    on_failure:
+#      put: slack-notification-release
+#      params:
+#        channel: {{concourse-slack-channel}}
+#        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+#        text: |
+#          :x: FAILED to deploy Concourse on production
+#          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+#        username: concourse
+#    on_success:
+#      put: slack-notification-release
+#      params:
+#        channel: {{concourse-slack-channel}}
+#        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+#        text: |
+#          :white_check_mark: Successfully deployed Concourse on production
+#          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+#        username: concourse
 
 resources:
 - name: pipelines
