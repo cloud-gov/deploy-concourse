@@ -188,6 +188,7 @@ resources:
     target: {{concourse-deployment-bosh-target}}
     username: {{concourse-deployment-bosh-username}}
     password: {{concourse-deployment-bosh-password}}
+    cert: {{concourse-deployment-bosh-cert-file}}
     deployment: {{concourse-deployment-bosh-deployment}}
     ignore_ssl: true
 
