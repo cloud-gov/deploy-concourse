@@ -203,7 +203,7 @@ resources:
     username: {{concourse-deployment-bosh-username}}
     password: {{concourse-deployment-bosh-password}}
     deployment: {{concourse-deployment-bosh-deployment}}
-    ignore_ssl: true
+    ignore_ssl: false
 
 - name: slack-notification-release
   type: bosh-io-release
