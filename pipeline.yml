@@ -45,10 +45,11 @@ jobs:
     file: pipelines/tasks/write_file.yml
     config:
       params:
-        FILE_NAME: {{concourse-deployment-bosh-cert-file}}
+        FILE_NAME: BOSHRootCA.pem
         CONTENT: {{concourse-deployment-bosh-cert}}
   - put: concourse-deployment
     params:
+      cert: bosh-ssl-cert/BOSHRootCA.pem
       manifest: concourse-manifest/manifest.yml
       releases:
         - concourse-release/concourse-*.tgz
@@ -116,8 +117,15 @@ jobs:
 #        OUTPUT_FILE: manifest.yml
 #        SOURCE_FILE: concourse-config/concourse/concourse.yml
 #        MERGE_FILES: concourse-decrypt/concourse.yml
+#  - task: bosh-ssl-cert
+#    file: pipelines/tasks/write_file.yml
+#    config:
+#      params:
+#        FILE_NAME: BOSHRootCA.pem
+#        CONTENT: {{concourse-deployment-bosh-cert}}
 #  - put: concourse-deployment
 #    params:
+#      cert: bosh-ssl-cert/BOSHRootCA.pem
 #      manifest: concourse-manifest/manifest.yml
 #      releases:
 #        - concourse-release/concourse-*.tgz
@@ -194,7 +202,6 @@ resources:
     target: {{concourse-deployment-bosh-target}}
     username: {{concourse-deployment-bosh-username}}
     password: {{concourse-deployment-bosh-password}}
-    cert: {{concourse-deployment-bosh-cert-file}}
     deployment: {{concourse-deployment-bosh-deployment}}
     ignore_ssl: true
 
