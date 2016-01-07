@@ -11,9 +11,9 @@ jobs:
     - get: concourse-private-stage
       trigger: true
     - get: concourse-stemcell
-      trigger: false
+      trigger: true
     - get: concourse-release
-      trigger: false
+      trigger: true
       params:
         globs:
           - concourse-*.tgz
@@ -57,100 +57,102 @@ jobs:
         - slack-notification-release/release.tgz
       stemcells:
         - concourse-stemcell/*.tgz
-#    on_failure:
-#      put: slack-notification-release
-#      params:
-#        channel: {{concourse-slack-channel}}
-#        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-#        text: |
-#          :x: FAILED to deploy Concourse on staging
-#          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-#        username: concourse
-#    on_success:
-#      put: slack-notification-release
-#      params:
-#        channel: {{concourse-slack-channel}}
-#        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-#        text: |
-#          :white_check_mark: Successfully deployed Concourse on staging
-#          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-#        username: concourse
+    on_failure:
+      put: slack-notification-release
+      params:
+        channel: {{concourse-slack-channel}}
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        text: |
+          :x: FAILED to deploy Concourse on staging
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        username: concourse
+    on_success:
+      put: slack-notification-release
+      params:
+        channel: {{concourse-slack-channel}}
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        text: |
+          :white_check_mark: Successfully deployed Concourse on staging
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        username: concourse
 
-#- name: deploy-concourse-production
-#  serial: true
-#  plan:
-#  - aggregate:
-#    - get: pipelines
-#      trigger: false
-#    - get: concourse-config
-#      trigger: true
-#    - get: concourse-private-production
-#      trigger: true
-#    - get: concourse-stemcell
-#      trigger: false
-#    - get: concourse-release
-#      trigger: false
-#      params:
-#        globs:
-#          - concourse-*.tgz
-#          - garden-linux-*.tgz
-#    - get: slack-notification-release
-#      trigger: true
-#  - task: concourse-decrypt
-#    file: pipelines/tasks/decrypt.yml
-#    config:
-#      inputs:
-#        - name: pipelines
-#        - name: concourse-private-production
-#      params:
-#        INPUT_FILE: concourse-private-production/concourse.yml
-#        OUTPUT_FILE: concourse.yml
-#        PASSPHRASE: {{concourse-production-private-passphrase}}
-#  - task: concourse-manifest
-#    file: pipelines/tasks/spiff-merge.yml
-#    config:
-#      inputs:
-#        - name: pipelines
-#        - name: concourse-config
-#        - name: concourse-decrypt
-#      params:
-#        OUTPUT_FILE: manifest.yml
-#        SOURCE_FILE: concourse-config/concourse/concourse.yml
-#        MERGE_FILES: concourse-decrypt/concourse.yml
-#  - task: bosh-ssl-cert
-#    file: pipelines/tasks/write_file.yml
-#    config:
-#      params:
-#        FILE_NAME: BOSHRootCA.pem
-#        CONTENT: {{concourse-deployment-bosh-cert}}
-#  - put: concourse-deployment
-#    params:
-#      cert: bosh-ssl-cert/BOSHRootCA.pem
-#      manifest: concourse-manifest/manifest.yml
-#      releases:
-#        - concourse-release/concourse-*.tgz
-#        - concourse-release/garden-linux-*.tgz
-#        - slack-notification-release/release.tgz
-#      stemcells:
-#        - concourse-stemcell/*.tgz
-#    on_failure:
-#      put: slack-notification-release
-#      params:
-#        channel: {{concourse-slack-channel}}
-#        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-#        text: |
-#          :x: FAILED to deploy Concourse on production
-#          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-#        username: concourse
-#    on_success:
-#      put: slack-notification-release
-#      params:
-#        channel: {{concourse-slack-channel}}
-#        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
-#        text: |
-#          :white_check_mark: Successfully deployed Concourse on production
-#          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-#        username: concourse
+- name: deploy-concourse-production
+  serial: true
+  plan:
+  - aggregate:
+    - get: pipelines
+      trigger: false
+    - get: concourse-config
+      trigger: true
+      passed: [deploy-concourse-stage]
+    - get: concourse-private-production
+      trigger: true
+      passed: [deploy-concourse-stage]
+    - get: concourse-stemcell
+      trigger: false
+    - get: concourse-release
+      trigger: false
+      params:
+        globs:
+          - concourse-*.tgz
+          - garden-linux-*.tgz
+    - get: slack-notification-release
+      trigger: true
+  - task: concourse-decrypt
+    file: pipelines/tasks/decrypt.yml
+    config:
+      inputs:
+        - name: pipelines
+        - name: concourse-private-production
+      params:
+        INPUT_FILE: concourse-private-production/concourse.yml
+        OUTPUT_FILE: concourse.yml
+        PASSPHRASE: {{concourse-production-private-passphrase}}
+  - task: concourse-manifest
+    file: pipelines/tasks/spiff-merge.yml
+    config:
+      inputs:
+        - name: pipelines
+        - name: concourse-config
+        - name: concourse-decrypt
+      params:
+        OUTPUT_FILE: manifest.yml
+        SOURCE_FILE: concourse-config/concourse/concourse.yml
+        MERGE_FILES: concourse-decrypt/concourse.yml
+  - task: bosh-ssl-cert
+    file: pipelines/tasks/write_file.yml
+    config:
+      params:
+        FILE_NAME: BOSHRootCA.pem
+        CONTENT: {{concourse-deployment-bosh-cert}}
+  - put: concourse-deployment
+    params:
+      cert: bosh-ssl-cert/BOSHRootCA.pem
+      manifest: concourse-manifest/manifest.yml
+      releases:
+        - concourse-release/concourse-*.tgz
+        - concourse-release/garden-linux-*.tgz
+        - slack-notification-release/release.tgz
+      stemcells:
+        - concourse-stemcell/*.tgz
+    on_failure:
+      put: slack-notification-release
+      params:
+        channel: {{concourse-slack-channel}}
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        text: |
+          :x: FAILED to deploy Concourse on production
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        username: concourse
+    on_success:
+      put: slack-notification-release
+      params:
+        channel: {{concourse-slack-channel}}
+        icon_url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
+        text: |
+          :white_check_mark: Successfully deployed Concourse on production
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        username: concourse
 
 resources:
 - name: pipelines
