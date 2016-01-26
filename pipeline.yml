@@ -84,10 +84,8 @@ jobs:
       trigger: false
     - get: concourse-config
       trigger: true
-      passed: [deploy-concourse-stage]
     - get: concourse-private-production
       trigger: true
-      passed: [deploy-concourse-stage]
     - get: concourse-stemcell
       trigger: false
     - get: concourse-release
