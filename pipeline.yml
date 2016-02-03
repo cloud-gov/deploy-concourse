@@ -41,15 +41,15 @@ jobs:
         OUTPUT_FILE: manifest.yml
         SOURCE_FILE: concourse-config/concourse/concourse.yml
         MERGE_FILES: concourse-decrypt/concourse.yml
-  - task: bosh-ssl-cert
+  - task: bosh-stage-ssl-cert
     file: pipelines/tasks/write_file.yml
     config:
       params:
         FILE_NAME: BOSHRootCA.pem
-        CONTENT: {{concourse-deployment-bosh-cert}}
-  - put: concourse-deployment
+        CONTENT: {{concourse-stage-deployment-bosh-cert}}
+  - put: concourse-stage-deployment
     params:
-      cert: bosh-ssl-cert/BOSHRootCA.pem
+      cert: bosh-stage-ssl-cert/BOSHRootCA.pem
       manifest: concourse-manifest/manifest.yml
       releases:
         - concourse-release/concourse-*.tgz
@@ -117,15 +117,15 @@ jobs:
         OUTPUT_FILE: manifest.yml
         SOURCE_FILE: concourse-config/concourse/concourse.yml
         MERGE_FILES: concourse-decrypt/concourse.yml
-  - task: bosh-ssl-cert
+  - task: bosh-prod-ssl-cert
     file: pipelines/tasks/write_file.yml
     config:
       params:
         FILE_NAME: BOSHRootCA.pem
-        CONTENT: {{concourse-deployment-bosh-cert}}
-  - put: concourse-deployment
+        CONTENT: {{concourse-production-deployment-bosh-cert}}
+  - put: concourse-production-deployment
     params:
-      cert: bosh-ssl-cert/BOSHRootCA.pem
+      cert: bosh-prod-ssl-cert/BOSHRootCA.pem
       manifest: concourse-manifest/manifest.yml
       releases:
         - concourse-release/concourse-*.tgz
@@ -196,13 +196,22 @@ resources:
     repository: concourse
     user: concourse
 
-- name: concourse-deployment
+- name: concourse-stage-deployment
   type: bosh-deployment
   source:
-    target: {{concourse-deployment-bosh-target}}
-    username: {{concourse-deployment-bosh-username}}
-    password: {{concourse-deployment-bosh-password}}
-    deployment: {{concourse-deployment-bosh-deployment}}
+    target: {{concourse-stage-deployment-bosh-target}}
+    username: {{concourse-stage-deployment-bosh-username}}
+    password: {{concourse-stage-deployment-bosh-password}}
+    deployment: {{concourse-stage-deployment-bosh-deployment}}
+    ignore_ssl: false
+
+- name: concourse-production-deployment
+  type: bosh-deployment
+  source:
+    target: {{concourse-production-deployment-bosh-target}}
+    username: {{concourse-production-deployment-bosh-username}}
+    password: {{concourse-production-deployment-bosh-password}}
+    deployment: {{concourse-production-deployment-bosh-deployment}}
     ignore_ssl: false
 
 - name: slack-notification-release
