@@ -1,0 +1,11 @@
+# YAML property files
+credentials.yml
+
+# Temporary files
+tmp
+
+# Mac files
+.DS_Store
+
+# Eclipse files
+.project
