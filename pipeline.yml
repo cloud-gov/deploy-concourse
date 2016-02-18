@@ -4,7 +4,7 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: pipelines
+    - get: pipeline-tasks
       trigger: false
     - get: concourse-config
       trigger: true
@@ -21,28 +21,28 @@ jobs:
     # - get: slack-notification-release
     #   trigger: true
   - task: concourse-decrypt
-    file: pipelines/tasks/decrypt.yml
+    file: pipeline-tasks/decrypt.yml
     config:
       inputs:
-        - name: pipelines
+        - name: pipeline-tasks
         - name: concourse-private-production
       params:
         INPUT_FILE: concourse-private-production/concourse.yml
         OUTPUT_FILE: decrypt/concourse.yml
         PASSPHRASE: {{concourse-production-private-passphrase}}
   - task: concourse-manifest
-    file: pipelines/tasks/spiff-merge.yml
+    file: pipeline-tasks/spiff-merge.yml
     config:
       inputs:
-        - name: pipelines
+        - name: pipeline-tasks
         - name: concourse-config
         - name: decrypt
       params:
-        OUTPUT_FILE: spiff-merge/manifest.ym
-        SOURCE_FILE: concourse-config/concourse/concourse.yml
+        OUTPUT_FILE: spiff-merge/manifest.yml
+        SOURCE_FILE: concourse-config/concourse.yml
         MERGE_FILES: decrypt/concourse.yml
   - task: bosh-prod-ssl-cert
-    file: pipelines/tasks/write_file.yml
+    file: pipeline-tasks/write_file.yml
     config:
       params:
         FILE_NAME: write_file/BOSHRootCA.pem
@@ -77,11 +77,11 @@ jobs:
         icon_url: {{slack-icon-url}}
 
 resources:
-- name: pipelines
+- name: pipeline-tasks
   type: git
   source:
-    uri: {{pipelines-git-url}}
-    branch: {{pipelines-branch}}
+    uri: {{pipeline-tasks-git-url}}
+    branch: {{pipeline-tasks-git-branch}}
 
 - name: concourse-config
   type: git
