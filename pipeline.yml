@@ -38,7 +38,7 @@ jobs:
         - name: concourse-config
         - name: decrypt
       params:
-        OUTPUT_FILE: spiff-merge/manifest.ym
+        OUTPUT_FILE: spiff-merge/manifest.yml
         SOURCE_FILE: concourse-config/concourse.yml
         MERGE_FILES: decrypt/concourse.yml
   - task: bosh-prod-ssl-cert
