@@ -191,6 +191,8 @@ jobs:
         additional_resource_types:
           - type: slack-notification
             image: /var/vcap/packages/slack-notification-resource
+          - type: cg-common
+            image: docker:///18fgsa/cg-common-resource
 disk_pools:
   - name: database
     disk_size: (( meta.disk.database.size ))
