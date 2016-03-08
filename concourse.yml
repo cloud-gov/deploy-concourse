@@ -10,9 +10,6 @@ meta:
       name: ~
       user: ~
       pass: ~
-    basic_auth:
-      user: ~
-      pass: ~
     github_auth:
       authorize: ~
       client_id: ~
@@ -109,8 +106,8 @@ jobs:
       atc:
         web_bind_port: 8080
         external_url: (( meta.atc.external_url ))
-        basic_auth_username: (( meta.atc.basic_auth.user ))
-        basic_auth_password: (( meta.atc.basic_auth.pass ))
+        basic_auth_username: ~
+        basic_auth_password: ~
         github_auth:
           authorize: (( meta.atc.github_auth.authorize ))
           client_id: (( meta.atc.github_auth.client_id ))
