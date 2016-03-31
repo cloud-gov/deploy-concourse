@@ -14,12 +14,8 @@ jobs:
       trigger: false
     - get: concourse-release
       trigger: true
-      params:
-        globs:
-          - concourse-*.tgz
-          - garden-linux-*.tgz
-    # - get: slack-notification-release
-    #   trigger: true
+    - get: garden-linux-release
+      trigger: false
   - task: concourse-decrypt
     file: pipeline-tasks/decrypt.yml
     config:
@@ -52,9 +48,8 @@ jobs:
       cert: write_file/BOSHRootCA.pem
       manifest: spiff-merge/manifest.yml
       releases:
-        - concourse-release/concourse-*.tgz
-        - concourse-release/garden-linux-*.tgz
-        # - slack-notification-release/release.tgz
+        - concourse-release/*.tgz
+        - garden-linux-release/*.tgz
       stemcells:
         - concourse-stemcell/*.tgz
     on_failure:
@@ -105,10 +100,14 @@ resources:
     name: {{concourse-stemcell}}
 
 - name: concourse-release
-  type: github-release
+  type: bosh-io-release
   source:
-    repository: concourse
-    user: concourse
+    repository: concourse/concourse
+
+- name: garden-linux-release
+  type: bosh-io-release
+  source:
+    repository: cloudfoundry-incubator/garden-linux-release
 
 - name: concourse-production-deployment
   type: bosh-deployment
@@ -119,12 +118,13 @@ resources:
     deployment: {{concourse-production-deployment-bosh-deployment}}
     ignore_ssl: false
 
-# - name: slack-notification-release
-#   type: bosh-io-release
-#   source:
-#     repository: cloudfoundry-community/slack-notification-resource-boshrelease
-
 - name: slack
-  type: slack-notification
+  type: slack-notification-docker
   source:
     url: {{slack-webhook-url}}
+
+resource_types:
+  name: slack-notification-docker
+  type: docker-image
+  source:
+    repository: cfcommunity/slack-notification-resource
