@@ -7,6 +7,7 @@ meta:
   atc:
     external_url: ~
     db:
+      address: ~
       name: ~
       user: ~
       pass: ~
@@ -21,16 +22,10 @@ meta:
     gateway: ~
     subnet: ~
     security_groups: ~
-  disk:
-    database:
-      size: ~
-      type: ~
   resources:
     web:
       instance_type: ~
       elbs: ~
-    databases:
-      instance_type: ~
     workers:
       instance_type: ~
   compilation:
@@ -78,24 +73,15 @@ instance_groups:
             authorize: (( meta.atc.github_auth.authorize ))
             client_id: (( meta.atc.github_auth.client_id ))
             client_secret: (( meta.atc.github_auth.client_secret ))
-          postgresql_database: (( meta.atc.db.name ))
+          postgresql:
+            address: (( meta.atc.db.address ))
+            database: (( meta.atc.db.name ))
+            role:
+              name: (( meta.atc.db.user ))
+              password: (( meta.atc.db.pass ))
       - release: concourse
         name: tsa
         properties: {}
-
-  - name: db
-    instances: 1
-    resource_pool: databases
-    persistent_disk_pool: database
-    networks: [{name: concourse}]
-    jobs:
-      - release: concourse
-        name: postgresql
-        properties:
-          databases:
-            - name: (( meta.atc.db.name ))
-              role: (( meta.atc.db.user ))
-              password: (( meta.atc.db.pass ))
 
   - name: worker
     instances: 1
@@ -125,12 +111,6 @@ instance_groups:
             default_container_grace_time: 10m
             max_containers: 250
 
-disk_pools:
-  - name: database
-    disk_size: (( meta.disk.database.size ))
-    cloud_properties:
-      type: (( meta.disk.database.type ))
-
 resource_pools:
   - name: web
     network: concourse
@@ -141,16 +121,6 @@ resource_pools:
       availability_zone: &az (( meta.az ))
       instance_type: (( meta.resources.web.instance_type ))
       elbs: (( meta.resources.web.elbs ))
-      ephemeral_disk:
-        size: 30000
-        type: gp2
-
-  - name: databases
-    network: concourse
-    stemcell: *stemcell
-    cloud_properties:
-      availability_zone: *az
-      instance_type: (( meta.resources.databases.instance_type ))
       ephemeral_disk:
         size: 30000
         type: gp2
