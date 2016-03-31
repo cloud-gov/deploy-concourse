@@ -1,5 +1,5 @@
 ---
-name: concourse
+name: (( merge || concourse ))
 
 # Meta property overrides
 meta:
@@ -19,7 +19,6 @@ meta:
     reserved: ~
     dns: ~
     gateway: ~
-    discovery_ip: ~
     subnet: ~
     security_groups: ~
   disk:
@@ -30,8 +29,6 @@ meta:
     web:
       instance_type: ~
       elbs: ~
-    discovery:
-      instance_type: ~
     databases:
       instance_type: ~
     workers:
@@ -45,15 +42,6 @@ meta:
 # replace with bosh status --uuid
 director_uuid: (( merge ))
 
-# pick a sane db name and password
-atc_db_name: &atc-db-name (( meta.atc.db.name ))
-atc_db_role: &atc-db-role
-  name: (( meta.atc.db.user ))
-  password: (( meta.atc.db.pass ))
-
-# replace with an AZ from your account
-availability_zone: &az (( meta.az ))
-
 # replace all addresses with your VPC range
 #
 # e.g. X.X.0.2 -> 10.0.0.2
@@ -65,8 +53,6 @@ networks:
         reserved: (( meta.network.reserved ))
         gateway: (( meta.network.gateway ))
         dns: (( meta.network.dns ))
-        static:
-          - &discovery_static_ip (( meta.network.discovery_ip ))
         cloud_properties:
           security_groups: (( meta.network.security_groups ))
           subnet: (( meta.network.subnet ))
@@ -76,120 +62,69 @@ releases:
     version: latest
   - name: garden-linux
     version: latest
-  - name: slack-notification-resource
-    version: 7
 
-jobs:
-  - name: discovery
-    instances: 1
-    resource_pool: discovery
-    persistent_disk: 1024
-    templates:
-      - {release: concourse, name: consul-agent}
-    networks:
-      - name: concourse
-        static_ips: [*discovery_static_ip]
-    properties:
-      consul:
-        agent:
-          mode: server
-
+instance_groups:
   - name: web
     instances: 1
     resource_pool: web
-    templates:
-      - {release: concourse, name: consul-agent}
-      - {release: concourse, name: tsa}
-      - {release: concourse, name: atc}
     networks: [{name: concourse}]
-    properties:
-      atc:
-        web_bind_port: 8080
-        external_url: (( meta.atc.external_url ))
-        basic_auth_username: ~
-        basic_auth_password: ~
-        github_auth:
-          authorize: (( meta.atc.github_auth.authorize ))
-          client_id: (( meta.atc.github_auth.client_id ))
-          client_secret: (( meta.atc.github_auth.client_secret ))
-        postgresql:
-          database: *atc-db-name
-          role: *atc-db-role
-      consul:
-        agent:
-          servers: {lan: [*discovery_static_ip]}
+    jobs:
+      - release: concourse
+        name: atc
+        properties:
+          web_bind_port: 8080
+          external_url: (( meta.atc.external_url ))
+          github_auth:
+            authorize: (( meta.atc.github_auth.authorize ))
+            client_id: (( meta.atc.github_auth.client_id ))
+            client_secret: (( meta.atc.github_auth.client_secret ))
+          postgresql_database: (( meta.atc.db.name ))
+      - release: concourse
+        name: tsa
+        properties: {}
 
   - name: db
     instances: 1
     resource_pool: databases
     persistent_disk_pool: database
-    templates:
-      - {release: concourse, name: consul-agent}
-      - {release: concourse, name: postgresql}
     networks: [{name: concourse}]
-    properties:
-      postgresql:
-        databases: [{name: *atc-db-name}]
-        roles: [*atc-db-role]
-      consul:
-        agent:
-          servers: {lan: [*discovery_static_ip]}
+    jobs:
+      - release: concourse
+        name: postgresql
+        properties:
+          databases:
+            - name: (( meta.atc.db.name ))
+              role: (( meta.atc.db.user ))
+              password: (( meta.atc.db.pass ))
 
   - name: worker
     instances: 1
     resource_pool: workers
-    templates:
-      - {release: concourse, name: consul-agent}
-      - {release: concourse, name: groundcrew}
-      - {release: concourse, name: baggageclaim}
-      - {release: garden-linux, name: garden}
-      - {release: slack-notification-resource, name: just_install_packages}
     networks: [{name: concourse}]
-    properties:
-      garden:
-        listen_network: tcp
-        listen_address: 0.0.0.0:7777
-        enable_graph_cleanup: true
-        default_container_grace_time: 10m
-        max_containers: 250
-      consul:
-        agent:
-          servers: {lan: [*discovery_static_ip]}
-      groundcrew:
-        resource_types:
-          - type: archive
-            image: /var/vcap/packages/archive_resource
-          - type: cf
-            image: /var/vcap/packages/cf_resource
-          - type: docker-image
-            image: /var/vcap/packages/docker_image_resource
-          - type: git
-            image: /var/vcap/packages/git_resource
-          - type: s3
-            image: /var/vcap/packages/s3_resource
-          - type: semver
-            image: /var/vcap/packages/semver_resource
-          - type: time
-            image: /var/vcap/packages/time_resource
-          - type: tracker
-            image: /var/vcap/packages/tracker_resource
-          - type: pool
-            image: /var/vcap/packages/pool_resource
-          - type: vagrant-cloud
-            image: /var/vcap/packages/vagrant_cloud_resource
-          - type: github-release
-            image: /var/vcap/packages/github_release_resource
-          - type: bosh-io-release
-            image: /var/vcap/packages/bosh_io_release_resource
-          - type: bosh-io-stemcell
-            image: /var/vcap/packages/bosh_io_stemcell_resource
-          - type: bosh-deployment
-            image: docker:///18fgsa/bosh-deployment-resource
-        additional_resource_types:
-          - type: slack-notification
-            image: /var/vcap/packages/slack-notification-resource
-          - type: cg-common
-            image: docker:///18fgsa/cg-common-resource
+    jobs:
+      - release: concourse
+        name: groundcrew
+        properties:
+          additional_resource_types:
+            - type: slack-notification
+              image: docker:///cfcommunity/slack-notification-resource
+            - type: cg-common
+              image: docker:///18fgsa/cg-common-resource
+            - type: 18f-bosh-deployment
+              image: docker:///18fgsa/bosh-deployment-resource
+      - release: concourse
+        name: baggageclaim
+        properties: {}
+      - release: garden-linux
+        name: garden
+        properties:
+          garden:
+            listen_network: tcp
+            listen_address: 0.0.0.0:7777
+            enable_graph_cleanup: true
+            default_container_grace_time: 10m
+            max_containers: 250
+
 disk_pools:
   - name: database
     disk_size: (( meta.disk.database.size ))
@@ -203,21 +138,11 @@ resource_pools:
       name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
       version: latest
     cloud_properties:
-      availability_zone: *az
+      availability_zone: &az (( meta.az ))
       instance_type: (( meta.resources.web.instance_type ))
       elbs: (( meta.resources.web.elbs ))
       ephemeral_disk:
         size: 30000
-        type: gp2
-
-  - name: discovery
-    network: concourse
-    stemcell: *stemcell
-    cloud_properties:
-      availability_zone: *az
-      instance_type: (( meta.resources.discovery.instance_type ))
-      ephemeral_disk:
-        size: 100000
         type: gp2
 
   - name: databases
