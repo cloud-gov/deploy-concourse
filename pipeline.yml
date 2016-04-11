@@ -1,5 +1,60 @@
 ---
 jobs:
+- name: deploy-concourse-staging
+  serial: true
+  plan:
+  - aggregate:
+    - get: pipeline-tasks
+      trigger: false
+    - get: concourse-config
+      trigger: true
+    - get: common-staging
+      trigger: true
+    - get: concourse-stemcell
+      trigger: false
+    - get: concourse-release
+      trigger: true
+    - get: garden-linux-release
+      trigger: false
+  - task: concourse-manifest
+    file: pipeline-tasks/spiff-merge.yml
+    config:
+      inputs:
+        - name: pipeline-tasks
+        - name: concourse-config
+        - name: common-staging
+      params:
+        OUTPUT_FILE: spiff-merge/manifest.yml
+        SOURCE_FILE: concourse-config/concourse.yml
+        MERGE_FILES: common-staging/secrets.yml
+  - put: concourse-staging-deployment
+    params:
+      cert: common-staging/boshCA.crt
+      manifest: spiff-merge/manifest.yml
+      releases:
+        - concourse-release/*.tgz
+        - garden-linux-release/*.tgz
+      stemcells:
+        - concourse-stemcell/*.tgz
+    on_failure:
+      put: slack
+      params:
+        text: |
+          :x: FAILED to deploy Concourse on staging
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        channel: {{slack-channel}}
+        username: {{slack-username}}
+        icon_url: {{slack-icon-url}}
+    on_success:
+      put: slack
+      params:
+        text: |
+          :white_check_mark: Successfully deployed Concourse on staging
+          <https://ci.cloud.gov/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+        channel: {{slack-channel}}
+        username: {{slack-username}}
+        icon_url: {{slack-icon-url}}
+
 - name: deploy-concourse-production
   serial: true
   plan:
@@ -8,44 +63,32 @@ jobs:
       trigger: false
     - get: concourse-config
       trigger: true
-    - get: concourse-private-production
+      passed: [deploy-concourse-staging]
+    - get: common-production
       trigger: true
     - get: concourse-stemcell
       trigger: false
+      passed: [deploy-concourse-staging]
     - get: concourse-release
       trigger: true
+      passed: [deploy-concourse-staging]
     - get: garden-linux-release
       trigger: false
-  - task: concourse-decrypt
-    file: pipeline-tasks/decrypt.yml
-    config:
-      inputs:
-        - name: pipeline-tasks
-        - name: concourse-private-production
-      params:
-        INPUT_FILE: concourse-private-production/concourse.yml
-        OUTPUT_FILE: decrypt/concourse.yml
-        PASSPHRASE: {{concourse-production-private-passphrase}}
+      passed: [deploy-concourse-staging]
   - task: concourse-manifest
     file: pipeline-tasks/spiff-merge.yml
     config:
       inputs:
         - name: pipeline-tasks
         - name: concourse-config
-        - name: decrypt
+        - name: common-production
       params:
         OUTPUT_FILE: spiff-merge/manifest.yml
         SOURCE_FILE: concourse-config/concourse.yml
-        MERGE_FILES: decrypt/concourse.yml
-  - task: bosh-prod-ssl-cert
-    file: pipeline-tasks/write_file.yml
-    config:
-      params:
-        FILE_NAME: write_file/BOSHRootCA.pem
-        CONTENT: {{concourse-production-deployment-bosh-cert}}
+        MERGE_FILES: common-production/secrets.yml
   - put: concourse-production-deployment
     params:
-      cert: write_file/BOSHRootCA.pem
+      cert: common-production/boshCA.crt
       manifest: spiff-merge/manifest.yml
       releases:
         - concourse-release/*.tgz
@@ -83,16 +126,28 @@ resources:
   source:
     uri: {{concourse-config-git-url}}
     branch: {{concourse-config-git-branch}}
+    paths:
+    - concourse.yml
 
-- name: concourse-private-production
-  type: s3
+- name: common-production
+  type: cg-common
   source:
-    bucket: {{concourse-production-private-bucket}}
-    versioned_file: concourse.yml
+    bucket_name: {{concourse-production-private-bucket}}
     access_key_id: {{concourse-production-private-access-key-id}}
     secret_access_key: {{concourse-production-private-secret-access-key}}
-    region_name: {{concourse-production-private-region-name}}
-    private: true
+    secrets_file: concourse-tooling-prod.yml
+    secrets_passphrase: {{concourse-production-private-passphrase}}
+    bosh_cert: bosh-tooling.pem
+
+- name: common-staging
+  type: cg-common
+  source:
+    bucket_name: {{concourse-staging-private-bucket}}
+    access_key_id: {{concourse-staging-private-access-key-id}}
+    secret_access_key: {{concourse-staging-private-secret-access-key}}
+    secrets_file: concourse-tooling-staging.yml
+    secrets_passphrase: {{concourse-staging-private-passphrase}}
+    bosh_cert: bosh-tooling.pem
 
 - name: concourse-stemcell
   type: bosh-io-stemcell
@@ -110,13 +165,20 @@ resources:
     repository: cloudfoundry-incubator/garden-linux-release
 
 - name: concourse-production-deployment
-  type: bosh-deployment
+  type: 18f-bosh-deployment
   source:
     target: {{concourse-production-deployment-bosh-target}}
     username: {{concourse-production-deployment-bosh-username}}
     password: {{concourse-production-deployment-bosh-password}}
     deployment: {{concourse-production-deployment-bosh-deployment}}
-    ignore_ssl: false
+
+- name: concourse-staging-deployment
+  type: 18f-bosh-deployment
+  source:
+    target: {{concourse-staging-deployment-bosh-target}}
+    username: {{concourse-staging-deployment-bosh-username}}
+    password: {{concourse-staging-deployment-bosh-password}}
+    deployment: {{concourse-staging-deployment-bosh-deployment}}
 
 - name: slack
   type: slack-notification-docker
@@ -124,7 +186,15 @@ resources:
     url: {{slack-webhook-url}}
 
 resource_types:
-  name: slack-notification-docker
+- name: slack-notification-docker
   type: docker-image
   source:
     repository: cfcommunity/slack-notification-resource
+- name: 18f-bosh-deployment
+  type: docker-image
+  source:
+    repository: 18fgsa/bosh-deployment-resource
+- name: cg-common
+  type: docker-image
+  source:
+    repository: 18fgsa/cg-common-resource
