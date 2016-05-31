@@ -3,6 +3,7 @@ name: (( merge || concourse ))
 
 # Meta property overrides
 meta:
+  environment: ~
   az: ~
   atc:
     external_url: ~
@@ -33,6 +34,10 @@ meta:
     disk:
       size: ~
       type: ~
+  tripwire: ~
+  awslogs: ~
+  nessus-agent: ~
+  newrelic: ~
 
 # replace with bosh status --uuid
 director_uuid: (( merge ))
@@ -57,6 +62,17 @@ releases:
     version: latest
   - name: garden-linux
     version: latest
+  - name: fisma
+    version: latest
+  - name: tripwire
+    version: latest
+  - name: awslogs
+    version: latest
+  - name: nessus-agent
+    version: latest
+  - name: newrelic
+    version: latest
+
 
 instance_groups:
   - name: web
@@ -82,6 +98,22 @@ instance_groups:
       - release: concourse
         name: tsa
         properties: {}
+      - release: fisma
+        name: harden
+        properties: {}
+      - release: tripwire
+        name: tripwire
+        properties: (( meta.tripwire ))
+      - release: awslogs
+        name: awslogs
+        properties: (( meta.awslogs ))
+      - release: nessus-agent
+        name: nessus-agent
+        properties: (( meta.nessus-agent ))
+      - release: newrelic
+        name: newrelic
+        properties: (( meta.newrelic ))
+
 
   - name: worker
     instances: 1
@@ -110,6 +142,21 @@ instance_groups:
             enable_graph_cleanup: true
             default_container_grace_time: 10m
             max_containers: 250
+      - release: fisma
+        name: harden
+        properties: {}
+      - release: tripwire
+        name: tripwire
+        properties: (( meta.tripwire ))
+      - release: awslogs
+        name: awslogs
+        properties: (( meta.awslogs ))
+      - release: nessus-agent
+        name: nessus-agent
+        properties: (( meta.nessus-agent ))
+      - release: newrelic
+        name: newrelic
+        properties: (( meta.newrelic ))
 
 resource_pools:
   - name: web
