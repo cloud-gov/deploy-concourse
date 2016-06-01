@@ -106,13 +106,16 @@ instance_groups:
         properties: (( meta.tripwire ))
       - release: awslogs
         name: awslogs
-        properties: (( meta.awslogs ))
+        properties:
+          awslogs: (( meta.awslogs ))
       - release: nessus-agent
         name: nessus-agent
-        properties: (( meta.nessus-agent ))
+        properties:
+          nessus-agent: (( meta.nessus-agent ))
       - release: newrelic
         name: newrelic-monitor
-        properties: (( meta.newrelic ))
+        properties:
+          newrelic: (( meta.newrelic ))
 
 
   - name: worker
@@ -150,13 +153,16 @@ instance_groups:
         properties: (( meta.tripwire ))
       - release: awslogs
         name: awslogs
-        properties: (( meta.awslogs ))
+        properties:
+          awslogs: (( meta.awslogs ))
       - release: nessus-agent
         name: nessus-agent
-        properties: (( meta.nessus-agent ))
+        properties:
+          nessus-agent: (( meta.nessus-agent ))
       - release: newrelic
         name: newrelic-monitor
-        properties: (( meta.newrelic ))
+        properties:
+          newrelic: (( meta.newrelic ))
 
 resource_pools:
   - name: web
