@@ -155,7 +155,7 @@ instance_groups:
         name: nessus-agent
         properties: (( meta.nessus-agent ))
       - release: newrelic
-        name: newrelic
+        name: newrelic-monitor
         properties: (( meta.newrelic ))
 
 resource_pools:
