@@ -133,6 +133,7 @@ resources:
   type: cg-common
   source:
     bucket_name: {{concourse-production-private-bucket}}
+    region: {{aws-region}}
     access_key_id: {{concourse-production-private-access-key-id}}
     secret_access_key: {{concourse-production-private-secret-access-key}}
     secrets_file: concourse-tooling-prod.yml
@@ -143,6 +144,7 @@ resources:
   type: cg-common
   source:
     bucket_name: {{concourse-staging-private-bucket}}
+    region: {{aws-region}}
     access_key_id: {{concourse-staging-private-access-key-id}}
     secret_access_key: {{concourse-staging-private-secret-access-key}}
     secrets_file: concourse-tooling-staging.yml
