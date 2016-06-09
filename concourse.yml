@@ -38,6 +38,7 @@ meta:
   awslogs: ~
   nessus-agent: ~
   newrelic: ~
+  collectd: ~
 
 # replace with bosh status --uuid
 director_uuid: (( merge ))
@@ -71,6 +72,10 @@ releases:
   - name: nessus-agent
     version: latest
   - name: newrelic
+    version: latest
+  - name: riemannc
+    version: latest
+  - name: clamav
     version: latest
 
 
@@ -116,7 +121,15 @@ instance_groups:
         name: newrelic-monitor
         properties:
           newrelic: (( meta.newrelic ))
-
+      - release: riemannc
+        name: riemannc
+        properties:
+          riemann:
+            server: (( meta.collectd.riemann_server ))
+            port: 5555
+      - release: clamav
+        name: clamav
+        properties: {}
 
   - name: worker
     instances: 1
@@ -163,6 +176,15 @@ instance_groups:
         name: newrelic-monitor
         properties:
           newrelic: (( meta.newrelic ))
+      - release: riemannc
+        name: riemannc
+        properties:
+          riemann:
+            server: (( meta.collectd.riemann_server ))
+            port: 5555
+      - release: clamav
+        name: clamav
+        properties: {}
 
 resource_pools:
   - name: web
