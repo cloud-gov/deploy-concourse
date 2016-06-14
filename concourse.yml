@@ -61,7 +61,7 @@ networks:
 releases:
   - name: concourse
     version: latest
-  - name: garden-linux
+  - name: garden-runc
     version: latest
   - name: fisma
     version: latest
@@ -149,7 +149,7 @@ instance_groups:
       - release: concourse
         name: baggageclaim
         properties: {}
-      - release: garden-linux
+      - release: garden-runc
         name: garden
         properties:
           garden:
