@@ -14,7 +14,7 @@ jobs:
       trigger: false
     - get: concourse-release
       trigger: true
-    - get: garden-linux-release
+    - get: garden-runc-release
       trigger: false
   - task: concourse-manifest
     file: pipeline-tasks/spiff-merge.yml
@@ -33,7 +33,7 @@ jobs:
       manifest: spiff-merge/manifest.yml
       releases:
         - concourse-release/*.tgz
-        - garden-linux-release/*.tgz
+        - garden-runc-release/*.tgz
       stemcells:
         - concourse-stemcell/*.tgz
     on_failure:
@@ -72,7 +72,7 @@ jobs:
     - get: concourse-release
       trigger: true
       passed: [deploy-concourse-staging]
-    - get: garden-linux-release
+    - get: garden-runc-release
       trigger: false
       passed: [deploy-concourse-staging]
   - task: concourse-manifest
@@ -92,7 +92,7 @@ jobs:
       manifest: spiff-merge/manifest.yml
       releases:
         - concourse-release/*.tgz
-        - garden-linux-release/*.tgz
+        - garden-runc-release/*.tgz
       stemcells:
         - concourse-stemcell/*.tgz
     on_failure:
@@ -170,10 +170,10 @@ resources:
   source:
     repository: concourse/concourse
 
-- name: garden-linux-release
+- name: garden-runc-release
   type: bosh-io-release
   source:
-    repository: cloudfoundry-incubator/garden-linux-release
+    repository: cloudfoundry-incubator/garden-runc-release
 
 - name: concourse-production-deployment
   type: 18f-bosh-deployment
