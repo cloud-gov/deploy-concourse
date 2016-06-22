@@ -1,0 +1,19 @@
+---
+platform: linux
+image_resource:
+  type: docker-image
+  source:
+    repository: 18fgsa/concourse-task
+
+inputs:
+  - name: concourse-config
+  - name: cert-dir
+
+run:
+  path: concourse-config/jumpbox.sh
+
+params:
+  BOSH_TARGET:
+  BOSH_USERNAME:
+  BOSH_PASSWORD:
+  BOSH_CACERT:
