@@ -1,0 +1,83 @@
+---
+jobs:
+- name: container-bosh-staging
+  plan:
+  - aggregate:
+    - get: concourse-config
+    - get: cert-dir
+      resource: stagingbosh-certificate
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    params:
+      BOSH_TARGET: {{staging-bosh-target}}
+      BOSH_USERNAME: {{staging-bosh-username}}
+      BOSH_PASSWORD: {{staging-bosh-password}}
+      BOSH_CACERT: cert-dir/bosh.pem
+
+- name: container-bosh-production
+  plan:
+  - aggregate:
+    - get: concourse-config
+    - get: cert-dir
+      resource: productionbosh-certificate
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    params:
+      BOSH_TARGET: {{production-bosh-target}}
+      BOSH_USERNAME: {{production-bosh-username}}
+      BOSH_PASSWORD: {{production-bosh-password}}
+      BOSH_CACERT: cert-dir/bosh.pem
+
+- name: container-bosh-tooling
+  plan:
+  - aggregate:
+    - get: concourse-config
+    - get: cert-dir
+      resource: toolingbosh-certificate
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    params:
+      BOSH_TARGET: {{tooling-bosh-target}}
+      BOSH_USERNAME: {{tooling-bosh-username}}
+      BOSH_PASSWORD: {{tooling-bosh-password}}
+      BOSH_CACERT: cert-dir/bosh.pem
+
+resources:
+- name: concourse-config
+  type: git
+  source:
+    uri: {{concourse-config-git-url}}
+    branch: {{concourse-config-git-branch}}
+    paths:
+    - jumpbox.yml
+    - jumpbox.sh
+
+- name: stagingbosh-certificate
+  type: s3
+  source:
+    access_key_id: {{ci-access-key-id}}
+    bucket: {{staging-bucket-name}}
+    secret_access_key: {{ci-secret-access-key}}
+    versioned_file: bosh.pem
+    private: true
+    region_name: {{aws-region}}
+
+- name: productionbosh-certificate
+  type: s3
+  source:
+    access_key_id: {{ci-access-key-id}}
+    bucket: {{production-bucket-name}}
+    secret_access_key: {{ci-secret-access-key}}
+    versioned_file: bosh.pem
+    private: true
+    region_name: {{aws-region}}
+
+- name: toolingbosh-certificate
+  type: s3
+  source:
+    access_key_id: {{ci-access-key-id}}
+    bucket: {{production-bucket-name}}
+    secret_access_key: {{ci-secret-access-key}}
+    versioned_file: bosh-tooling.pem
+    private: true
+    region_name: {{aws-region}}
