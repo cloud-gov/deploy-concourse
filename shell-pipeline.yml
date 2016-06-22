@@ -40,7 +40,7 @@ jobs:
       BOSH_TARGET: {{tooling-bosh-target}}
       BOSH_USERNAME: {{tooling-bosh-username}}
       BOSH_PASSWORD: {{tooling-bosh-password}}
-      BOSH_CACERT: cert-dir/bosh.pem
+      BOSH_CACERT: cert-dir/bosh-tooling.pem
 
 resources:
 - name: concourse-config
