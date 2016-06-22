@@ -133,8 +133,9 @@ resources:
   type: cg-common
   source:
     bucket_name: {{concourse-production-private-bucket}}
-    access_key_id: {{concourse-production-private-access-key-id}}
-    secret_access_key: {{concourse-production-private-secret-access-key}}
+    region: {{aws-region}}
+    access_key_id: {{ci-access-key-id}}
+    secret_access_key: {{ci-secret-access-key}}
     secrets_file: concourse-tooling-prod.yml
     secrets_passphrase: {{concourse-production-private-passphrase}}
     bosh_cert: bosh-tooling.pem
@@ -143,16 +144,26 @@ resources:
   type: cg-common
   source:
     bucket_name: {{concourse-staging-private-bucket}}
-    access_key_id: {{concourse-staging-private-access-key-id}}
-    secret_access_key: {{concourse-staging-private-secret-access-key}}
+    region: {{aws-region}}
+    access_key_id: {{ci-access-key-id}}
+    secret_access_key: {{ci-secret-access-key}}
     secrets_file: concourse-tooling-staging.yml
     secrets_passphrase: {{concourse-staging-private-passphrase}}
     bosh_cert: bosh-tooling.pem
 
+#- name: concourse-stemcell
+#  type: bosh-io-stemcell
+#  source:
+#    name: {{concourse-stemcell}}
+
 - name: concourse-stemcell
-  type: bosh-io-stemcell
+  type: s3
   source:
-    name: {{concourse-stemcell}}
+     bucket: cg-stemcell-images
+     region_name: {{aws-region}}
+     access_key_id: {{ci-access-key-id}}
+     secret_access_key: {{ci-secret-access-key}}
+     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-ubuntu-trusty-go_agent.tgz
 
 - name: concourse-release
   type: bosh-io-release
