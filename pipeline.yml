@@ -159,7 +159,7 @@ resources:
 - name: concourse-stemcell
   type: s3
   source:
-     bucket: cg-stemcell-images
+     bucket: {{stemcell-bucket}}
      region_name: {{aws-region}}
      access_key_id: {{ci-access-key-id}}
      secret_access_key: {{ci-secret-access-key}}
