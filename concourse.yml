@@ -77,6 +77,8 @@ releases:
     version: latest
   - name: clamav
     version: latest
+  - name: snort
+    version: latest
 
 
 instance_groups:
@@ -129,6 +131,9 @@ instance_groups:
             port: 5555
       - release: clamav
         name: clamav
+        properties: {}
+      - release: snort
+        name: snort
         properties: {}
 
   - name: worker
@@ -184,6 +189,9 @@ instance_groups:
             port: 5555
       - release: clamav
         name: clamav
+        properties: {}
+      - release: snort
+        name: snort
         properties: {}
 
 resource_pools:
