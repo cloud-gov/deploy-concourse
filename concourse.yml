@@ -34,6 +34,9 @@ meta:
     disk:
       size: ~
       type: ~
+  riemann_emitter:
+    host: ~
+    port: (( merge || 5555 ))
   rds:
     instance_name: ~
     region: ~
@@ -115,11 +118,14 @@ instance_groups:
       - release: riemann
         name: riemann-emitter
         properties:
-          rds:
-            instance_name: (( meta.rds.instance_name ))
-            region: (( meta.rds.region ))
-            access_key_id: (( meta.rds.access_key_id ))
-            secret_access_key: (( meta.rds.secret_access_key ))
+          riemann_emitter:
+            host: (( meta.riemann_emitter.host ))
+            port: (( meta.riemann_emitter.port ))
+            rds:
+              instance_name: (( meta.rds.instance_name ))
+              region: (( meta.rds.region ))
+              access_key_id: (( meta.rds.access_key_id ))
+              secret_access_key: (( meta.rds.secret_access_key ))
       - release: fisma
         name: harden
         properties: {}
