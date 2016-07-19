@@ -34,6 +34,11 @@ meta:
     disk:
       size: ~
       type: ~
+  rds:
+    instance_name: ~
+    region: ~
+    access_key_id: ~
+    secret_access_key: ~
   tripwire: ~
   awslogs: ~
   nessus-agent: ~
@@ -62,6 +67,8 @@ releases:
   - name: concourse
     version: latest
   - name: garden-runc
+    version: latest
+  - name: riemann
     version: latest
   - name: fisma
     version: latest
@@ -105,6 +112,14 @@ instance_groups:
       - release: concourse
         name: tsa
         properties: {}
+      - release: riemann
+        name: riemann-emitter
+        properties:
+          rds:
+            instance_name: (( meta.rds.instance_name ))
+            region: (( meta.rds.region ))
+            access_key_id: (( meta.rds.access_key_id ))
+            secret_access_key: (( meta.rds.secret_access_key ))
       - release: fisma
         name: harden
         properties: {}
