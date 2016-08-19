@@ -226,7 +226,7 @@ resource_pools:
       instance_type: (( meta.resources.web.instance_type ))
       elbs: (( meta.resources.web.elbs ))
       ephemeral_disk:
-        size: 30000
+        size: 45000
         type: gp2
         encrypted: true
 
@@ -237,7 +237,7 @@ resource_pools:
       availability_zone: *az
       instance_type: (( meta.resources.workers.instance_type ))
       ephemeral_disk:
-        size: 100000
+        size: 300000
         type: gp2
         encrypted: true
 
