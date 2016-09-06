@@ -184,6 +184,7 @@ instance_groups:
             enable_graph_cleanup: true
             default_container_grace_time: 10m
             max_containers: 250
+            network_pool: 10.254.0.0/20
       - release: fisma
         name: harden
         properties: {}
