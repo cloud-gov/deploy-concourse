@@ -1,5 +1,5 @@
 ---
-name: (( merge || concourse ))
+name: concourse
 
 # Meta property overrides
 meta:
@@ -36,7 +36,7 @@ meta:
       type: ~
   riemann_emitter:
     host: ~
-    port: (( merge || 5555 ))
+    port: 5555
   rds:
     instance_name: ~
     region: ~
@@ -49,7 +49,7 @@ meta:
   collectd: ~
 
 # replace with bosh status --uuid
-director_uuid: (( merge ))
+director_uuid: ~
 
 # replace all addresses with your VPC range
 #
@@ -58,13 +58,13 @@ networks:
   - name: concourse
     type: manual
     subnets:
-      - range: (( meta.network.range ))
-        reserved: (( meta.network.reserved ))
-        gateway: (( meta.network.gateway ))
-        dns: (( meta.network.dns ))
+      - range: (( grab meta.network.range ))
+        reserved: (( grab meta.network.reserved ))
+        gateway: (( grab meta.network.gateway ))
+        dns: (( grab meta.network.dns ))
         cloud_properties:
-          security_groups: (( meta.network.security_groups ))
-          subnet: (( meta.network.subnet ))
+          security_groups: (( grab meta.network.security_groups ))
+          subnet: (( grab meta.network.subnet ))
 
 releases:
   - name: concourse
@@ -101,17 +101,17 @@ instance_groups:
         name: atc
         properties:
           web_bind_port: 8080
-          external_url: (( meta.atc.external_url ))
+          external_url: (( grab meta.atc.external_url ))
           github_auth:
-            authorize: (( meta.atc.github_auth.authorize ))
-            client_id: (( meta.atc.github_auth.client_id ))
-            client_secret: (( meta.atc.github_auth.client_secret ))
+            authorize: (( grab meta.atc.github_auth.authorize ))
+            client_id: (( grab meta.atc.github_auth.client_id ))
+            client_secret: (( grab meta.atc.github_auth.client_secret ))
           postgresql:
-            address: (( meta.atc.db.address ))
-            database: (( meta.atc.db.name ))
+            address: (( grab meta.atc.db.address ))
+            database: (( grab meta.atc.db.name ))
             role:
-              name: (( meta.atc.db.user ))
-              password: (( meta.atc.db.pass ))
+              name: (( grab meta.atc.db.user ))
+              password: (( grab meta.atc.db.pass ))
       - release: concourse
         name: tsa
         properties: {}
@@ -119,36 +119,36 @@ instance_groups:
         name: riemann-emitter
         properties:
           riemann_emitter:
-            host: (( meta.riemann_emitter.host ))
-            port: (( meta.riemann_emitter.port ))
+            host: (( grab meta.riemann_emitter.host ))
+            port: (( grab meta.riemann_emitter.port ))
             rds:
-              instance_name: (( meta.rds.instance_name ))
-              region: (( meta.rds.region ))
-              access_key_id: (( meta.rds.access_key_id ))
-              secret_access_key: (( meta.rds.secret_access_key ))
+              instance_name: (( grab meta.rds.instance_name ))
+              region: (( grab meta.rds.region ))
+              access_key_id: (( grab meta.rds.access_key_id ))
+              secret_access_key: (( grab meta.rds.secret_access_key ))
       - release: fisma
         name: harden
         properties: {}
       - release: tripwire
         name: tripwire
-        properties: (( meta.tripwire ))
+        properties: (( grab meta.tripwire ))
       - release: awslogs
         name: awslogs
         properties:
-          awslogs: (( meta.awslogs ))
+          awslogs: (( grab meta.awslogs ))
       - release: nessus-agent
         name: nessus-agent
         properties:
-          nessus-agent: (( meta.nessus-agent ))
+          nessus-agent: (( grab meta.nessus-agent ))
       - release: newrelic
         name: newrelic-monitor
         properties:
-          newrelic: (( meta.newrelic ))
+          newrelic: (( grab meta.newrelic ))
       - release: riemannc
         name: riemannc
         properties:
           riemann:
-            server: (( meta.collectd.riemann_server ))
+            server: (( grab meta.collectd.riemann_server ))
             port: 5555
       - release: clamav
         name: clamav
@@ -190,24 +190,24 @@ instance_groups:
         properties: {}
       - release: tripwire
         name: tripwire
-        properties: (( meta.tripwire ))
+        properties: (( grab meta.tripwire ))
       - release: awslogs
         name: awslogs
         properties:
-          awslogs: (( meta.awslogs ))
+          awslogs: (( grab meta.awslogs ))
       - release: nessus-agent
         name: nessus-agent
         properties:
-          nessus-agent: (( meta.nessus-agent ))
+          nessus-agent: (( grab meta.nessus-agent ))
       - release: newrelic
         name: newrelic-monitor
         properties:
-          newrelic: (( meta.newrelic ))
+          newrelic: (( grab meta.newrelic ))
       - release: riemannc
         name: riemannc
         properties:
           riemann:
-            server: (( meta.collectd.riemann_server ))
+            server: (( grab meta.collectd.riemann_server ))
             port: 5555
       - release: clamav
         name: clamav
@@ -223,9 +223,9 @@ resource_pools:
       name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
       version: latest
     cloud_properties:
-      availability_zone: &az (( meta.az ))
-      instance_type: (( meta.resources.web.instance_type ))
-      elbs: (( meta.resources.web.elbs ))
+      availability_zone: &az (( grab meta.az ))
+      instance_type: (( grab meta.resources.web.instance_type ))
+      elbs: (( grab meta.resources.web.elbs ))
       ephemeral_disk:
         size: 45000
         type: gp2
@@ -236,7 +236,7 @@ resource_pools:
     stemcell: *stemcell
     cloud_properties:
       availability_zone: *az
-      instance_type: (( meta.resources.workers.instance_type ))
+      instance_type: (( grab meta.resources.workers.instance_type ))
       ephemeral_disk:
         size: 300000
         type: gp2
@@ -248,10 +248,10 @@ compilation:
   reuse_compilation_vms: true
   cloud_properties:
     availability_zone: *az
-    instance_type: (( meta.compilation.instance_type ))
+    instance_type: (( grab meta.compilation.instance_type ))
     ephemeral_disk:
-      size: (( meta.compilation.disk.size ))
-      type: (( meta.compilation.disk.type ))
+      size: (( grab meta.compilation.disk.size ))
+      type: (( grab meta.compilation.disk.type ))
       encrypted: true
 
 update:

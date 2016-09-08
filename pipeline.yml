@@ -4,8 +4,6 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: pipeline-tasks
-      trigger: false
     - get: concourse-config
       trigger: true
     - get: common-staging
@@ -17,20 +15,24 @@ jobs:
     - get: garden-runc-release
       trigger: false
   - task: concourse-manifest
-    file: pipeline-tasks/spiff-merge.yml
     config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: 18fgsa/concourse-task
       inputs:
-        - name: pipeline-tasks
-        - name: concourse-config
-        - name: common-staging
-      params:
-        OUTPUT_FILE: spiff-merge/manifest.yml
-        SOURCE_FILE: concourse-config/concourse.yml
-        MERGE_FILES: common-staging/secrets.yml
+      - name: concourse-config
+      - name: common-staging
+      run:
+        path: concourse-config/generate.sh
+        args: ["common-staging/secrets.yml", "concourse-manifest/manifest.yml"]
+      outputs:
+      - name: concourse-manifest
   - put: concourse-staging-deployment
     params:
       cert: common-staging/boshCA.crt
-      manifest: spiff-merge/manifest.yml
+      manifest: concourse-manifest/manifest.yml
       releases:
         - concourse-release/*.tgz
         - garden-runc-release/*.tgz
@@ -59,8 +61,6 @@ jobs:
   serial: true
   plan:
   - aggregate:
-    - get: pipeline-tasks
-      trigger: false
     - get: concourse-config
       trigger: true
       passed: [deploy-concourse-staging]
@@ -76,20 +76,24 @@ jobs:
       trigger: false
       passed: [deploy-concourse-staging]
   - task: concourse-manifest
-    file: pipeline-tasks/spiff-merge.yml
     config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: 18fgsa/concourse-task
       inputs:
-        - name: pipeline-tasks
-        - name: concourse-config
-        - name: common-production
-      params:
-        OUTPUT_FILE: spiff-merge/manifest.yml
-        SOURCE_FILE: concourse-config/concourse.yml
-        MERGE_FILES: common-production/secrets.yml
+      - name: concourse-config
+      - name: common-production
+      run:
+        path: concourse-config/generate.sh
+        args: ["common-production/secrets.yml", "concourse-manifest/manifest.yml"]
+      outputs:
+      - name: concourse-manifest
   - put: concourse-production-deployment
     params:
       cert: common-production/boshCA.crt
-      manifest: spiff-merge/manifest.yml
+      manifest: concourse-manifest/manifest.yml
       releases:
         - concourse-release/*.tgz
         - garden-runc-release/*.tgz
@@ -115,12 +119,6 @@ jobs:
         icon_url: {{slack-icon-url}}
 
 resources:
-- name: pipeline-tasks
-  type: git
-  source:
-    uri: {{pipeline-tasks-git-url}}
-    branch: {{pipeline-tasks-git-branch}}
-
 - name: concourse-config
   type: git
   source:
