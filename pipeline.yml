@@ -10,7 +10,7 @@ jobs:
       resource: common-staging
       trigger: true
     - get: concourse-stemcell
-      trigger: false
+      trigger: true
     - get: concourse-release
       trigger: true
     - get: garden-runc-release
@@ -69,7 +69,7 @@ jobs:
       resource: common-production
       trigger: true
     - get: concourse-stemcell
-      trigger: false
+      trigger: true
       passed: [deploy-concourse-staging]
     - get: concourse-release
       trigger: true
