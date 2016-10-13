@@ -6,16 +6,17 @@ jobs:
   - aggregate:
     - get: concourse-config
       trigger: true
-    - get: common-staging
+    - get: common
+      resource: common-staging
       trigger: true
     - get: concourse-stemcell
-      trigger: false
+      trigger: true
     - get: concourse-release
       trigger: true
     - get: garden-runc-release
       trigger: false
   - task: concourse-manifest
-    config:
+    config: &manifest-config
       platform: linux
       image_resource:
         type: docker-image
@@ -23,27 +24,27 @@ jobs:
           repository: 18fgsa/concourse-task
       inputs:
       - name: concourse-config
-      - name: common-staging
+      - name: common
       run:
         path: concourse-config/generate.sh
-        args: ["common-staging/secrets.yml", "concourse-manifest/manifest.yml"]
+        args: ["common/secrets.yml", "concourse-manifest/manifest.yml"]
       outputs:
       - name: concourse-manifest
   - put: concourse-staging-deployment
-    params:
-      cert: common-staging/boshCA.crt
+    params: &deploy-params
+      cert: common/boshCA.crt
       manifest: concourse-manifest/manifest.yml
       releases:
-        - concourse-release/*.tgz
-        - garden-runc-release/*.tgz
+      - concourse-release/*.tgz
+      - garden-runc-release/*.tgz
       stemcells:
-        - concourse-stemcell/*.tgz
+      - concourse-stemcell/*.tgz
     on_failure:
       put: slack
       params:
         text: |
           :x: FAILED to deploy Concourse on staging
-          <https://$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+          <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
         channel: {{slack-channel}}
         username: {{slack-username}}
         icon_url: {{slack-icon-url}}
@@ -52,7 +53,7 @@ jobs:
       params:
         text: |
           :white_check_mark: Successfully deployed Concourse on staging
-          <https://$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+          <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
         channel: {{slack-channel}}
         username: {{slack-username}}
         icon_url: {{slack-icon-url}}
@@ -64,10 +65,11 @@ jobs:
     - get: concourse-config
       trigger: true
       passed: [deploy-concourse-staging]
-    - get: common-production
+    - get: common
+      resource: common-production
       trigger: true
     - get: concourse-stemcell
-      trigger: false
+      trigger: true
       passed: [deploy-concourse-staging]
     - get: concourse-release
       trigger: true
@@ -76,35 +78,15 @@ jobs:
       trigger: false
       passed: [deploy-concourse-staging]
   - task: concourse-manifest
-    config:
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: 18fgsa/concourse-task
-      inputs:
-      - name: concourse-config
-      - name: common-production
-      run:
-        path: concourse-config/generate.sh
-        args: ["common-production/secrets.yml", "concourse-manifest/manifest.yml"]
-      outputs:
-      - name: concourse-manifest
+    config: *manifest-config
   - put: concourse-production-deployment
-    params:
-      cert: common-production/boshCA.crt
-      manifest: concourse-manifest/manifest.yml
-      releases:
-        - concourse-release/*.tgz
-        - garden-runc-release/*.tgz
-      stemcells:
-        - concourse-stemcell/*.tgz
+    params: *deploy-params
     on_failure:
       put: slack
       params:
         text: |
           :x: FAILED to deploy Concourse on production
-          <https://$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+          <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
         channel: {{slack-channel}}
         username: {{slack-username}}
         icon_url: {{slack-icon-url}}
@@ -113,7 +95,7 @@ jobs:
       params:
         text: |
           :white_check_mark: Successfully deployed Concourse on production
-          <https://$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+          <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
         channel: {{slack-channel}}
         username: {{slack-username}}
         icon_url: {{slack-icon-url}}
@@ -148,11 +130,6 @@ resources:
     secrets_file: concourse-tooling-staging.yml
     secrets_passphrase: {{concourse-staging-private-passphrase}}
     bosh_cert: bosh-tooling.pem
-
-#- name: concourse-stemcell
-#  type: bosh-io-stemcell
-#  source:
-#    name: {{concourse-stemcell}}
 
 - name: concourse-stemcell
   type: s3
