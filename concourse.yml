@@ -121,6 +121,7 @@ instance_groups:
           riemann_emitter:
             host: (( grab meta.riemann_emitter.host ))
             port: (( grab meta.riemann_emitter.port ))
+            health: true
             rds:
               instance_name: (( grab meta.rds.instance_name ))
               region: (( grab meta.rds.region ))
@@ -185,6 +186,13 @@ instance_groups:
             default_container_grace_time: 10m
             max_containers: 250
             network_pool: 10.254.0.0/20
+      - release: riemann
+        name: riemann-emitter
+        properties:
+          riemann_emitter:
+            host: (( grab meta.riemann_emitter.host ))
+            port: (( grab meta.riemann_emitter.port ))
+            health: true
       - release: fisma
         name: harden
         properties: {}
