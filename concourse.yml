@@ -42,11 +42,6 @@ meta:
     region: ~
     access_key_id: ~
     secret_access_key: ~
-  tripwire: ~
-  awslogs: ~
-  nessus-agent: ~
-  newrelic: ~
-  collectd: ~
 
 # replace with bosh status --uuid
 director_uuid: ~
@@ -71,25 +66,6 @@ releases:
     version: latest
   - name: garden-runc
     version: latest
-  - name: riemann
-    version: latest
-  - name: fisma
-    version: latest
-  - name: tripwire
-    version: latest
-  - name: awslogs
-    version: latest
-  - name: nessus-agent
-    version: latest
-  - name: newrelic
-    version: latest
-  - name: riemannc
-    version: latest
-  - name: clamav
-    version: latest
-  - name: snort
-    version: latest
-
 
 instance_groups:
   - name: web
@@ -127,36 +103,6 @@ instance_groups:
               region: (( grab meta.rds.region ))
               access_key_id: (( grab meta.rds.access_key_id ))
               secret_access_key: (( grab meta.rds.secret_access_key ))
-      - release: fisma
-        name: harden
-        properties: {}
-      - release: tripwire
-        name: tripwire
-        properties: (( grab meta.tripwire ))
-      - release: awslogs
-        name: awslogs
-        properties:
-          awslogs: (( grab meta.awslogs ))
-      - release: nessus-agent
-        name: nessus-agent
-        properties:
-          nessus-agent: (( grab meta.nessus-agent ))
-      - release: newrelic
-        name: newrelic-monitor
-        properties:
-          newrelic: (( grab meta.newrelic ))
-      - release: riemannc
-        name: riemannc
-        properties:
-          riemann:
-            server: (( grab meta.collectd.riemann_server ))
-            port: 5555
-      - release: clamav
-        name: clamav
-        properties: {}
-      - release: snort
-        name: snort
-        properties: {}
 
   - name: worker
     instances: 1
@@ -193,36 +139,6 @@ instance_groups:
             host: (( grab meta.riemann_emitter.host ))
             port: (( grab meta.riemann_emitter.port ))
             health: true
-      - release: fisma
-        name: harden
-        properties: {}
-      - release: tripwire
-        name: tripwire
-        properties: (( grab meta.tripwire ))
-      - release: awslogs
-        name: awslogs
-        properties:
-          awslogs: (( grab meta.awslogs ))
-      - release: nessus-agent
-        name: nessus-agent
-        properties:
-          nessus-agent: (( grab meta.nessus-agent ))
-      - release: newrelic
-        name: newrelic-monitor
-        properties:
-          newrelic: (( grab meta.newrelic ))
-      - release: riemannc
-        name: riemannc
-        properties:
-          riemann:
-            server: (( grab meta.collectd.riemann_server ))
-            port: 5555
-      - release: clamav
-        name: clamav
-        properties: {}
-      - release: snort
-        name: snort
-        properties: {}
 
 resource_pools:
   - name: web
