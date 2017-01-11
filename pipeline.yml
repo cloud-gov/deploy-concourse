@@ -15,6 +15,7 @@ jobs:
       trigger: true
     - get: garden-runc-release
       trigger: false
+    - get: master-bosh-root-cert
   - task: concourse-manifest
     config: &manifest-config
       platform: linux
@@ -32,7 +33,7 @@ jobs:
       - name: concourse-manifest
   - put: ops-concourse-staging-deployment
     params: &deploy-params
-      cert: common/boshCA.crt
+      cert: master-bosh-root-cert/master-bosh.crt
       manifest: concourse-manifest/manifest.yml
       releases:
       - concourse-release/*.tgz
@@ -77,6 +78,7 @@ jobs:
     - get: garden-runc-release
       trigger: false
       passed: [deploy-ops-concourse-staging]
+    - get: master-bosh-root-cert
   - task: concourse-manifest
     config: *manifest-config
   - put: ops-concourse-production-deployment
@@ -115,6 +117,7 @@ jobs:
       trigger: true
     - get: garden-runc-release
       trigger: false
+    - get: master-bosh-root-cert
   - task: concourse-manifest
     config: *manifest-config
   - put: tenant-concourse-staging-deployment
@@ -157,6 +160,7 @@ jobs:
     - get: garden-runc-release
       trigger: false
       passed: [deploy-tenant-concourse-staging]
+    - get: master-bosh-root-cert
   - task: concourse-manifest
     config: *manifest-config
   - put: tenant-concourse-production-deployment
@@ -233,6 +237,15 @@ resources:
     secrets_passphrase: {{tenant-concourse-production-private-passphrase}}
     bosh_cert: bosh.pem
 
+- name: master-bosh-root-cert
+  type: s3
+  source:
+    bucket: {{ops-concourse-production-private-bucket}}
+    region_name: {{aws-region}}
+    access_key_id: {{ci-access-key-id}}
+    secret_access_key: {{ci-secret-access-key}}
+    versioned_file: master-bosh.crt
+
 - name: concourse-stemcell
   type: s3
   source:
@@ -294,10 +307,12 @@ resource_types:
   type: docker-image
   source:
     repository: cfcommunity/slack-notification-resource
+
 - name: 18f-bosh-deployment
   type: docker-image
   source:
     repository: 18fgsa/bosh-deployment-resource
+
 - name: cg-common
   type: docker-image
   source:

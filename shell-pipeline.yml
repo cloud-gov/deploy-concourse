@@ -4,43 +4,40 @@ jobs:
   plan:
   - aggregate:
     - get: concourse-config
-    - get: cert-dir
-      resource: stagingbosh-certificate
+    - get: master-bosh-root-cert
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
       BOSH_TARGET: {{staging-bosh-target}}
       BOSH_USERNAME: {{staging-bosh-username}}
       BOSH_PASSWORD: {{staging-bosh-password}}
-      BOSH_CACERT: cert-dir/bosh.pem
+      BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
 
 - name: container-bosh-production
   plan:
   - aggregate:
     - get: concourse-config
-    - get: cert-dir
-      resource: productionbosh-certificate
+    - get: master-bosh-root-cert
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
       BOSH_TARGET: {{production-bosh-target}}
       BOSH_USERNAME: {{production-bosh-username}}
       BOSH_PASSWORD: {{production-bosh-password}}
-      BOSH_CACERT: cert-dir/bosh.pem
+      BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
 
 - name: container-bosh-tooling
   plan:
   - aggregate:
     - get: concourse-config
-    - get: cert-dir
-      resource: toolingbosh-certificate
+    - get: master-bosh-root-cert
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
       BOSH_TARGET: {{tooling-bosh-target}}
       BOSH_USERNAME: {{tooling-bosh-username}}
       BOSH_PASSWORD: {{tooling-bosh-password}}
-      BOSH_CACERT: cert-dir/bosh-tooling.pem
+      BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
 
 resources:
 - name: concourse-config
@@ -52,32 +49,15 @@ resources:
     - jumpbox.yml
     - jumpbox.sh
 
-- name: stagingbosh-certificate
-  type: s3
+- name: master-bosh-root-cert
+  type: s3-iam
   source:
-    access_key_id: {{ci-access-key-id}}
-    bucket: {{staging-bucket-name}}
-    secret_access_key: {{ci-secret-access-key}}
-    versioned_file: bosh.pem
-    private: true
-    region_name: {{aws-region}}
-
-- name: productionbosh-certificate
-  type: s3
-  source:
-    access_key_id: {{ci-access-key-id}}
     bucket: {{production-bucket-name}}
-    secret_access_key: {{ci-secret-access-key}}
-    versioned_file: bosh.pem
-    private: true
     region_name: {{aws-region}}
+    versioned_file: master-bosh.crt
 
-- name: toolingbosh-certificate
-  type: s3
+resource_types:
+- name: s3-iam
+  type: docker-image
   source:
-    access_key_id: {{ci-access-key-id}}
-    bucket: {{production-bucket-name}}
-    secret_access_key: {{ci-secret-access-key}}
-    versioned_file: bosh-tooling.pem
-    private: true
-    region_name: {{aws-region}}
+    repository: 18fgsa/s3-resource
