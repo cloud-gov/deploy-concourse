@@ -6,8 +6,8 @@ image_resource:
     repository: 18fgsa/concourse-task
 
 inputs:
-  - name: concourse-config
-  - name: cert-dir
+- name: concourse-config
+- name: master-bosh-root-cert
 
 run:
   path: concourse-config/jumpbox.sh
