@@ -1,13 +1,13 @@
 ---
 jobs:
-- name: deploy-concourse-staging
+- name: deploy-ops-concourse-staging
   serial: true
   plan:
   - aggregate:
     - get: concourse-config
       trigger: true
     - get: common
-      resource: common-staging
+      resource: common-ops-staging
       trigger: true
     - get: concourse-stemcell
       trigger: true
@@ -30,7 +30,7 @@ jobs:
         args: ["common/secrets.yml", "concourse-manifest/manifest.yml"]
       outputs:
       - name: concourse-manifest
-  - put: concourse-staging-deployment
+  - put: ops-concourse-staging-deployment
     params: &deploy-params
       cert: common/boshCA.crt
       manifest: concourse-manifest/manifest.yml
@@ -39,66 +39,146 @@ jobs:
       - garden-runc-release/*.tgz
       stemcells:
       - concourse-stemcell/*.tgz
-    on_failure:
-      put: slack
-      params:
-        text: |
-          :x: FAILED to deploy Concourse on staging
-          <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-        channel: {{slack-channel}}
-        username: {{slack-username}}
-        icon_url: {{slack-icon-url}}
-    on_success:
-      put: slack
-      params:
-        text: |
-          :white_check_mark: Successfully deployed Concourse on staging
-          <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-        channel: {{slack-channel}}
-        username: {{slack-username}}
-        icon_url: {{slack-icon-url}}
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED to deploy Ops Concourse on staging
+        <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: {{slack-channel}}
+      username: {{slack-username}}
+      icon_url: {{slack-icon-url}}
+  on_success:
+    put: slack
+    params:
+      text: |
+        :white_check_mark: Successfully deployed Ops Concourse on staging
+        <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: {{slack-channel}}
+      username: {{slack-username}}
+      icon_url: {{slack-icon-url}}
 
-- name: deploy-concourse-production
+- name: deploy-ops-concourse-production
   serial: true
   plan:
   - aggregate:
     - get: concourse-config
       trigger: true
-      passed: [deploy-concourse-staging]
+      passed: [deploy-ops-concourse-staging]
     - get: common
-      resource: common-production
+      resource: common-ops-production
       trigger: true
     - get: concourse-stemcell
       trigger: true
-      passed: [deploy-concourse-staging]
+      passed: [deploy-ops-concourse-staging]
     - get: concourse-release
       trigger: true
-      passed: [deploy-concourse-staging]
+      passed: [deploy-ops-concourse-staging]
     - get: garden-runc-release
       trigger: false
-      passed: [deploy-concourse-staging]
+      passed: [deploy-ops-concourse-staging]
   - task: concourse-manifest
     config: *manifest-config
-  - put: concourse-production-deployment
+  - put: ops-concourse-production-deployment
     params: *deploy-params
-    on_failure:
-      put: slack
-      params:
-        text: |
-          :x: FAILED to deploy Concourse on production
-          <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-        channel: {{slack-channel}}
-        username: {{slack-username}}
-        icon_url: {{slack-icon-url}}
-    on_success:
-      put: slack
-      params:
-        text: |
-          :white_check_mark: Successfully deployed Concourse on production
-          <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-        channel: {{slack-channel}}
-        username: {{slack-username}}
-        icon_url: {{slack-icon-url}}
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED to deploy Ops Concourse on production
+        <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: {{slack-channel}}
+      username: {{slack-username}}
+      icon_url: {{slack-icon-url}}
+  on_success:
+    put: slack
+    params:
+      text: |
+        :white_check_mark: Successfully deployed Ops Concourse on production
+        <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: {{slack-channel}}
+      username: {{slack-username}}
+      icon_url: {{slack-icon-url}}
+
+- name: deploy-tenant-concourse-staging
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse-config
+      trigger: true
+    - get: common
+      resource: common-tenant-staging
+      trigger: true
+    - get: concourse-stemcell
+      trigger: true
+    - get: concourse-release
+      trigger: true
+    - get: garden-runc-release
+      trigger: false
+  - task: concourse-manifest
+    config: *manifest-config
+  - put: tenant-concourse-staging-deployment
+    params: *deploy-params
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED to deploy Tenant Concourse on staging
+        <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: {{slack-channel}}
+      username: {{slack-username}}
+      icon_url: {{slack-icon-url}}
+  on_success:
+    put: slack
+    params:
+      text: |
+        :white_check_mark: Successfully deployed Tenant Concourse on staging
+        <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: {{slack-channel}}
+      username: {{slack-username}}
+      icon_url: {{slack-icon-url}}
+
+- name: deploy-tenant-concourse-production
+  serial: true
+  plan:
+  - aggregate:
+    - get: concourse-config
+      trigger: true
+      passed: [deploy-tenant-concourse-staging]
+    - get: common
+      resource: common-tenant-production
+      trigger: true
+    - get: concourse-stemcell
+      trigger: true
+      passed: [deploy-tenant-concourse-staging]
+    - get: concourse-release
+      trigger: true
+      passed: [deploy-tenant-concourse-staging]
+    - get: garden-runc-release
+      trigger: false
+      passed: [deploy-tenant-concourse-staging]
+  - task: concourse-manifest
+    config: *manifest-config
+  - put: tenant-concourse-production-deployment
+    params: *deploy-params
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED to deploy Tenant Concourse on production
+        <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: {{slack-channel}}
+      username: {{slack-username}}
+      icon_url: {{slack-icon-url}}
+  on_success:
+    put: slack
+    params:
+      text: |
+        :white_check_mark: Successfully deployed Tenant Concourse on production
+        <$ATC_EXTERNAL_URL/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: {{slack-channel}}
+      username: {{slack-username}}
+      icon_url: {{slack-icon-url}}
 
 resources:
 - name: concourse-config
@@ -109,27 +189,49 @@ resources:
     paths:
     - concourse.yml
 
-- name: common-production
+- name: common-ops-production
   type: cg-common
   source:
-    bucket_name: {{concourse-production-private-bucket}}
+    bucket_name: {{ops-concourse-production-private-bucket}}
     region: {{aws-region}}
     access_key_id: {{ci-access-key-id}}
     secret_access_key: {{ci-secret-access-key}}
     secrets_file: concourse-tooling-prod.yml
-    secrets_passphrase: {{concourse-production-private-passphrase}}
+    secrets_passphrase: {{ops-concourse-production-private-passphrase}}
     bosh_cert: bosh-tooling.pem
 
-- name: common-staging
+- name: common-ops-staging
   type: cg-common
   source:
-    bucket_name: {{concourse-staging-private-bucket}}
+    bucket_name: {{ops-concourse-staging-private-bucket}}
     region: {{aws-region}}
     access_key_id: {{ci-access-key-id}}
     secret_access_key: {{ci-secret-access-key}}
     secrets_file: concourse-tooling-staging.yml
-    secrets_passphrase: {{concourse-staging-private-passphrase}}
+    secrets_passphrase: {{ops-concourse-staging-private-passphrase}}
     bosh_cert: bosh-tooling.pem
+
+- name: common-tenant-staging
+  type: cg-common
+  source:
+    bucket_name: {{tenant-concourse-staging-private-bucket}}
+    region: {{aws-region}}
+    access_key_id: {{ci-access-key-id}}
+    secret_access_key: {{ci-secret-access-key}}
+    secrets_file: concourse.yml
+    secrets_passphrase: {{tenant-concourse-staging-private-passphrase}}
+    bosh_cert: bosh.pem
+
+- name: common-tenant-production
+  type: cg-common
+  source:
+    bucket_name: {{tenant-concourse-production-private-bucket}}
+    region: {{aws-region}}
+    access_key_id: {{ci-access-key-id}}
+    secret_access_key: {{ci-secret-access-key}}
+    secrets_file: concourse.yml
+    secrets_passphrase: {{tenant-concourse-production-private-passphrase}}
+    bosh_cert: bosh.pem
 
 - name: concourse-stemcell
   type: s3
@@ -150,21 +252,37 @@ resources:
   source:
     repository: cloudfoundry-incubator/garden-runc-release
 
-- name: concourse-production-deployment
+- name: ops-concourse-production-deployment
   type: 18f-bosh-deployment
   source:
-    target: {{concourse-production-deployment-bosh-target}}
-    username: {{concourse-production-deployment-bosh-username}}
-    password: {{concourse-production-deployment-bosh-password}}
-    deployment: {{concourse-production-deployment-bosh-deployment}}
+    target: {{ops-concourse-production-deployment-bosh-target}}
+    username: {{ops-concourse-production-deployment-bosh-username}}
+    password: {{ops-concourse-production-deployment-bosh-password}}
+    deployment: {{ops-concourse-production-deployment-bosh-deployment}}
 
-- name: concourse-staging-deployment
+- name: ops-concourse-staging-deployment
   type: 18f-bosh-deployment
   source:
-    target: {{concourse-staging-deployment-bosh-target}}
-    username: {{concourse-staging-deployment-bosh-username}}
-    password: {{concourse-staging-deployment-bosh-password}}
-    deployment: {{concourse-staging-deployment-bosh-deployment}}
+    target: {{ops-concourse-staging-deployment-bosh-target}}
+    username: {{ops-concourse-staging-deployment-bosh-username}}
+    password: {{ops-concourse-staging-deployment-bosh-password}}
+    deployment: {{ops-concourse-staging-deployment-bosh-deployment}}
+
+- name: tenant-concourse-staging-deployment
+  type: 18f-bosh-deployment
+  source:
+    target: {{tenant-concourse-staging-deployment-bosh-target}}
+    username: {{tenant-concourse-staging-deployment-bosh-username}}
+    password: {{tenant-concourse-staging-deployment-bosh-password}}
+    deployment: {{tenant-concourse-staging-deployment-bosh-deployment}}
+
+- name: tenant-concourse-production-deployment
+  type: 18f-bosh-deployment
+  source:
+    target: {{tenant-concourse-production-deployment-bosh-target}}
+    username: {{tenant-concourse-production-deployment-bosh-username}}
+    password: {{tenant-concourse-production-deployment-bosh-password}}
+    deployment: {{tenant-concourse-production-deployment-bosh-deployment}}
 
 - name: slack
   type: slack-notification-docker
