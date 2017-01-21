@@ -35,8 +35,8 @@ jobs:
     file: concourse-config/jumpbox.yml
     params:
       BOSH_TARGET: {{tooling-bosh-target}}
-      BOSH_USERNAME: {{tooling-bosh-username}}
-      BOSH_PASSWORD: {{tooling-bosh-password}}
+      BOSH_CLIENT: {{tooling-bosh-uaa-client}}
+      BOSH_CLIENT_SECRET: {{tooling-bosh-uaa-client-secret}}
       BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
 
 resources:
