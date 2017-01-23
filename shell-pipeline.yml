@@ -8,7 +8,7 @@ jobs:
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
-      BOSH_TARGET: {{staging-bosh-target}}
+      BOSH_ENVIRONMENT: {{staging-bosh-target}}
       BOSH_USERNAME: {{staging-bosh-username}}
       BOSH_PASSWORD: {{staging-bosh-password}}
       BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
@@ -21,7 +21,7 @@ jobs:
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
-      BOSH_TARGET: {{production-bosh-target}}
+      BOSH_ENVIRONMENT: {{production-bosh-target}}
       BOSH_USERNAME: {{production-bosh-username}}
       BOSH_PASSWORD: {{production-bosh-password}}
       BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
@@ -34,7 +34,7 @@ jobs:
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
-      BOSH_TARGET: {{tooling-bosh-target}}
+      BOSH_ENVIRONMENT: {{tooling-bosh-target}}
       BOSH_CLIENT: {{tooling-bosh-uaa-client}}
       BOSH_CLIENT_SECRET: {{tooling-bosh-uaa-client-secret}}
       BOSH_CACERT: master-bosh-root-cert/master-bosh.crt

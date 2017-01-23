@@ -13,7 +13,7 @@ run:
   path: concourse-config/jumpbox.sh
 
 params:
-  BOSH_TARGET:
+  BOSH_ENVIRONMENT:
   BOSH_USERNAME:
   BOSH_PASSWORD:
   BOSH_CACERT:
