@@ -8,6 +8,7 @@ jobs:
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
+      BOSH_DIRECTOR_NAME: staging
       BOSH_ENVIRONMENT: {{staging-bosh-target}}
       BOSH_USERNAME: {{staging-bosh-username}}
       BOSH_PASSWORD: {{staging-bosh-password}}
@@ -22,6 +23,7 @@ jobs:
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
+      BOSH_DIRECTOR_NAME: PRODUCTION
       BOSH_ENVIRONMENT: {{production-bosh-target}}
       BOSH_USERNAME: {{production-bosh-username}}
       BOSH_PASSWORD: {{production-bosh-password}}
@@ -36,6 +38,7 @@ jobs:
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
+      BOSH_DIRECTOR_NAME: Tooling
       BOSH_ENVIRONMENT: {{tooling-bosh-target}}
       BOSH_CLIENT: {{tooling-bosh-uaa-client}}
       BOSH_CLIENT_SECRET: {{tooling-bosh-uaa-client-secret}}
