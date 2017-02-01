@@ -28,3 +28,7 @@ ${BOSH_PASSWORD}
 
 EOF
 fi
+
+cat <<EOF >> $HOME/.bashrc
+PS1="\[\$(tput setaf "$PROMPT_COLOR")\]\[\e]0;\u@\h: \w\a\]${debian_chroot:+($debian_chroot)}\u@\h:\w\$ \[\$(tput sgr0)\]"
+EOF

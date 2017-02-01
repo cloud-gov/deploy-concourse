@@ -12,6 +12,7 @@ jobs:
       BOSH_USERNAME: {{staging-bosh-username}}
       BOSH_PASSWORD: {{staging-bosh-password}}
       BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
+      PROMPT_COLOR: "2" # green
 
 - name: container-bosh-production
   plan:
@@ -25,6 +26,7 @@ jobs:
       BOSH_USERNAME: {{production-bosh-username}}
       BOSH_PASSWORD: {{production-bosh-password}}
       BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
+      PROMPT_COLOR: "1" # red
 
 - name: container-bosh-tooling
   plan:
@@ -38,6 +40,7 @@ jobs:
       BOSH_CLIENT: {{tooling-bosh-uaa-client}}
       BOSH_CLIENT_SECRET: {{tooling-bosh-uaa-client-secret}}
       BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
+      PROMPT_COLOR: "3" # yellow
 
 resources:
 - name: concourse-config
