@@ -7,22 +7,9 @@ meta:
   az: ~
   atc:
     external_url: ~
-    db:
-      address: ~
-      name: ~
-      user: ~
-      pass: ~
-    github_auth:
-      authorize: ~
-      client_id: ~
-      client_secret: ~
   network:
-    range: ~
     reserved: ~
     dns: ~
-    gateway: ~
-    subnet: ~
-    security_groups: ~
   resources:
     web:
       instance_type: ~
@@ -38,10 +25,7 @@ meta:
     host: ~
     port: 5555
   rds:
-    instance_name: ~
     region: ~
-    access_key_id: ~
-    secret_access_key: ~
 
 # replace with bosh status --uuid
 director_uuid: ~
@@ -53,13 +37,9 @@ networks:
 - name: concourse
   type: manual
   subnets:
-  - range: (( grab meta.network.range ))
-    reserved: (( grab meta.network.reserved ))
-    gateway: (( grab meta.network.gateway ))
+  - (( inline ))
+  - reserved: (( grab meta.network.reserved ))
     dns: (( grab meta.network.dns ))
-    cloud_properties:
-      security_groups: (( grab meta.network.security_groups ))
-      subnet: (( grab meta.network.subnet ))
 
 releases:
 - {name: concourse, version: latest}
@@ -72,36 +52,21 @@ instance_groups:
   resource_pool: web
   networks: [{name: concourse}]
   jobs:
-  - release: concourse
-    name: atc
+  - name: atc
+    release: concourse
     properties:
       web_bind_port: 8080
       external_url: (( grab meta.atc.external_url ))
-      github_auth:
-        authorize: (( grab meta.atc.github_auth.authorize ))
-        client_id: (( grab meta.atc.github_auth.client_id ))
-        client_secret: (( grab meta.atc.github_auth.client_secret ))
-      postgresql:
-        address: (( grab meta.atc.db.address ))
-        database: (( grab meta.atc.db.name ))
-        role:
-          name: (( grab meta.atc.db.user ))
-          password: (( grab meta.atc.db.pass ))
-  - release: concourse
-    name: tsa
+  - name: tsa
+    release: concourse
     properties: {}
-  - release: riemann
-    name: riemann-emitter
+  - name: riemann-emitter
+    release: riemann
     properties:
       riemann_emitter:
         host: (( grab meta.riemann_emitter.host ))
         port: (( grab meta.riemann_emitter.port ))
         health: true
-        rds:
-          instance_name: (( grab meta.rds.instance_name ))
-          region: (( grab meta.rds.region ))
-          access_key_id: (( grab meta.rds.access_key_id ))
-          secret_access_key: (( grab meta.rds.secret_access_key ))
 
 - name: worker
   instances: 1
@@ -148,7 +113,6 @@ resource_pools:
   cloud_properties:
     availability_zone: &az (( grab meta.az ))
     instance_type: (( grab meta.resources.web.instance_type ))
-    elbs: (( grab meta.resources.web.elbs ))
     ephemeral_disk:
       size: 45000
       type: gp2

@@ -9,6 +9,10 @@ jobs:
     - get: common
       resource: common-ops-staging
       trigger: true
+    - get: terraform-state
+      resource: state-file-tooling
+      trigger: true
+    - get: pipeline-tasks
     - get: concourse-stemcell
       trigger: true
     - get: concourse-release
@@ -16,6 +20,10 @@ jobs:
     - get: garden-runc-release
       trigger: false
     - get: master-bosh-root-cert
+  - task: terraform-state-to-yaml
+    file: pipeline-tasks/terraform-state-to-yaml.yml
+    params:
+      STATE_FILE: terraform.tfstate
   - task: concourse-manifest
     config: &manifest-config
       platform: linux
@@ -25,10 +33,11 @@ jobs:
           repository: 18fgsa/concourse-task
       inputs:
       - name: concourse-config
+      - name: terraform-yaml
       - name: common
       run:
         path: concourse-config/generate.sh
-        args: ["common/secrets.yml", "concourse-manifest/manifest.yml"]
+        args: ["concourse-config/concourse-staging.yml", "common/secrets.yml", "terraform-yaml/state.yml", "concourse-manifest/manifest.yml"]
       outputs:
       - name: concourse-manifest
   - put: ops-concourse-staging-deployment
@@ -64,8 +73,13 @@ jobs:
   plan:
   - aggregate:
     - get: concourse-config
-      trigger: true
       passed: [deploy-ops-concourse-staging]
+      trigger: true
+    - get: terraform-state
+      resource: state-file-tooling
+      passed: [deploy-ops-concourse-staging]
+      trigger: true
+    - get: pipeline-tasks
     - get: common
       resource: common-ops-production
       trigger: true
@@ -79,8 +93,16 @@ jobs:
       trigger: false
       passed: [deploy-ops-concourse-staging]
     - get: master-bosh-root-cert
+  - task: terraform-state-to-yaml
+    file: pipeline-tasks/terraform-state-to-yaml.yml
+    params:
+      STATE_FILE: terraform.tfstate
   - task: concourse-manifest
-    config: *manifest-config
+    config:
+      <<: *manifest-config
+      run:
+        path: concourse-config/generate.sh
+        args: ["concourse-config/concourse-production.yml", "common/secrets.yml", "terraform-yaml/state.yml", "concourse-manifest/manifest.yml"]
   - put: ops-concourse-production-deployment
     params: *deploy-params
   on_failure:
@@ -108,6 +130,10 @@ jobs:
   - aggregate:
     - get: concourse-config
       trigger: true
+    - get: terraform-state
+      resource: state-file-staging
+      trigger: true
+    - get: pipeline-tasks
     - get: common
       resource: common-tenant-staging
       trigger: true
@@ -118,8 +144,16 @@ jobs:
     - get: garden-runc-release
       trigger: false
     - get: master-bosh-root-cert
+  - task: terraform-state-to-yaml
+    file: pipeline-tasks/terraform-state-to-yaml.yml
+    params:
+      STATE_FILE: terraform.tfstate
   - task: concourse-manifest
-    config: *manifest-config
+    config:
+      <<: *manifest-config
+      run:
+        path: concourse-config/generate.sh
+        args: ["concourse-config/concourse-tenant.yml", "common/secrets.yml", "terraform-yaml/state.yml", "concourse-manifest/manifest.yml"]
   - put: tenant-concourse-staging-deployment
     params: *deploy-params
   on_failure:
@@ -146,8 +180,12 @@ jobs:
   plan:
   - aggregate:
     - get: concourse-config
-      trigger: true
       passed: [deploy-tenant-concourse-staging]
+      trigger: true
+    - get: terraform-state
+      resource: state-file-production
+      trigger: true
+    - get: pipeline-tasks
     - get: common
       resource: common-tenant-production
       trigger: true
@@ -161,8 +199,16 @@ jobs:
       trigger: false
       passed: [deploy-tenant-concourse-staging]
     - get: master-bosh-root-cert
+  - task: terraform-state-to-yaml
+    file: pipeline-tasks/terraform-state-to-yaml.yml
+    params:
+      STATE_FILE: terraform.tfstate
   - task: concourse-manifest
-    config: *manifest-config
+    config:
+      <<: *manifest-config
+      run:
+        path: concourse-config/generate.sh
+        args: ["concourse-config/concourse-tenant.yml", "common/secrets.yml", "terraform-yaml/state.yml", "concourse-manifest/manifest.yml"]
   - put: tenant-concourse-production-deployment
     params: *deploy-params
   on_failure:
@@ -192,6 +238,12 @@ resources:
     branch: {{concourse-config-git-branch}}
     paths:
     - concourse.yml
+
+- name: pipeline-tasks
+  type: git
+  source:
+    uri: {{pipeline-tasks-git-url}}
+    branch: {{pipeline-tasks-git-branch}}
 
 - name: common-ops-production
   type: cg-common
@@ -302,6 +354,27 @@ resources:
   source:
     url: {{slack-webhook-url}}
 
+- name: state-file-tooling
+  type: s3-iam
+  source:
+    bucket: {{tf-state-bucket-tooling}}
+    versioned_file: {{tf-state-file-tooling}}
+    region_name: {{aws-region}}
+
+- name: state-file-staging
+  type: s3-iam
+  source:
+    bucket: {{tf-state-bucket-staging}}
+    versioned_file: {{tf-state-file-staging}}
+    region_name: {{aws-region}}
+
+- name: state-file-production
+  type: s3-iam
+  source:
+    bucket: {{tf-state-bucket-production}}
+    versioned_file: {{tf-state-file-production}}
+    region_name: {{aws-region}}
+
 resource_types:
 - name: slack-notification-docker
   type: docker-image
@@ -317,3 +390,8 @@ resource_types:
   type: docker-image
   source:
     repository: 18fgsa/cg-common-resource
+
+- name: s3-iam
+  type: docker-image
+  source:
+    repository: 18fgsa/s3-resource

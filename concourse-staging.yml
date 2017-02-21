@@ -1,0 +1,36 @@
+networks:
+- name: concourse
+  subnets:
+  - range: (( grab terraform_outputs.staging_concourse_subnet_cidr ))
+    gateway: (( grab terraform_outputs.staging_concourse_subnet_gateway ))
+    cloud_properties:
+      subnet: (( grab terraform_outputs.staging_concourse_subnet ))
+      security_groups:
+      - (( grab terraform_outputs.staging_concourse_security_group ))
+      - (( grab terraform_outputs.bosh_security_group ))
+
+resource_pools:
+- name: web
+  cloud_properties:
+    elbs:
+    - (( grab terraform_outputs.staging_concourse_elb_name ))
+
+instance_groups:
+- name: web
+  jobs:
+  - name: atc
+    properties:
+      postgresql:
+        database: (( grab terraform_outputs.staging_concourse_rds_name ))
+        address: (( grab terraform_outputs.staging_concourse_rds_url ))
+        role:
+          name: (( grab terraform_outputs.staging_concourse_rds_username ))
+          password: (( grab terraform_outputs.staging_concourse_rds_username ))
+  - name: riemann-emitter
+    properties:
+      riemann_emitter:
+        rds:
+          access_key_id: (( grab terraform_outputs.awslogs_access_key_id ))
+          secret_access_key: (( grab terraform_outputs.awslogs_secret_access_key ))
+          instance_name: (( grab terraform_outputs.staging_concourse_rds_identifier ))
+          region: (( grab meta.rds.region ))
