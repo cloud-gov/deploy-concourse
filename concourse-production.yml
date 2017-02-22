@@ -25,7 +25,7 @@ instance_groups:
         address: (( grab terraform_outputs.production_concourse_rds_url ))
         role:
           name: (( grab terraform_outputs.production_concourse_rds_username ))
-          password: (( grab terraform_outputs.production_concourse_rds_username ))
+          password: (( grab terraform_outputs.production_concourse_rds_password ))
   - name: riemann-emitter
     properties:
       riemann_emitter:

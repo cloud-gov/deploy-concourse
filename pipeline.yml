@@ -9,8 +9,8 @@ jobs:
     - get: common
       resource: common-ops-staging
       trigger: true
-    - get: terraform-state
-      resource: state-file-tooling
+    - get: terraform-yaml
+      resource: terraform-yaml-tooling
       trigger: true
     - get: pipeline-tasks
     - get: concourse-stemcell
@@ -20,10 +20,6 @@ jobs:
     - get: garden-runc-release
       trigger: false
     - get: master-bosh-root-cert
-  - task: terraform-state-to-yaml
-    file: pipeline-tasks/terraform-state-to-yaml.yml
-    params:
-      STATE_FILE: terraform.tfstate
   - task: concourse-manifest
     config: &manifest-config
       platform: linux
@@ -75,8 +71,8 @@ jobs:
     - get: concourse-config
       passed: [deploy-ops-concourse-staging]
       trigger: true
-    - get: terraform-state
-      resource: state-file-tooling
+    - get: terraform-yaml
+      resource: terraform-yaml-tooling
       passed: [deploy-ops-concourse-staging]
       trigger: true
     - get: pipeline-tasks
@@ -93,10 +89,6 @@ jobs:
       trigger: false
       passed: [deploy-ops-concourse-staging]
     - get: master-bosh-root-cert
-  - task: terraform-state-to-yaml
-    file: pipeline-tasks/terraform-state-to-yaml.yml
-    params:
-      STATE_FILE: terraform.tfstate
   - task: concourse-manifest
     config:
       <<: *manifest-config
@@ -130,8 +122,8 @@ jobs:
   - aggregate:
     - get: concourse-config
       trigger: true
-    - get: terraform-state
-      resource: state-file-staging
+    - get: terraform-yaml
+      resource: terraform-yaml-staging
       trigger: true
     - get: pipeline-tasks
     - get: common
@@ -144,10 +136,6 @@ jobs:
     - get: garden-runc-release
       trigger: false
     - get: master-bosh-root-cert
-  - task: terraform-state-to-yaml
-    file: pipeline-tasks/terraform-state-to-yaml.yml
-    params:
-      STATE_FILE: terraform.tfstate
   - task: concourse-manifest
     config:
       <<: *manifest-config
@@ -182,8 +170,8 @@ jobs:
     - get: concourse-config
       passed: [deploy-tenant-concourse-staging]
       trigger: true
-    - get: terraform-state
-      resource: state-file-production
+    - get: terraform-yaml
+      resource: terraform-yaml-production
       trigger: true
     - get: pipeline-tasks
     - get: common
@@ -354,21 +342,21 @@ resources:
   source:
     url: {{slack-webhook-url}}
 
-- name: state-file-tooling
+- name: terraform-yaml-tooling
   type: s3-iam
   source:
     bucket: {{tf-state-bucket-tooling}}
     versioned_file: {{tf-state-file-tooling}}
     region_name: {{aws-region}}
 
-- name: state-file-staging
+- name: terraform-yaml-staging
   type: s3-iam
   source:
     bucket: {{tf-state-bucket-staging}}
     versioned_file: {{tf-state-file-staging}}
     region_name: {{aws-region}}
 
-- name: state-file-production
+- name: terraform-yaml-production
   type: s3-iam
   source:
     bucket: {{tf-state-bucket-production}}
