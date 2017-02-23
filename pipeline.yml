@@ -225,7 +225,8 @@ resources:
     uri: {{concourse-config-git-url}}
     branch: {{concourse-config-git-branch}}
     paths:
-    - concourse.yml
+    - concourse*.yml
+    - generate.sh
 
 - name: pipeline-tasks
   type: git
