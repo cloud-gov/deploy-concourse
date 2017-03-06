@@ -22,7 +22,7 @@ instance_groups:
     properties:
       postgresql:
         database: (( grab terraform_outputs.concourse_rds_name ))
-        address: (( grab terraform_outputs.concourse_rds_96_url ))
+        address: (( grab terraform_outputs.concourse_rds_url ))
         role:
           name: (( grab terraform_outputs.concourse_rds_username ))
           password: (( grab terraform_outputs.concourse_rds_password ))
@@ -32,5 +32,5 @@ instance_groups:
         rds:
           access_key_id: (( grab meta.rds.access_key_id ))
           secret_access_key: (( grab meta.rds.secret_access_key ))
-          instance_name: (( grab terraform_outputs.concourse_rds_96_identifier ))
+          instance_name: (( grab terraform_outputs.concourse_rds_identifier ))
           region: (( grab meta.rds.region ))
