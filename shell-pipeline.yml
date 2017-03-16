@@ -1,5 +1,20 @@
 ---
 jobs:
+- name: container-bosh-development
+  plan:
+  - aggregate:
+    - get: concourse-config
+    - get: master-bosh-root-cert
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    params:
+      BOSH_DIRECTOR_NAME: development
+      BOSH_ENVIRONMENT: {{development-bosh-target}}
+      BOSH_USERNAME: {{development-bosh-username}}
+      BOSH_PASSWORD: {{development-bosh-password}}
+      BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
+      PROMPT_COLOR: "6" # cyan
+
 - name: container-bosh-staging
   plan:
   - aggregate:
