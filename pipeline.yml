@@ -11,7 +11,6 @@ jobs:
       trigger: true
     - get: terraform-yaml
       resource: terraform-yaml-tooling
-      trigger: true
     - get: pipeline-tasks
     - get: concourse-stemcell
       trigger: true
@@ -73,8 +72,6 @@ jobs:
       trigger: true
     - get: terraform-yaml
       resource: terraform-yaml-tooling
-      passed: [deploy-ops-concourse-staging]
-      trigger: true
     - get: pipeline-tasks
     - get: common
       resource: common-ops-production
@@ -124,7 +121,6 @@ jobs:
       trigger: true
     - get: terraform-yaml
       resource: terraform-yaml-staging
-      trigger: true
     - get: pipeline-tasks
     - get: common
       resource: common-tenant-staging
@@ -172,7 +168,6 @@ jobs:
       trigger: true
     - get: terraform-yaml
       resource: terraform-yaml-production
-      trigger: true
     - get: pipeline-tasks
     - get: common
       resource: common-tenant-production
