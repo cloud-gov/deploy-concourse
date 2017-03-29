@@ -83,6 +83,7 @@ instance_groups:
         image: docker:///18fgsa/cg-common-resource
       - type: 18f-bosh-deployment
         image: docker:///18fgsa/bosh-deployment-resource
+      drain_timeout: 15m
   - release: concourse
     name: baggageclaim
     properties: {}
