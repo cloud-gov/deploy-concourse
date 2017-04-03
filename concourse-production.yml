@@ -14,6 +14,9 @@ resource_pools:
   cloud_properties:
     elbs:
     - (( grab terraform_outputs.production_concourse_elb_name ))
+- name: workers
+  cloud_properties:
+    iam_instance_profile: (( grab terraform_outputs.concourse_worker_profile ))
 
 instance_groups:
 - name: web
