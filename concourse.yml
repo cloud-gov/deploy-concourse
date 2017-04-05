@@ -137,6 +137,7 @@ compilation:
   cloud_properties:
     availability_zone: *az
     instance_type: (( grab meta.compilation.instance_type ))
+    iam_instance_profile: (( grab terraform_outputs.bosh_compilation_profile ))
     ephemeral_disk:
       size: (( grab meta.compilation.disk.size ))
       type: (( grab meta.compilation.disk.type ))
