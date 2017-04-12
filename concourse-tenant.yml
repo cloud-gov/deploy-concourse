@@ -22,7 +22,7 @@ instance_groups:
     properties:
       postgresql:
         database: (( grab terraform_outputs.concourse_rds_name ))
-        address: (( grab terraform_outputs.concourse_rds_url ))
+        host: (( grab terraform_outputs.concourse_rds_url ))
         role:
           name: (( grab terraform_outputs.concourse_rds_username ))
           password: (( grab terraform_outputs.concourse_rds_password ))
