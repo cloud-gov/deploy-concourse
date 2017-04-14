@@ -77,7 +77,5 @@ instance_groups:
     properties:
       riemann_emitter:
         rds:
-          access_key_id: (( grab meta.rds.access_key_id ))
-          secret_access_key: (( grab meta.rds.secret_access_key ))
           instance_name: (( grab terraform_outputs.concourse_rds_identifier ))
           region: (( grab meta.rds.region ))
