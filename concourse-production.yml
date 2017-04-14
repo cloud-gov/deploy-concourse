@@ -80,7 +80,5 @@ instance_groups:
     properties:
       riemann_emitter:
         rds:
-          access_key_id: (( grab terraform_outputs.awslogs_access_key_id_curr ))
-          secret_access_key: (( grab terraform_outputs.awslogs_secret_access_key_curr ))
           instance_name: (( grab terraform_outputs.production_concourse_rds_identifier ))
           region: (( grab meta.rds.region ))
