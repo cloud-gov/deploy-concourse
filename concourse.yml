@@ -4,23 +4,8 @@ name: concourse
 # Meta property overrides
 meta:
   environment: ~
-  az: ~
   atc:
     external_url: ~
-  network:
-    reserved: ~
-    dns: ~
-  resources:
-    web:
-      instance_type: ~
-      elbs: ~
-    workers:
-      instance_type: ~
-  compilation:
-    instance_type: ~
-    disk:
-      size: ~
-      type: ~
   riemann_emitter:
     host: ~
     port: 5555
@@ -30,17 +15,6 @@ meta:
 # replace with bosh status --uuid
 director_uuid: ~
 
-# replace all addresses with your VPC range
-#
-# e.g. X.X.0.2 -> 10.0.0.2
-networks:
-- name: concourse
-  type: manual
-  subnets:
-  - (( inline ))
-  - reserved: (( grab meta.network.reserved ))
-    dns: (( grab meta.network.dns ))
-
 releases:
 - {name: concourse, version: latest}
 - {name: garden-runc, version: latest}
@@ -49,8 +23,8 @@ releases:
 instance_groups:
 - name: web
   instances: 1
-  resource_pool: web
-  networks: [{name: concourse}]
+  networks:
+  - name: concourse
   jobs:
   - name: atc
     release: concourse
@@ -59,7 +33,6 @@ instance_groups:
       external_url: (( grab meta.atc.external_url ))
   - name: tsa
     release: concourse
-    properties: {}
   - name: riemann-emitter
     release: riemann
     properties:
@@ -70,8 +43,8 @@ instance_groups:
 
 - name: worker
   instances: 1
-  resource_pool: workers
-  networks: [{name: concourse}]
+  networks:
+  - name: concourse
   jobs:
   - release: concourse
     name: groundcrew
@@ -86,7 +59,6 @@ instance_groups:
       drain_timeout: 15m
   - release: concourse
     name: baggageclaim
-    properties: {}
   - release: garden-runc
     name: garden
     properties:
@@ -104,44 +76,6 @@ instance_groups:
         host: (( grab meta.riemann_emitter.host ))
         port: (( grab meta.riemann_emitter.port ))
         health: true
-
-resource_pools:
-- name: web
-  network: concourse
-  stemcell: &stemcell
-    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
-    version: latest
-  cloud_properties:
-    availability_zone: &az (( grab meta.az ))
-    instance_type: (( grab meta.resources.web.instance_type ))
-    ephemeral_disk:
-      size: 45000
-      type: gp2
-      encrypted: true
-
-- name: workers
-  network: concourse
-  stemcell: *stemcell
-  cloud_properties:
-    availability_zone: *az
-    instance_type: (( grab meta.resources.workers.instance_type ))
-    ephemeral_disk:
-      size: 300000
-      type: gp2
-      encrypted: true
-
-compilation:
-  workers: 3
-  network: concourse
-  reuse_compilation_vms: true
-  cloud_properties:
-    availability_zone: *az
-    instance_type: (( grab meta.compilation.instance_type ))
-    iam_instance_profile: (( grab terraform_outputs.bosh_compilation_profile ))
-    ephemeral_disk:
-      size: (( grab meta.compilation.disk.size ))
-      type: (( grab meta.compilation.disk.type ))
-      encrypted: true
 
 update:
   canaries: 1

@@ -1,25 +1,8 @@
-networks:
-- name: concourse
-  subnets:
-  - range: (( grab terraform_outputs.production_concourse_subnet_cidr ))
-    gateway: (( grab terraform_outputs.production_concourse_subnet_gateway ))
-    cloud_properties:
-      subnet: (( grab terraform_outputs.production_concourse_subnet ))
-      security_groups:
-      - (( grab terraform_outputs.production_concourse_security_group ))
-      - (( grab terraform_outputs.bosh_security_group ))
-
-resource_pools:
-- name: web
-  cloud_properties:
-    elbs:
-    - (( grab terraform_outputs.production_concourse_elb_name ))
-- name: workers
-  cloud_properties:
-    iam_instance_profile: (( grab terraform_outputs.concourse_worker_profile ))
-
 instance_groups:
 - name: web
+  azs: [az1]
+  vm_type: production-concourse-web
+  vm_extensions: [production-concourse-lb]
   jobs:
   - name: atc
     properties:
@@ -82,3 +65,7 @@ instance_groups:
         rds:
           instance_name: (( grab terraform_outputs.production_concourse_rds_identifier ))
           region: (( grab meta.rds.region ))
+- name: worker
+  azs: [az1]
+  vm_type: production-concourse-worker
+  vm_extensions: [production-concourse-profile]
