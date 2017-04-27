@@ -23,6 +23,7 @@ fi
 
 spruce merge --prune meta --prune terraform_outputs \
   $SCRIPTPATH/concourse.yml \
+  $SCRIPTPATH/rds-ca-cert.yml \
   $CONFIG \
   $SECRETS \
   $TERRAFORM \
