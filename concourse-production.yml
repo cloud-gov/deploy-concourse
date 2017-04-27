@@ -1,6 +1,5 @@
 instance_groups:
 - name: web
-  azs: [az1]
   vm_type: production-concourse-web
   vm_extensions: [production-concourse-lb]
   jobs:
@@ -66,6 +65,5 @@ instance_groups:
           instance_name: (( grab terraform_outputs.production_concourse_rds_identifier ))
           region: (( grab meta.rds.region ))
 - name: worker
-  azs: [az1]
   vm_type: production-concourse-worker
   vm_extensions: [production-concourse-profile]
