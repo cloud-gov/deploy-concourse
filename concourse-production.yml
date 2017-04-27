@@ -2,6 +2,9 @@ instance_groups:
 - name: web
   vm_type: production-concourse-web
   vm_extensions: [production-concourse-lb]
+  azs: [z1]
+  networks:
+  - name: production-concourse
   jobs:
   - name: atc
     properties:
@@ -20,3 +23,6 @@ instance_groups:
 - name: worker
   vm_type: production-concourse-worker
   vm_extensions: [production-concourse-profile]
+  azs: [z1]
+  networks:
+  - name: production-concourse

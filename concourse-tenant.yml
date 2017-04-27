@@ -1,8 +1,10 @@
 instance_groups:
 - name: web
-  resource_pool: web
   vm_type: concourse-web
   vm_extensions: [concourse-lb]
+  azs: [z2]
+  networks:
+  - name: concourse
   jobs:
   - name: atc
     properties:
@@ -20,3 +22,6 @@ instance_groups:
           region: (( grab meta.rds.region ))
 - name: worker
   vm_type: concourse-worker
+  azs: [z2]
+  networks:
+  - name: concourse

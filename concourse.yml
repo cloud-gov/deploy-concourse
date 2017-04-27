@@ -20,12 +20,15 @@ releases:
 - {name: garden-runc, version: latest}
 - {name: riemann, version: latest}
 
+stemcells:
+- alias: default
+  name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+  version: latest
+
 instance_groups:
 - name: web
   instances: 1
-  azs: [az1]
-  networks:
-  - name: concourse
+  stemcell: default
   jobs:
   - name: atc
     release: concourse
@@ -44,9 +47,7 @@ instance_groups:
 
 - name: worker
   instances: 1
-  azs: [az1]
-  networks:
-  - name: concourse
+  stemcell: default
   jobs:
   - release: concourse
     name: groundcrew
