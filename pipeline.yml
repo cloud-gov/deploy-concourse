@@ -301,32 +301,32 @@ resources:
   type: 18f-bosh-deployment
   source:
     target: {{ops-concourse-production-deployment-bosh-target}}
-    username: {{ops-concourse-production-deployment-bosh-username}}
-    password: {{ops-concourse-production-deployment-bosh-password}}
+    client_id: {{ops-concourse-production-deployment-bosh-uaa-client-id}}
+    client_secret: {{ops-concourse-production-deployment-bosh-uaa-client-secret}}
     deployment: {{ops-concourse-production-deployment-bosh-deployment}}
 
 - name: ops-concourse-staging-deployment
   type: 18f-bosh-deployment
   source:
     target: {{ops-concourse-staging-deployment-bosh-target}}
-    username: {{ops-concourse-staging-deployment-bosh-username}}
-    password: {{ops-concourse-staging-deployment-bosh-password}}
+    client_id: {{ops-concourse-staging-deployment-bosh-uaa-client-id}}
+    client_secret: {{ops-concourse-staging-deployment-bosh-uaa-client-secret}}
     deployment: {{ops-concourse-staging-deployment-bosh-deployment}}
 
 - name: tenant-concourse-staging-deployment
   type: 18f-bosh-deployment
   source:
     target: {{tenant-concourse-staging-deployment-bosh-target}}
-    username: {{tenant-concourse-staging-deployment-bosh-username}}
-    password: {{tenant-concourse-staging-deployment-bosh-password}}
+    client_id: {{tenant-concourse-staging-deployment-bosh-uaa-client-id}}
+    client_secret: {{tenant-concourse-staging-deployment-bosh-uaa-client-secret}}
     deployment: {{tenant-concourse-staging-deployment-bosh-deployment}}
 
 - name: tenant-concourse-production-deployment
   type: 18f-bosh-deployment
   source:
     target: {{tenant-concourse-production-deployment-bosh-target}}
-    username: {{tenant-concourse-production-deployment-bosh-username}}
-    password: {{tenant-concourse-production-deployment-bosh-password}}
+    client_id: {{tenant-concourse-production-deployment-bosh-uaa-client-id}}
+    client_secret: {{tenant-concourse-production-deployment-bosh-uaa-client-secret}}
     deployment: {{tenant-concourse-production-deployment-bosh-deployment}}
 
 - name: slack
