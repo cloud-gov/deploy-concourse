@@ -45,7 +45,8 @@ instance_groups:
         port: (( grab meta.riemann_emitter.port ))
         health: true
 
-- name: worker
+- &worker
+  name: worker
   instances: 1
   stemcell: default
   jobs:
@@ -79,6 +80,14 @@ instance_groups:
         host: (( grab meta.riemann_emitter.host ))
         port: (( grab meta.riemann_emitter.port ))
         health: true
+
+- <<: *worker
+  name: iaas-worker
+  jobs:
+  - name: groundcrew
+    properties:
+      tags:
+      - iaas
 
 update:
   canaries: 1
