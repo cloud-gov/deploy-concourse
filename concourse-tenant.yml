@@ -19,7 +19,8 @@ instance_groups:
       riemann_emitter:
         rds:
           instance_name: (( grab terraform_outputs.concourse_rds_identifier ))
-          region: (( grab meta.rds.region ))
+          region: (( grab terraform_outputs.vpc_region ))
+
 - name: worker
   vm_type: concourse-worker
   azs: [z2]
