@@ -295,7 +295,7 @@ resources:
 - name: garden-runc-release
   type: bosh-io-release
   source:
-    repository: cloudfoundry-incubator/garden-runc-release
+    repository: cloudfoundry/garden-runc-release
 
 - name: ops-concourse-production-deployment
   type: 18f-bosh-deployment
