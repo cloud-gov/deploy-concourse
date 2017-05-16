@@ -32,7 +32,7 @@ jobs:
       - name: common
       run:
         path: concourse-config/generate.sh
-        args: ["concourse-config/concourse-staging.yml", "common/secrets.yml", "terraform-yaml/state.yml", "concourse-manifest/manifest.yml"]
+        args: ["concourse-config/concourse-staging.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
       outputs:
       - name: concourse-manifest
   - put: ops-concourse-staging-deployment
@@ -91,7 +91,7 @@ jobs:
       <<: *manifest-config
       run:
         path: concourse-config/generate.sh
-        args: ["concourse-config/concourse-production.yml", "common/secrets.yml", "terraform-yaml/state.yml", "concourse-manifest/manifest.yml"]
+        args: ["concourse-config/concourse-production.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
   - put: ops-concourse-production-deployment
     params: *deploy-params
   on_failure:
@@ -137,7 +137,7 @@ jobs:
       <<: *manifest-config
       run:
         path: concourse-config/generate.sh
-        args: ["concourse-config/concourse-tenant.yml", "common/secrets.yml", "terraform-yaml/state.yml", "concourse-manifest/manifest.yml"]
+        args: ["concourse-config/concourse-tenant.yml", "common/secrets.yml", "concourse-config/concourse-tenant-staging.yml", terraform-yaml/state.yml"]
   - put: tenant-concourse-staging-deployment
     params: *deploy-params
   on_failure:
@@ -187,7 +187,7 @@ jobs:
       <<: *manifest-config
       run:
         path: concourse-config/generate.sh
-        args: ["concourse-config/concourse-tenant.yml", "common/secrets.yml", "terraform-yaml/state.yml", "concourse-manifest/manifest.yml"]
+        args: ["concourse-config/concourse-tenant.yml", "common/secrets.yml", "concourse-config/concourse-tenant-production.yml", "terraform-yaml/state.yml"]
   - put: tenant-concourse-production-deployment
     params: *deploy-params
   on_failure:

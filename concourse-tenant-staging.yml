@@ -1,0 +1,6 @@
+instance_groups:
+- name: web
+  jobs:
+  - name: atc
+    properties:
+      external_url: https://concourse-ci.fr-stage.cloud.gov
