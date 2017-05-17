@@ -59,10 +59,7 @@ instance_groups:
       garden:
         listen_network: tcp
         listen_address: 0.0.0.0:7777
-        enable_graph_cleanup: true
-        default_container_grace_time: 10m
-        max_containers: 250
-        network_pool: 10.254.0.0/20
+        graph_cleanup_threshold_in_mb: 2048
   - release: riemann
     name: riemann-emitter
     properties:
