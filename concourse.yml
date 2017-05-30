@@ -86,6 +86,7 @@ instance_groups:
   jobs:
   - name: groundcrew
     properties:
+      team: main
       tags:
       - iaas
 
