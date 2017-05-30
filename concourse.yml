@@ -1,19 +1,7 @@
 ---
 name: concourse
 
-# Meta property overrides
-meta:
-  environment: ~
-  atc:
-    external_url: ~
-  riemann_emitter:
-    host: ~
-    port: 5555
-  rds:
-    region: ~
-
-# replace with bosh status --uuid
-director_uuid: ~
+director_uuid: (( param "specify director UUID"))
 
 releases:
 - {name: concourse, version: latest}
@@ -33,8 +21,11 @@ instance_groups:
   - name: atc
     release: concourse
     properties:
+      riemann:
+        host: (( grab meta.riemann_emitter.host ))
+        service_prefix: concourse.
       web_bind_port: 8080
-      external_url: (( grab meta.atc.external_url ))
+      external_url: (( param "specify external url" ))
   - name: tsa
     release: concourse
   - name: riemann-emitter
@@ -70,10 +61,7 @@ instance_groups:
       garden:
         listen_network: tcp
         listen_address: 0.0.0.0:7777
-        enable_graph_cleanup: true
-        default_container_grace_time: 10m
-        max_containers: 250
-        network_pool: 10.254.0.0/20
+        graph_cleanup_threshold_in_mb: 2048
   - name: riemann-emitter
     release: riemann
     properties:
@@ -110,10 +98,7 @@ instance_groups:
       garden:
         listen_network: tcp
         listen_address: 0.0.0.0:7777
-        enable_graph_cleanup: true
-        default_container_grace_time: 10m
-        max_containers: 250
-        network_pool: 10.254.0.0/20
+        graph_cleanup_threshold_in_mb: 2048
   - name: riemann-emitter
     release: riemann
     properties:
