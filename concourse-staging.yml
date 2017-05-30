@@ -27,5 +27,9 @@ instance_groups:
   networks:
   - name: staging-concourse
 - name: iaas-worker
+  vm_type: staging-concourse-worker
   vm_extensions: [staging-concourse-iaas-profile]
   instances: 1
+  azs: [z2]
+  networks:
+  - name: staging-concourse

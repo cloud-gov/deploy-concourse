@@ -45,13 +45,12 @@ instance_groups:
         port: (( grab meta.riemann_emitter.port ))
         health: true
 
-- &worker
-  name: worker
+- name: worker
   instances: 1
   stemcell: default
   jobs:
-  - release: concourse
-    name: groundcrew
+  - name: groundcrew
+    release: concourse
     properties:
       additional_resource_types:
       - type: slack-notification
@@ -61,10 +60,10 @@ instance_groups:
       - type: 18f-bosh-deployment
         image: docker:///18fgsa/bosh-deployment-resource
       drain_timeout: 15m
-  - release: concourse
-    name: baggageclaim
-  - release: garden-runc
-    name: garden
+  - name: baggageclaim
+    release: concourse
+  - name: garden
+    release: garden-runc
     properties:
       garden:
         listen_network: tcp
@@ -73,23 +72,35 @@ instance_groups:
         default_container_grace_time: 10m
         max_containers: 250
         network_pool: 10.254.0.0/20
-  - release: riemann
-    name: riemann-emitter
+  - name: riemann-emitter
+    release: riemann
     properties:
       riemann_emitter:
         host: (( grab meta.riemann_emitter.host ))
         port: (( grab meta.riemann_emitter.port ))
         health: true
 
-- <<: *worker
-  name: iaas-worker
+- name: iaas-worker
+  stemcell: default
   instances: 0
   jobs:
   - name: groundcrew
+    release: concourse
     properties:
+      additional_resource_types:
+      - type: slack-notification
+        image: docker:///cfcommunity/slack-notification-resource
+      - type: cg-common
+        image: docker:///18fgsa/cg-common-resource
+      - type: 18f-bosh-deployment
+        image: docker:///18fgsa/bosh-deployment-resource
+      drain_timeout: 15m
       team: main
       tags:
       - iaas
+  - (( grab instance_groups.worker.jobs.baggageclaim ))
+  - (( grab instance_groups.worker.jobs.garden ))
+  - (( grab instance_groups.worker.jobs.riemann-emitter ))
 
 update:
   canaries: 1
