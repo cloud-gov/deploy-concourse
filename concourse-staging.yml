@@ -28,3 +28,4 @@ instance_groups:
   - name: staging-concourse
 - name: iaas-worker
   vm_extensions: [staging-concourse-iaas-profile]
+  instances: 1

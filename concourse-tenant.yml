@@ -25,5 +25,3 @@ instance_groups:
   azs: [z2]
   networks:
   - name: concourse
-- name: iaas-worker
-  instances: 0

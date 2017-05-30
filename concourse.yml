@@ -83,6 +83,7 @@ instance_groups:
 
 - <<: *worker
   name: iaas-worker
+  instances: 0
   jobs:
   - name: groundcrew
     properties:

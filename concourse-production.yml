@@ -28,3 +28,4 @@ instance_groups:
   - name: production-concourse
 - name: iaas-worker
   vm_extensions: [production-concourse-iaas-profile]
+  instances: 1
