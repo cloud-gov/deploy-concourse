@@ -60,8 +60,10 @@ instance_groups:
       - type: 18f-bosh-deployment
         image: docker:///18fgsa/bosh-deployment-resource
       drain_timeout: 15m
+    consumes: {baggageclaim: {from: default-baggageclaim}}
   - name: baggageclaim
     release: concourse
+    provides: {baggageclaim: {as: default-baggageclaim}}
   - name: garden
     release: garden-runc
     properties:
@@ -98,9 +100,27 @@ instance_groups:
       team: main
       tags:
       - iaas
-  - (( grab instance_groups.worker.jobs.baggageclaim ))
-  - (( grab instance_groups.worker.jobs.garden ))
-  - (( grab instance_groups.worker.jobs.riemann-emitter ))
+    consumes: {baggageclaim: {from: iaas-baggageclaim}}
+  - name: baggageclaim
+    release: concourse
+    provides: {baggageclaim: {as: iaas-baggageclaim}}
+  - name: garden
+    release: garden-runc
+    properties:
+      garden:
+        listen_network: tcp
+        listen_address: 0.0.0.0:7777
+        enable_graph_cleanup: true
+        default_container_grace_time: 10m
+        max_containers: 250
+        network_pool: 10.254.0.0/20
+  - name: riemann-emitter
+    release: riemann
+    properties:
+      riemann_emitter:
+        host: (( grab meta.riemann_emitter.host ))
+        port: (( grab meta.riemann_emitter.port ))
+        health: true
 
 update:
   canaries: 1
