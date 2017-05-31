@@ -29,9 +29,9 @@ instance_groups:
   networks:
   - name: production-concourse
 - name: iaas-worker
-  vm_type: production-concourse-worker
+  vm_type: production-concourse-iaas-worker
   vm_extensions: [production-concourse-iaas-profile]
-  instances: 1
+  instances: 2
   azs: [z1]
   networks:
   - name: production-concourse
