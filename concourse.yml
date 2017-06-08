@@ -70,43 +70,6 @@ instance_groups:
         port: (( grab meta.riemann_emitter.port ))
         health: true
 
-- name: iaas-worker
-  stemcell: default
-  instances: 0
-  jobs:
-  - name: groundcrew
-    release: concourse
-    properties:
-      additional_resource_types:
-      - type: slack-notification
-        image: docker:///cfcommunity/slack-notification-resource
-      - type: cg-common
-        image: docker:///18fgsa/cg-common-resource
-      - type: 18f-bosh-deployment
-        image: docker:///18fgsa/bosh-deployment-resource
-      drain_timeout: 15m
-      team: main
-      tags:
-      - iaas
-    consumes: {baggageclaim: {from: iaas-baggageclaim}}
-  - name: baggageclaim
-    release: concourse
-    provides: {baggageclaim: {as: iaas-baggageclaim}}
-  - name: garden
-    release: garden-runc
-    properties:
-      garden:
-        listen_network: tcp
-        listen_address: 0.0.0.0:7777
-        graph_cleanup_threshold_in_mb: 2048
-  - name: riemann-emitter
-    release: riemann
-    properties:
-      riemann_emitter:
-        host: (( grab meta.riemann_emitter.host ))
-        port: (( grab meta.riemann_emitter.port ))
-        health: true
-
 update:
   canaries: 1
   max_in_flight: 1

@@ -22,16 +22,18 @@ instance_groups:
         rds:
           instance_name: (( grab terraform_outputs.production_concourse_rds_identifier ))
           region: (( grab meta.rds.region ))
+
 - name: worker
   vm_type: production-concourse-worker
   vm_extensions: [production-concourse-profile]
   azs: [z1]
   networks:
   - name: production-concourse
+
 - name: iaas-worker
   vm_type: production-concourse-iaas-worker
-  vm_extensions: [production-concourse-iaas-profile]
+  vm_extensions: (( grab meta.iaas_extensions ))
   instances: 2
-  azs: [z1]
-  networks:
-  - name: production-concourse
+
+meta:
+  iaas_extensions: [production-concourse-iaas-profile]
