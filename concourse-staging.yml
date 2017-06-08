@@ -20,16 +20,18 @@ instance_groups:
         rds:
           instance_name: (( grab terraform_outputs.staging_concourse_rds_identifier ))
           region: (( grab meta.rds.region ))
+
 - name: worker
   vm_type: staging-concourse-worker
   vm_extensions: [staging-concourse-profile]
   azs: [z2]
   networks:
   - name: staging-concourse
+
 - name: iaas-worker
   vm_type: staging-concourse-iaas-worker
-  vm_extensions: [staging-concourse-iaas-profile]
-  instances: 2
-  azs: [z2]
-  networks:
-  - name: staging-concourse
+  vm_extensions: (( grab meta.iaas_extensions ))
+  instances: 1
+
+meta:
+  iaas_extensions: [staging-concourse-iaas-profile]
