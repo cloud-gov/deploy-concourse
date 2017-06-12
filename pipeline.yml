@@ -230,8 +230,6 @@ resources:
   source:
     bucket_name: {{ops-concourse-production-private-bucket}}
     region: {{aws-region}}
-    access_key_id: {{ci-access-key-id}}
-    secret_access_key: {{ci-secret-access-key}}
     secrets_file: concourse-tooling-prod.yml
     secrets_passphrase: {{ops-concourse-production-private-passphrase}}
     bosh_cert: bosh-tooling.pem
@@ -241,8 +239,6 @@ resources:
   source:
     bucket_name: {{ops-concourse-staging-private-bucket}}
     region: {{aws-region}}
-    access_key_id: {{ci-access-key-id}}
-    secret_access_key: {{ci-secret-access-key}}
     secrets_file: concourse-tooling-staging.yml
     secrets_passphrase: {{ops-concourse-staging-private-passphrase}}
     bosh_cert: bosh-tooling.pem
@@ -252,8 +248,6 @@ resources:
   source:
     bucket_name: {{tenant-concourse-staging-private-bucket}}
     region: {{aws-region}}
-    access_key_id: {{ci-access-key-id}}
-    secret_access_key: {{ci-secret-access-key}}
     secrets_file: concourse.yml
     secrets_passphrase: {{tenant-concourse-staging-private-passphrase}}
     bosh_cert: bosh.pem
@@ -263,28 +257,22 @@ resources:
   source:
     bucket_name: {{tenant-concourse-production-private-bucket}}
     region: {{aws-region}}
-    access_key_id: {{ci-access-key-id}}
-    secret_access_key: {{ci-secret-access-key}}
     secrets_file: concourse.yml
     secrets_passphrase: {{tenant-concourse-production-private-passphrase}}
     bosh_cert: bosh.pem
 
 - name: master-bosh-root-cert
-  type: s3
+  type: s3-iam
   source:
     bucket: {{ops-concourse-production-private-bucket}}
     region_name: {{aws-region}}
-    access_key_id: {{ci-access-key-id}}
-    secret_access_key: {{ci-secret-access-key}}
     versioned_file: master-bosh.crt
 
 - name: concourse-stemcell
-  type: s3
+  type: s3-iam
   source:
     bucket: {{stemcell-bucket}}
     region_name: {{aws-region}}
-    access_key_id: {{ci-access-key-id}}
-    secret_access_key: {{ci-secret-access-key}}
     regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-ubuntu-trusty-go_agent.tgz
 
 - name: concourse-release
