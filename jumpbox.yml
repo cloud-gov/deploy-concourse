@@ -8,6 +8,7 @@ image_resource:
 inputs:
 - name: concourse-config
 - name: master-bosh-root-cert
+- name: cg-scripts
 
 run:
   path: concourse-config/jumpbox.sh
