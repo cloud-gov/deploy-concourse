@@ -2,7 +2,8 @@
 jobs:
 - name: container-bosh-development
   plan:
-  - aggregate:
+  - aggregate: &resources
+    - get: cg-scripts
     - get: concourse-config
     - get: master-bosh-root-cert
   - task: jumpbox
@@ -17,9 +18,7 @@ jobs:
 
 - name: container-bosh-staging
   plan:
-  - aggregate:
-    - get: concourse-config
-    - get: master-bosh-root-cert
+  - aggregate: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
@@ -32,9 +31,7 @@ jobs:
 
 - name: container-bosh-production
   plan:
-  - aggregate:
-    - get: concourse-config
-    - get: master-bosh-root-cert
+  - aggregate: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
@@ -47,9 +44,7 @@ jobs:
 
 - name: container-bosh-tooling
   plan:
-  - aggregate:
-    - get: concourse-config
-    - get: master-bosh-root-cert
+  - aggregate: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
@@ -76,6 +71,12 @@ resources:
     bucket: {{production-bucket-name}}
     region_name: {{aws-region}}
     versioned_file: master-bosh.crt
+
+- name: cg-scripts
+  type: git
+  source:
+    uri: https://github.com/18F/cg-scripts
+    branch: master
 
 resource_types:
 - name: s3-iam
