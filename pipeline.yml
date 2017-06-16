@@ -12,7 +12,6 @@ jobs:
       trigger: true
     - get: terraform-yaml
       resource: terraform-yaml-tooling
-    - get: pipeline-tasks
     - get: concourse-stemcell
       trigger: true
     - get: concourse-release
@@ -80,7 +79,6 @@ jobs:
     - get: pipeline-tasks
     - get: terraform-yaml
       resource: terraform-yaml-tooling
-    - get: pipeline-tasks
     - get: common
       resource: common-ops-production
       trigger: true
