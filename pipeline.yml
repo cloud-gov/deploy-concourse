@@ -6,6 +6,7 @@ jobs:
   - aggregate:
     - get: concourse-config
       trigger: true
+    - get: pipeline-tasks
     - get: common
       resource: common-ops-staging
       trigger: true
@@ -35,6 +36,12 @@ jobs:
         args: ["concourse-config/concourse-ops.yml", "concourse-config/concourse-staging.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
       outputs:
       - name: concourse-manifest
+  - &lint-manifest
+    task: lint-manifest
+    file: pipeline-tasks/lint-manifest.yml
+    input_mapping:
+      pipeline-config: concourse-config
+      lint-manifest: concourse-manifest
   - put: ops-concourse-staging-deployment
     params: &deploy-params
       cert: master-bosh-root-cert/master-bosh.crt
@@ -70,6 +77,7 @@ jobs:
     - get: concourse-config
       passed: [deploy-ops-concourse-staging]
       trigger: true
+    - get: pipeline-tasks
     - get: terraform-yaml
       resource: terraform-yaml-tooling
     - get: pipeline-tasks
@@ -92,6 +100,7 @@ jobs:
       run:
         path: concourse-config/generate.sh
         args: ["concourse-config/concourse-ops.yml", "concourse-config/concourse-production.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
+  - *lint-manifest
   - put: ops-concourse-production-deployment
     params: *deploy-params
   on_failure:
@@ -138,6 +147,7 @@ jobs:
       run:
         path: concourse-config/generate.sh
         args: ["concourse-config/concourse-tenant.yml", "common/secrets.yml", "concourse-config/concourse-tenant-staging.yml", "terraform-yaml/state.yml"]
+  - *lint-manifest
   - put: tenant-concourse-staging-deployment
     params: *deploy-params
   on_failure:
@@ -188,6 +198,7 @@ jobs:
       run:
         path: concourse-config/generate.sh
         args: ["concourse-config/concourse-tenant.yml", "common/secrets.yml", "concourse-config/concourse-tenant-production.yml", "terraform-yaml/state.yml"]
+  - *lint-manifest
   - put: tenant-concourse-production-deployment
     params: *deploy-params
   on_failure:
