@@ -278,11 +278,9 @@ resources:
     versioned_file: master-bosh.crt
 
 - name: concourse-stemcell
-  type: s3-iam
+  type: bosh-io-stemcell
   source:
-    bucket: {{stemcell-bucket}}
-    region_name: {{aws-region}}
-    regexp: light-bosh-stemcell-(.*)-aws-xen-hvm-ubuntu-trusty-go_agent.tgz
+    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
 
 - name: concourse-release
   type: bosh-io-release
