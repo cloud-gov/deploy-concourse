@@ -11,9 +11,9 @@ jobs:
     params:
       BOSH_DIRECTOR_NAME: development
       BOSH_ENVIRONMENT: {{development-bosh-target}}
-      BOSH_USERNAME: {{development-bosh-username}}
-      BOSH_PASSWORD: {{development-bosh-password}}
-      BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
+      BOSH_CLIENT: {{development-bosh-client}}
+      BOSH_CLIENT_SECRET: {{development-bosh-client-secret}}
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       PROMPT_COLOR: "6" # cyan
 
 - name: container-bosh-staging
@@ -24,9 +24,9 @@ jobs:
     params:
       BOSH_DIRECTOR_NAME: staging
       BOSH_ENVIRONMENT: {{staging-bosh-target}}
-      BOSH_USERNAME: {{staging-bosh-username}}
-      BOSH_PASSWORD: {{staging-bosh-password}}
-      BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
+      BOSH_CLIENT: {{staging-bosh-client}}
+      BOSH_CLIENT_SECRET: {{staging-bosh-client-secret}}
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       PROMPT_COLOR: "2" # green
 
 - name: container-bosh-production
@@ -37,9 +37,9 @@ jobs:
     params:
       BOSH_DIRECTOR_NAME: PRODUCTION
       BOSH_ENVIRONMENT: {{production-bosh-target}}
-      BOSH_USERNAME: {{production-bosh-username}}
-      BOSH_PASSWORD: {{production-bosh-password}}
-      BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
+      BOSH_CLIENT: {{production-bosh-client}}
+      BOSH_CLIENT_SECRET: {{production-bosh-client-secret}}
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       PROMPT_COLOR: "1" # red
 
 - name: container-bosh-tooling
@@ -52,7 +52,7 @@ jobs:
       BOSH_ENVIRONMENT: {{tooling-bosh-target}}
       BOSH_CLIENT: {{tooling-bosh-uaa-client}}
       BOSH_CLIENT_SECRET: {{tooling-bosh-uaa-client-secret}}
-      BOSH_CACERT: master-bosh-root-cert/master-bosh.crt
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       PROMPT_COLOR: "3" # yellow
 
 resources:
