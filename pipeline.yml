@@ -226,6 +226,7 @@ resources:
     branch: {{concourse-config-git-branch}}
     paths:
     - concourse*.yml
+    - rds*.yml
     - generate.sh
 
 - name: pipeline-tasks
