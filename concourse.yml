@@ -6,7 +6,6 @@ director_uuid: (( param "specify director UUID"))
 releases:
 - {name: concourse, version: latest}
 - {name: garden-runc, version: latest}
-- {name: riemann, version: latest}
 
 stemcells:
 - alias: default
@@ -28,13 +27,6 @@ instance_groups:
       external_url: (( param "specify external url" ))
   - name: tsa
     release: concourse
-  - name: riemann-emitter
-    release: riemann
-    properties:
-      riemann_emitter:
-        host: (( grab meta.riemann_emitter.host ))
-        port: (( grab meta.riemann_emitter.port ))
-        health: true
 
 - name: worker
   instances: 1
@@ -62,13 +54,6 @@ instance_groups:
         listen_network: tcp
         listen_address: 0.0.0.0:7777
         graph_cleanup_threshold_in_mb: 2048
-  - name: riemann-emitter
-    release: riemann
-    properties:
-      riemann_emitter:
-        host: (( grab meta.riemann_emitter.host ))
-        port: (( grab meta.riemann_emitter.port ))
-        health: true
 
 update:
   canaries: 1

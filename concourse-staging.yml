@@ -14,12 +14,6 @@ instance_groups:
         role:
           name: (( grab terraform_outputs.staging_concourse_rds_username ))
           password: (( grab terraform_outputs.staging_concourse_rds_password ))
-  - name: riemann-emitter
-    properties:
-      riemann_emitter:
-        rds:
-          instance_name: (( grab terraform_outputs.staging_concourse_rds_identifier ))
-          region: (( grab meta.rds.region ))
 
 - name: worker
   vm_type: staging-concourse-worker
