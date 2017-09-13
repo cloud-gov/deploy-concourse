@@ -22,7 +22,7 @@ instance_groups:
           region: (( grab meta.rds.region ))
 
 - name: worker
-  instances: 7
+  instances: 5
   vm_type: production-concourse-worker
   vm_extensions: [production-concourse-profile]
   azs: [z1]
