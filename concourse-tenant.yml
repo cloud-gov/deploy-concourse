@@ -14,12 +14,6 @@ instance_groups:
         role:
           name: (( grab terraform_outputs.concourse_rds_username ))
           password: (( grab terraform_outputs.concourse_rds_password ))
-  - name: riemann-emitter
-    properties:
-      riemann_emitter:
-        rds:
-          instance_name: (( grab terraform_outputs.concourse_rds_identifier ))
-          region: (( grab terraform_outputs.vpc_region ))
 
 - name: worker
   vm_type: concourse-worker
