@@ -18,7 +18,6 @@ jobs:
       trigger: true
     - get: garden-runc-release
       trigger: false
-    - get: master-bosh-root-cert
   - task: concourse-manifest
     config: &manifest-config
       platform: linux
@@ -43,7 +42,6 @@ jobs:
       lint-manifest: concourse-manifest
   - put: ops-concourse-staging-deployment
     params: &deploy-params
-      cert: master-bosh-root-cert/master-bosh.crt
       manifest: concourse-manifest/manifest.yml
       releases:
       - concourse-release/*.tgz
@@ -91,7 +89,6 @@ jobs:
     - get: garden-runc-release
       trigger: false
       passed: [deploy-ops-concourse-staging]
-    - get: master-bosh-root-cert
   - task: concourse-manifest
     config:
       <<: *manifest-config
@@ -138,7 +135,6 @@ jobs:
       trigger: true
     - get: garden-runc-release
       trigger: false
-    - get: master-bosh-root-cert
   - task: concourse-manifest
     config:
       <<: *manifest-config
@@ -189,7 +185,6 @@ jobs:
     - get: garden-runc-release
       trigger: false
       passed: [deploy-tenant-concourse-staging]
-    - get: master-bosh-root-cert
   - task: concourse-manifest
     config:
       <<: *manifest-config
@@ -271,13 +266,6 @@ resources:
     secrets_passphrase: {{tenant-concourse-production-private-passphrase}}
     bosh_cert: bosh.pem
 
-- name: master-bosh-root-cert
-  type: s3-iam
-  source:
-    bucket: {{ops-concourse-production-private-bucket}}
-    region_name: {{aws-region}}
-    versioned_file: master-bosh.crt
-
 - name: concourse-stemcell
   type: bosh-io-stemcell
   source:
@@ -294,36 +282,40 @@ resources:
     repository: cloudfoundry/garden-runc-release
 
 - name: ops-concourse-production-deployment
-  type: 18f-bosh-deployment
+  type: bosh-deployment
   source:
     target: {{ops-concourse-production-deployment-bosh-target}}
-    client_id: {{ops-concourse-production-deployment-bosh-uaa-client-id}}
+    client: {{ops-concourse-production-deployment-bosh-uaa-client-id}}
     client_secret: {{ops-concourse-production-deployment-bosh-uaa-client-secret}}
     deployment: {{ops-concourse-production-deployment-bosh-deployment}}
+    ca_cert: {{ops-concourse-production-bosh-ca-cert}}
 
 - name: ops-concourse-staging-deployment
-  type: 18f-bosh-deployment
+  type: bosh-deployment
   source:
     target: {{ops-concourse-staging-deployment-bosh-target}}
-    client_id: {{ops-concourse-staging-deployment-bosh-uaa-client-id}}
+    client: {{ops-concourse-staging-deployment-bosh-uaa-client-id}}
     client_secret: {{ops-concourse-staging-deployment-bosh-uaa-client-secret}}
     deployment: {{ops-concourse-staging-deployment-bosh-deployment}}
+    ca_cert: {{ops-concourse-staging-bosh-ca-cert}}
 
 - name: tenant-concourse-staging-deployment
-  type: 18f-bosh-deployment
+  type: bosh-deployment
   source:
     target: {{tenant-concourse-staging-deployment-bosh-target}}
-    client_id: {{tenant-concourse-staging-deployment-bosh-uaa-client-id}}
+    client: {{tenant-concourse-staging-deployment-bosh-uaa-client-id}}
     client_secret: {{tenant-concourse-staging-deployment-bosh-uaa-client-secret}}
     deployment: {{tenant-concourse-staging-deployment-bosh-deployment}}
+    ca_cert: {{tenant-concourse-staging-bosh-ca-cert}}
 
 - name: tenant-concourse-production-deployment
-  type: 18f-bosh-deployment
+  type: bosh-deployment
   source:
     target: {{tenant-concourse-production-deployment-bosh-target}}
-    client_id: {{tenant-concourse-production-deployment-bosh-uaa-client-id}}
+    client: {{tenant-concourse-production-deployment-bosh-uaa-client-id}}
     client_secret: {{tenant-concourse-production-deployment-bosh-uaa-client-secret}}
     deployment: {{tenant-concourse-production-deployment-bosh-deployment}}
+    ca_cert: {{tenant-concourse-production-bosh-ca-cert}}
 
 - name: slack
   type: slack-notification-docker
@@ -357,10 +349,10 @@ resource_types:
   source:
     repository: cfcommunity/slack-notification-resource
 
-- name: 18f-bosh-deployment
+- name: bosh-deployment
   type: docker-image
   source:
-    repository: 18fgsa/bosh-deployment-resource
+    repository: cloudfoundry/bosh-deployment-resource
 
 - name: cg-common
   type: docker-image
