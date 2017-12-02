@@ -20,9 +20,9 @@ instance_groups:
   - name: atc
     release: concourse
     properties:
-      riemann:
-        host: (( grab meta.riemann_emitter.host ))
-        service_prefix: concourse.
+      prometheus:
+        bind_ip: 0.0.0.0
+        bind_port: 9110
       web_bind_port: 8080
       external_url: (( param "specify external url" ))
   - name: tsa
