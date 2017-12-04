@@ -1,0 +1,29 @@
+---
+instance_groups:
+- name: web
+  jobs:
+  - name: atc
+    properties:
+      token_signing_key: ((token_signing_key))
+  - name: tsa
+    properties:
+      log_level: debug
+      host_key: ((tsa_host_key))
+      token_signing_key: ((token_signing_key))
+      authorized_keys:
+      - ((worker_key.public_key))
+
+- name: worker
+  jobs:
+  - name: groundcrew
+    properties:
+      tsa:
+        worker_key: ((worker_key))
+
+variables:
+- name: token_signing_key
+  type: rsa
+- name: tsa_host_key
+  type: ssh
+- name: worker_key
+  type: ssh
