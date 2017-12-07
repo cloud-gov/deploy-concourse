@@ -24,6 +24,7 @@ instance_groups:
         bind_ip: 0.0.0.0
         bind_port: 9110
       web_bind_port: 8080
+      intercept_idle_timeout: 10m
       external_url: (( param "specify external url" ))
   - name: tsa
     release: concourse
