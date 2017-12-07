@@ -16,7 +16,7 @@ instance_groups:
           password: (( grab terraform_outputs.staging_concourse_rds_password ))
 
 - name: worker
-  instances: 2
+  instances: 1
   vm_type: staging-concourse-worker
   vm_extensions: [staging-concourse-profile]
   azs: [z2]
