@@ -144,6 +144,12 @@ jobs:
   - *lint-manifest
   - put: tenant-concourse-staging-deployment
     params: *deploy-params
+  - task: prune-stalled-workers
+    file: concourse-config/ci/prune-stalled-workers.yml
+    params:
+      CONCOURSE_URL: https://concourse-ci.fr-stage.cloud.gov
+      CONCOURSE_USERNAME: {{tenant-concourse-username-staging}}
+      CONCOURSE_PASSWORD: {{tenant-concourse-password-staging}}
   on_failure:
     put: slack
     params:
@@ -194,6 +200,12 @@ jobs:
   - *lint-manifest
   - put: tenant-concourse-production-deployment
     params: *deploy-params
+  - task: prune-stalled-workers
+    file: concourse-config/ci/prune-stalled-workers.yml
+    params:
+      CONCOURSE_URL: https://concourse-ci.fr.cloud.gov
+      CONCOURSE_USERNAME: {{tenant-concourse-username-production}}
+      CONCOURSE_PASSWORD: {{tenant-concourse-password-production}}
   on_failure:
     put: slack
     params:
@@ -223,6 +235,7 @@ resources:
     - concourse*.yml
     - rds*.yml
     - generate.sh
+    - ci/*
 
 - name: pipeline-tasks
   type: git
