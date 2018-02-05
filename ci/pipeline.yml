@@ -117,114 +117,6 @@ jobs:
       username: {{slack-username}}
       icon_url: {{slack-icon-url}}
 
-- name: deploy-tenant-concourse-staging
-  serial: true
-  plan:
-  - aggregate:
-    - get: concourse-config
-      trigger: true
-    - get: terraform-yaml
-      resource: terraform-yaml-staging
-    - get: pipeline-tasks
-    - get: common
-      resource: common-tenant-staging
-      trigger: true
-    - get: concourse-stemcell
-      trigger: true
-    - get: concourse-release
-      trigger: true
-    - get: garden-runc-release
-      trigger: false
-  - task: concourse-manifest
-    config:
-      <<: *manifest-config
-      run:
-        path: concourse-config/generate.sh
-        args: ["concourse-config/concourse-tenant.yml", "common/secrets.yml", "concourse-config/concourse-tenant-staging.yml", "terraform-yaml/state.yml"]
-  - *lint-manifest
-  - put: tenant-concourse-staging-deployment
-    params: *deploy-params
-  - task: prune-stalled-workers
-    file: concourse-config/ci/prune-stalled-workers.yml
-    params:
-      CONCOURSE_URL: https://concourse-ci.fr-stage.cloud.gov
-      CONCOURSE_USERNAME: {{tenant-concourse-username-staging}}
-      CONCOURSE_PASSWORD: {{tenant-concourse-password-staging}}
-  on_failure:
-    put: slack
-    params:
-      text: |
-        :x: FAILED to deploy Tenant Concourse on staging
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: {{slack-channel}}
-      username: {{slack-username}}
-      icon_url: {{slack-icon-url}}
-  on_success:
-    put: slack
-    params:
-      text: |
-        :white_check_mark: Successfully deployed Tenant Concourse on staging
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: {{slack-channel}}
-      username: {{slack-username}}
-      icon_url: {{slack-icon-url}}
-
-- name: deploy-tenant-concourse-production
-  serial: true
-  plan:
-  - aggregate:
-    - get: concourse-config
-      passed: [deploy-tenant-concourse-staging]
-      trigger: true
-    - get: terraform-yaml
-      resource: terraform-yaml-production
-    - get: pipeline-tasks
-    - get: common
-      resource: common-tenant-production
-      trigger: true
-    - get: concourse-stemcell
-      trigger: true
-      passed: [deploy-tenant-concourse-staging]
-    - get: concourse-release
-      trigger: true
-      passed: [deploy-tenant-concourse-staging]
-    - get: garden-runc-release
-      trigger: false
-      passed: [deploy-tenant-concourse-staging]
-  - task: concourse-manifest
-    config:
-      <<: *manifest-config
-      run:
-        path: concourse-config/generate.sh
-        args: ["concourse-config/concourse-tenant.yml", "common/secrets.yml", "concourse-config/concourse-tenant-production.yml", "terraform-yaml/state.yml"]
-  - *lint-manifest
-  - put: tenant-concourse-production-deployment
-    params: *deploy-params
-  - task: prune-stalled-workers
-    file: concourse-config/ci/prune-stalled-workers.yml
-    params:
-      CONCOURSE_URL: https://concourse-ci.fr.cloud.gov
-      CONCOURSE_USERNAME: {{tenant-concourse-username-production}}
-      CONCOURSE_PASSWORD: {{tenant-concourse-password-production}}
-  on_failure:
-    put: slack
-    params:
-      text: |
-        :x: FAILED to deploy Tenant Concourse on production
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: {{slack-channel}}
-      username: {{slack-username}}
-      icon_url: {{slack-icon-url}}
-  on_success:
-    put: slack
-    params:
-      text: |
-        :white_check_mark: Successfully deployed Tenant Concourse on production
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: {{slack-channel}}
-      username: {{slack-username}}
-      icon_url: {{slack-icon-url}}
-
 resources:
 - name: concourse-config
   type: git
@@ -261,24 +153,6 @@ resources:
     secrets_passphrase: {{ops-concourse-staging-private-passphrase}}
     bosh_cert: bosh-tooling.pem
 
-- name: common-tenant-staging
-  type: cg-common
-  source:
-    bucket_name: {{tenant-concourse-staging-private-bucket}}
-    region: {{aws-region}}
-    secrets_file: concourse.yml
-    secrets_passphrase: {{tenant-concourse-staging-private-passphrase}}
-    bosh_cert: bosh.pem
-
-- name: common-tenant-production
-  type: cg-common
-  source:
-    bucket_name: {{tenant-concourse-production-private-bucket}}
-    region: {{aws-region}}
-    secrets_file: concourse.yml
-    secrets_passphrase: {{tenant-concourse-production-private-passphrase}}
-    bosh_cert: bosh.pem
-
 - name: concourse-stemcell
   type: bosh-io-stemcell
   source:
@@ -312,24 +186,6 @@ resources:
     deployment: {{ops-concourse-staging-deployment-bosh-deployment}}
     ca_cert: {{ops-concourse-staging-bosh-ca-cert}}
 
-- name: tenant-concourse-staging-deployment
-  type: bosh-deployment
-  source:
-    target: {{tenant-concourse-staging-deployment-bosh-target}}
-    client: {{tenant-concourse-staging-deployment-bosh-uaa-client-id}}
-    client_secret: {{tenant-concourse-staging-deployment-bosh-uaa-client-secret}}
-    deployment: {{tenant-concourse-staging-deployment-bosh-deployment}}
-    ca_cert: {{tenant-concourse-staging-bosh-ca-cert}}
-
-- name: tenant-concourse-production-deployment
-  type: bosh-deployment
-  source:
-    target: {{tenant-concourse-production-deployment-bosh-target}}
-    client: {{tenant-concourse-production-deployment-bosh-uaa-client-id}}
-    client_secret: {{tenant-concourse-production-deployment-bosh-uaa-client-secret}}
-    deployment: {{tenant-concourse-production-deployment-bosh-deployment}}
-    ca_cert: {{tenant-concourse-production-bosh-ca-cert}}
-
 - name: slack
   type: slack-notification-docker
   source:
@@ -340,20 +196,6 @@ resources:
   source:
     bucket: {{tf-state-bucket-tooling}}
     versioned_file: {{tf-state-file-tooling}}
-    region_name: {{aws-region}}
-
-- name: terraform-yaml-staging
-  type: s3-iam
-  source:
-    bucket: {{tf-state-bucket-staging}}
-    versioned_file: {{tf-state-file-staging}}
-    region_name: {{aws-region}}
-
-- name: terraform-yaml-production
-  type: s3-iam
-  source:
-    bucket: {{tf-state-bucket-production}}
-    versioned_file: {{tf-state-file-production}}
     region_name: {{aws-region}}
 
 resource_types:
