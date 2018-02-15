@@ -29,6 +29,6 @@ EOF
 output=$(./fly --target ci execute --config ./config.yml)
 
 if ! echo "${output}" | grep smoke; then
-  echo "Expected to find `smoke` in output"
+  echo "Expected to find 'smoke' in output"
   exit 1
 fi
