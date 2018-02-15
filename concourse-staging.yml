@@ -8,6 +8,8 @@ instance_groups:
   jobs:
   - name: atc
     properties:
+      basic_auth_username: (( param "specify basic auth username" ))
+      basic_auth_password: (( param "specify basic auth password" ))
       postgresql:
         database: (( grab terraform_outputs.staging_concourse_rds_name ))
         host: (( grab terraform_outputs.staging_concourse_rds_host ))
