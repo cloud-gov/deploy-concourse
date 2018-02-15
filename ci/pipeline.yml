@@ -48,6 +48,12 @@ jobs:
       - garden-runc-release/*.tgz
       stemcells:
       - concourse-stemcell/*.tgz
+  - task: smoke-test
+    file: concourse-config/ci/smoke-test.yml
+    params:
+      ATC_URL: http://0.web.staging-concourse.concourse-staging.toolingbosh:8080
+      BASIC_AUTH_USERNAME: {{basic-auth-username-staging}}
+      BASIC_AUTH_PASSWORD: {{basic-auth-password-staging}}
   on_failure:
     put: slack
     params:
