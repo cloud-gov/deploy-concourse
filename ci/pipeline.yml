@@ -1,6 +1,6 @@
 ---
 jobs:
-- name: deploy-ops-concourse-staging
+- name: deploy-concourse-staging
   serial: true
   plan:
   - aggregate:
@@ -8,10 +8,9 @@ jobs:
       trigger: true
     - get: pipeline-tasks
     - get: common
-      resource: common-ops-staging
+      resource: common-staging
       trigger: true
     - get: terraform-yaml
-      resource: terraform-yaml-tooling
     - get: concourse-stemcell
       trigger: true
     - get: concourse-release
@@ -40,7 +39,7 @@ jobs:
     input_mapping:
       pipeline-config: concourse-config
       lint-manifest: concourse-manifest
-  - put: ops-concourse-staging-deployment
+  - put: concourse-staging-deployment
     params: &deploy-params
       manifest: concourse-manifest/manifest.yml
       releases:
@@ -73,28 +72,27 @@ jobs:
       username: {{slack-username}}
       icon_url: {{slack-icon-url}}
 
-- name: deploy-ops-concourse-production
+- name: deploy-concourse-production
   serial: true
   plan:
   - aggregate:
     - get: concourse-config
-      passed: [deploy-ops-concourse-staging]
+      passed: [deploy-concourse-staging]
       trigger: true
     - get: pipeline-tasks
     - get: terraform-yaml
-      resource: terraform-yaml-tooling
     - get: common
-      resource: common-ops-production
+      resource: common-production
       trigger: true
     - get: concourse-stemcell
       trigger: true
-      passed: [deploy-ops-concourse-staging]
+      passed: [deploy-concourse-staging]
     - get: concourse-release
       trigger: true
-      passed: [deploy-ops-concourse-staging]
+      passed: [deploy-concourse-staging]
     - get: garden-runc-release
       trigger: false
-      passed: [deploy-ops-concourse-staging]
+      passed: [deploy-concourse-staging]
   - task: concourse-manifest
     config:
       <<: *manifest-config
@@ -102,7 +100,7 @@ jobs:
         path: concourse-config/generate.sh
         args: ["concourse-config/concourse-ops.yml", "concourse-config/concourse-production.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
   - *lint-manifest
-  - put: ops-concourse-production-deployment
+  - put: concourse-production-deployment
     params: *deploy-params
   on_failure:
     put: slack
@@ -141,22 +139,22 @@ resources:
     uri: {{pipeline-tasks-git-url}}
     branch: {{pipeline-tasks-git-branch}}
 
-- name: common-ops-production
+- name: common-production
   type: cg-common
   source:
-    bucket_name: {{ops-concourse-production-private-bucket}}
+    bucket_name: {{concourse-production-private-bucket}}
     region: {{aws-region}}
     secrets_file: concourse-tooling-prod.yml
-    secrets_passphrase: {{ops-concourse-production-private-passphrase}}
+    secrets_passphrase: {{concourse-production-private-passphrase}}
     bosh_cert: bosh-tooling.pem
 
-- name: common-ops-staging
+- name: common-staging
   type: cg-common
   source:
-    bucket_name: {{ops-concourse-staging-private-bucket}}
+    bucket_name: {{concourse-staging-private-bucket}}
     region: {{aws-region}}
     secrets_file: concourse-tooling-staging.yml
-    secrets_passphrase: {{ops-concourse-staging-private-passphrase}}
+    secrets_passphrase: {{concourse-staging-private-passphrase}}
     bosh_cert: bosh-tooling.pem
 
 - name: concourse-stemcell
@@ -174,30 +172,30 @@ resources:
   source:
     repository: cloudfoundry/garden-runc-release
 
-- name: ops-concourse-production-deployment
+- name: concourse-production-deployment
   type: bosh-deployment
   source:
-    target: {{ops-concourse-production-deployment-bosh-target}}
-    client: {{ops-concourse-production-deployment-bosh-uaa-client-id}}
-    client_secret: {{ops-concourse-production-deployment-bosh-uaa-client-secret}}
-    deployment: {{ops-concourse-production-deployment-bosh-deployment}}
-    ca_cert: {{ops-concourse-production-bosh-ca-cert}}
+    target: {{concourse-production-deployment-bosh-target}}
+    client: {{concourse-production-deployment-bosh-uaa-client-id}}
+    client_secret: {{concourse-production-deployment-bosh-uaa-client-secret}}
+    deployment: {{concourse-production-deployment-bosh-deployment}}
+    ca_cert: {{concourse-production-bosh-ca-cert}}
 
-- name: ops-concourse-staging-deployment
+- name: concourse-staging-deployment
   type: bosh-deployment
   source:
-    target: {{ops-concourse-staging-deployment-bosh-target}}
-    client: {{ops-concourse-staging-deployment-bosh-uaa-client-id}}
-    client_secret: {{ops-concourse-staging-deployment-bosh-uaa-client-secret}}
-    deployment: {{ops-concourse-staging-deployment-bosh-deployment}}
-    ca_cert: {{ops-concourse-staging-bosh-ca-cert}}
+    target: {{concourse-staging-deployment-bosh-target}}
+    client: {{concourse-staging-deployment-bosh-uaa-client-id}}
+    client_secret: {{concourse-staging-deployment-bosh-uaa-client-secret}}
+    deployment: {{concourse-staging-deployment-bosh-deployment}}
+    ca_cert: {{concourse-staging-bosh-ca-cert}}
 
 - name: slack
   type: slack-notification-docker
   source:
     url: {{slack-webhook-url}}
 
-- name: terraform-yaml-tooling
+- name: terraform-yaml
   type: s3-iam
   source:
     bucket: {{tf-state-bucket-tooling}}
