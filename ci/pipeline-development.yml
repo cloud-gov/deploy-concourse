@@ -91,7 +91,6 @@ resources:
     region: ((aws-region))
     secrets_file: concourse-tooling-prod.yml
     secrets_passphrase: ((concourse-production-private-passphrase))
-    bosh_cert: bosh-tooling.pem
 
 - name: concourse-stemcell
   type: bosh-io-stemcell

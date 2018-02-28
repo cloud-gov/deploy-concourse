@@ -146,7 +146,6 @@ resources:
     region: ((aws-region))
     secrets_file: concourse-tooling-prod.yml
     secrets_passphrase: ((concourse-production-private-passphrase))
-    bosh_cert: bosh-tooling.pem
 
 - name: common-staging
   type: cg-common
@@ -155,7 +154,6 @@ resources:
     region: ((aws-region))
     secrets_file: concourse-tooling-staging.yml
     secrets_passphrase: ((concourse-staging-private-passphrase))
-    bosh_cert: bosh-tooling.pem
 
 - name: concourse-stemcell
   type: bosh-io-stemcell
