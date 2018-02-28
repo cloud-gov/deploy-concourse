@@ -4,7 +4,7 @@ concourse-config-git-url: https://github.com/18F/cg-deploy-concourse.git
 pipeline-tasks-git-branch: master
 pipeline-tasks-git-url: https://github.com/18F/cg-pipeline-tasks.git
 
-tf-state-file-tooling: tooling/state.yml
+tf-state-file: tooling/state.yml
 
 concourse-staging-deployment-bosh-deployment: concourse-staging
 concourse-production-deployment-bosh-deployment: concourse-production
@@ -12,3 +12,9 @@ concourse-production-deployment-bosh-deployment: concourse-production
 slack-channel: "#cg-platform"
 slack-icon-url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
 slack-username: concourse
+
+aws-region: us-gov-west-1
+
+concourse-production-deployment-bosh-uaa-client-id: ci
+concourse-staging-deployment-bosh-uaa-client-id: ci
+

@@ -25,8 +25,5 @@ instance_groups:
 
 - name: iaas-worker
   vm_type: production-concourse-iaas-worker
-  vm_extensions: (( grab meta.iaas_extensions ))
+  vm_extensions: [production-concourse-iaas-profile]
   instances: 2
-
-meta:
-  iaas_extensions: [production-concourse-iaas-profile]
