@@ -30,7 +30,7 @@ jobs:
       - name: common
       run:
         path: concourse-config/generate.sh
-        args: ["concourse-config/concourse-ops.yml", "concourse-config/concourse-production.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
+        args: ["concourse-config/concourse-ops.yml", "concourse-config/concourse-development.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
       outputs:
       - name: concourse-manifest
   - &lint-manifest
