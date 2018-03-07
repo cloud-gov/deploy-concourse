@@ -87,7 +87,7 @@ resources:
 - name: common-production
   type: cg-common
   source:
-    bucket_name: ((concourse-production-private-bucket))
+    bucket_name: ((secrets-bucket))
     region: ((aws-region))
     secrets_file: concourse-tooling-prod.yml
     secrets_passphrase: ((concourse-production-private-passphrase))
