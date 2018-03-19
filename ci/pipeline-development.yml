@@ -1,16 +1,16 @@
 ---
 jobs:
-- name: deploy-concourse-staging
+- name: deploy-concourse-production
   serial: true
   plan:
   - aggregate:
     - get: concourse-config
       trigger: true
     - get: pipeline-tasks
-    - get: common
-      resource: common-staging
-      trigger: true
     - get: terraform-yaml
+    - get: common
+      resource: common-production
+      trigger: true
     - get: concourse-stemcell
       trigger: true
     - get: concourse-release
@@ -30,7 +30,7 @@ jobs:
       - name: common
       run:
         path: concourse-config/generate.sh
-        args: ["concourse-config/concourse-ops.yml", "concourse-config/concourse-staging.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
+        args: ["concourse-config/concourse-ops.yml", "concourse-config/concourse-development.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
       outputs:
       - name: concourse-manifest
   - &lint-manifest
@@ -39,7 +39,7 @@ jobs:
     input_mapping:
       pipeline-config: concourse-config
       lint-manifest: concourse-manifest
-  - put: concourse-staging-deployment
+  - put: concourse-production-deployment
     params: &deploy-params
       manifest: concourse-manifest/manifest.yml
       releases:
@@ -47,17 +47,11 @@ jobs:
       - garden-runc-release/*.tgz
       stemcells:
       - concourse-stemcell/*.tgz
-  - task: smoke-test
-    file: concourse-config/ci/smoke-test.yml
-    params:
-      ATC_URL: http://0.web.staging-concourse.concourse-staging.toolingbosh:8080
-      BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
-      BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
   on_failure:
     put: slack
     params:
       text: |
-        :x: FAILED to deploy Concourse on staging
+        :x: FAILED to deploy DEV Concourse on production
         <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
       channel: ((slack-channel))
       username: ((slack-username))
@@ -66,56 +60,7 @@ jobs:
     put: slack
     params:
       text: |
-        :white_check_mark: Successfully deployed Concourse on staging
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
-      username: ((slack-username))
-      icon_url: ((slack-icon-url))
-
-- name: deploy-concourse-production
-  serial: true
-  plan:
-  - aggregate:
-    - get: concourse-config
-      passed: [deploy-concourse-staging]
-      trigger: true
-    - get: pipeline-tasks
-    - get: terraform-yaml
-    - get: common
-      resource: common-production
-      trigger: true
-    - get: concourse-stemcell
-      trigger: true
-      passed: [deploy-concourse-staging]
-    - get: concourse-release
-      trigger: true
-      passed: [deploy-concourse-staging]
-    - get: garden-runc-release
-      trigger: false
-      passed: [deploy-concourse-staging]
-  - task: concourse-manifest
-    config:
-      <<: *manifest-config
-      run:
-        path: concourse-config/generate.sh
-        args: ["concourse-config/concourse-ops.yml", "concourse-config/concourse-production.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
-  - *lint-manifest
-  - put: concourse-production-deployment
-    params: *deploy-params
-  on_failure:
-    put: slack
-    params:
-      text: |
-        :x: FAILED to deploy Concourse on production
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
-      username: ((slack-username))
-      icon_url: ((slack-icon-url))
-  on_success:
-    put: slack
-    params:
-      text: |
-        :white_check_mark: Successfully deployed Concourse on production
+        :white_check_mark: Successfully deployed DEV Concourse on production
         <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
       channel: ((slack-channel))
       username: ((slack-username))
@@ -147,14 +92,6 @@ resources:
     secrets_file: concourse-tooling-prod.yml
     secrets_passphrase: ((concourse-production-private-passphrase))
 
-- name: common-staging
-  type: cg-common
-  source:
-    bucket_name: ((secrets-bucket))
-    region: ((aws-region))
-    secrets_file: concourse-tooling-staging.yml
-    secrets_passphrase: ((concourse-staging-private-passphrase))
-
 - name: concourse-stemcell
   type: bosh-io-stemcell
   source:
@@ -178,15 +115,6 @@ resources:
     client: ci
     client_secret: ((tooling_bosh_uaa_ci_client_secret))
     deployment: ((concourse-production-deployment-bosh-deployment))
-    ca_cert: ((common_ca_cert_store))
-
-- name: concourse-staging-deployment
-  type: bosh-deployment
-  source:
-    target: ((concourse-staging-deployment-bosh-target))
-    client: ci
-    client_secret: ((tooling_bosh_uaa_ci_client_secret))
-    deployment: ((concourse-staging-deployment-bosh-deployment))
     ca_cert: ((common_ca_cert_store))
 
 - name: slack

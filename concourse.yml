@@ -1,8 +1,6 @@
 ---
 name: concourse
 
-director_uuid: (( param "specify director UUID"))
-
 releases:
 - {name: concourse, version: latest}
 - {name: garden-runc, version: latest}

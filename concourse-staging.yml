@@ -27,8 +27,5 @@ instance_groups:
 
 - name: iaas-worker
   vm_type: staging-concourse-iaas-worker
-  vm_extensions: (( grab meta.iaas_extensions ))
+  vm_extensions: [staging-concourse-iaas-profile]
   instances: 1
-
-meta:
-  iaas_extensions: [staging-concourse-iaas-profile]

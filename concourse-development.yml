@@ -1,5 +1,6 @@
 instance_groups:
 - name: web
+  instances: 1
   vm_type: production-concourse-web
   vm_extensions: [production-concourse-lb]
   azs: [z1]
@@ -16,7 +17,7 @@ instance_groups:
           password: (( grab terraform_outputs.production_concourse_rds_password ))
 
 - name: worker
-  instances: 5
+  instances: 1
   vm_type: production-concourse-worker
   vm_extensions: [production-concourse-profile]
   azs: [z1]
@@ -26,4 +27,4 @@ instance_groups:
 - name: iaas-worker
   vm_type: production-concourse-iaas-worker
   vm_extensions: [production-concourse-iaas-profile]
-  instances: 2
+  instances: 1
