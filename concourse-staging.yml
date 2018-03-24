@@ -1,7 +1,7 @@
 instance_groups:
 - name: web
   vm_type: staging-concourse-web
-  vm_extensions: [staging-concourse-lb]
+  vm_extensions: [staging-concourse-lb, staging-concourse-target]
   azs: [z2]
   networks:
   - name: staging-concourse
