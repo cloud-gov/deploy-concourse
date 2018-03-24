@@ -2,7 +2,7 @@ instance_groups:
 - name: web
   instances: 1
   vm_type: production-concourse-web
-  vm_extensions: [production-concourse-lb]
+  vm_extensions: [production-concourse-lb, production-concourse-target]
   azs: [z1]
   networks:
   - name: production-concourse
