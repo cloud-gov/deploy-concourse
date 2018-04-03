@@ -31,7 +31,7 @@ instance_groups:
   instances: 1
   stemcell: default
   jobs:
-  - name: groundcrew
+  - name: worker
     release: concourse
     properties:
       additional_resource_types:
@@ -46,6 +46,8 @@ instance_groups:
   - name: baggageclaim
     release: concourse
     provides: {baggageclaim: {as: default-baggageclaim}}
+    properties:
+      driver: overlay
   - name: garden
     release: garden-runc
     properties:
