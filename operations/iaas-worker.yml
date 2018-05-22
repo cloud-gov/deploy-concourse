@@ -26,3 +26,10 @@
         garden:
           listen_network: tcp
           listen_address: 0.0.0.0:7777
+
+- type: replace
+  path: /instance_groups/name=iaas-worker/jobs/name=worker/properties/team?
+  value: main
+- type: replace
+  path: /instance_groups/name=iaas-worker/jobs/name=worker/properties/tags?
+  value: [iaas]
