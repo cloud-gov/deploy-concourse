@@ -1,0 +1,13 @@
+deployment_name: concourse-production
+external_url: https://ci.fr.cloud.gov
+azs: [z1]
+web_vm_type: production-concourse-web
+worker_vm_type: production-concourse-worker
+iaas_worker_vm_type: production-concourse-iaas-worker
+web_vm_extensions: [production-concourse-lb]
+worker_vm_extensions: [production-concourse-profile]
+iaas_worker_vm_extensions: [production-concourse-iaas-profile]
+network_name: production-concourse
+web_instances: 2
+worker_instances: 5
+iaas_worker_instances: 2

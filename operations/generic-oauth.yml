@@ -1,0 +1,11 @@
+- type: replace
+  path: /instance_groups/name=web/jobs/name=atc/properties/generic_oauth?
+  value:
+    auth_url: https://opslogin.fr.cloud.gov/oauth/authorize
+    token_url: https://opsuaa.fr.cloud.gov/oauth/token
+    client_id: ((generic_oauth_client_id))
+    client_secret: ((generic_oauth_client_secret))
+    auth_url_params:
+    - scope: openid,concourse.admin
+    scope: concourse.admin
+    display_name: UAA

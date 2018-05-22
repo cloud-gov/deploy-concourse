@@ -1,0 +1,28 @@
+- type: replace
+  path: /instance_groups/-
+  value:
+    name: iaas-worker
+    instances: ((iaas_worker_instances))
+    azs: [z1]
+    networks: [{name: ((network_name))}]
+    stemcell: trusty
+    vm_type: ((iaas_worker_vm_type))
+    jobs:
+    - release: concourse
+      name: worker
+      consumes: {baggageclaim: {from: iaas-worker-baggageclaim}}
+      properties:
+        drain_timeout: 10m
+        tsa: {worker_key: ((worker_key))}
+
+    - release: concourse
+      name: baggageclaim
+      properties: {log_level: debug}
+      provides: {baggageclaim: {as: iaas-worker-baggageclaim}}
+
+    - release: garden-runc
+      name: garden
+      properties:
+        garden:
+          listen_network: tcp
+          listen_address: 0.0.0.0:7777

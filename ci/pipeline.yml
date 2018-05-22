@@ -4,49 +4,40 @@ jobs:
   serial: true
   plan:
   - aggregate:
+    - get: concourse-deployment
+      trigger: true
     - get: concourse-config
       trigger: true
-    - get: pipeline-tasks
     - get: common
       resource: common-staging
       trigger: true
     - get: terraform-yaml
     - get: concourse-stemcell
       trigger: true
-    - get: concourse-release
-      trigger: true
-    - get: garden-runc-release
-      trigger: false
-  - task: concourse-manifest
-    config: &manifest-config
-      platform: linux
-      image_resource:
-        type: docker-image
-        source:
-          repository: 18fgsa/concourse-task
-      inputs:
-      - name: concourse-config
-      - name: terraform-yaml
-      - name: common
-      run:
-        path: concourse-config/generate.sh
-        args: ["concourse-config/concourse-ops.yml", "concourse-config/concourse-staging.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
-      outputs:
-      - name: concourse-manifest
-  - &lint-manifest
-    task: lint-manifest
-    file: pipeline-tasks/lint-manifest.yml
-    input_mapping:
-      pipeline-config: concourse-config
-      lint-manifest: concourse-manifest
   - put: concourse-staging-deployment
     params: &deploy-params
-      manifest: concourse-manifest/manifest.yml
-      releases:
-      - concourse-release/*.tgz
-      - garden-runc-release/*.tgz
+      manifest: concourse-deployment/cluster/concourse.yml
       stemcells:
       - concourse-stemcell/*.tgz
+      ops_files:
+      - concourse-deployment/cluster/operations/basic-auth.yml
+      - concourse-deployment/cluster/operations/external-postgres.yml
+      - concourse-deployment/cluster/operations/external-postgres-tls.yml
+      - concourse-deployment/cluster/operations/scale.yml
+      - concourse-config/operations/iaas-worker.yml
+      - concourse-config/operations/latest-stemcell.yml
+      - concourse-config/operations/postgres-staging.yml
+      - concourse-config/operations/driver.yml
+      - concourse-config/operations/config.yml
+      - concourse-config/operations/generic-oauth.yml
+      - concourse-config/operations/compliance.yml
+      - concourse-config/operations/prometheus.yml
+      vars_files:
+      - concourse-deployment/versions.yml
+      - concourse-config/variables/staging.yml
+      - concourse-config/variables/postgres-tls.yml
+      - terraform-yaml/state.yml
+      - common/secrets.yml
   - task: smoke-test
     file: concourse-config/ci/smoke-test.yml
     params:
@@ -76,10 +67,12 @@ jobs:
   serial: true
   plan:
   - aggregate:
+    - get: concourse-deployment
+      passed: [deploy-concourse-staging]
+      trigger: true
     - get: concourse-config
       passed: [deploy-concourse-staging]
       trigger: true
-    - get: pipeline-tasks
     - get: terraform-yaml
     - get: common
       resource: common-production
@@ -87,21 +80,28 @@ jobs:
     - get: concourse-stemcell
       trigger: true
       passed: [deploy-concourse-staging]
-    - get: concourse-release
-      trigger: true
-      passed: [deploy-concourse-staging]
-    - get: garden-runc-release
-      trigger: false
-      passed: [deploy-concourse-staging]
-  - task: concourse-manifest
-    config:
-      <<: *manifest-config
-      run:
-        path: concourse-config/generate.sh
-        args: ["concourse-config/concourse-ops.yml", "concourse-config/concourse-production.yml", "common/secrets.yml", "terraform-yaml/state.yml"]
-  - *lint-manifest
   - put: concourse-production-deployment
-    params: *deploy-params
+    params:
+      <<: *deploy-params
+      ops_files:
+      - concourse-deployment/cluster/operations/basic-auth.yml
+      - concourse-deployment/cluster/operations/external-postgres.yml
+      - concourse-deployment/cluster/operations/external-postgres-tls.yml
+      - concourse-deployment/cluster/operations/scale.yml
+      - concourse-config/operations/iaas-worker.yml
+      - concourse-config/operations/latest-stemcell.yml
+      - concourse-config/operations/postgres-production.yml
+      - concourse-config/operations/driver.yml
+      - concourse-config/operations/config.yml
+      - concourse-config/operations/generic-oauth.yml
+      - concourse-config/operations/compliance.yml
+      - concourse-config/operations/prometheus.yml
+      vars_files:
+      - concourse-deployment/versions.yml
+      - concourse-config/variables/production.yml
+      - concourse-config/variables/postgres-tls.yml
+      - terraform-yaml/state.yml
+      - common/secrets.yml
   on_failure:
     put: slack
     params:
@@ -122,22 +122,17 @@ jobs:
       icon_url: ((slack-icon-url))
 
 resources:
+- name: concourse-deployment
+  type: git
+  source:
+    uri: https://github.com/concourse/concourse-bosh-deployment
+    branch: master
+
 - name: concourse-config
   type: git
   source:
     uri: ((concourse-config-git-url))
     branch: ((concourse-config-git-branch))
-    paths:
-    - concourse*.yml
-    - rds*.yml
-    - generate.sh
-    - ci/*
-
-- name: pipeline-tasks
-  type: git
-  source:
-    uri: ((pipeline-tasks-git-url))
-    branch: ((pipeline-tasks-git-branch))
 
 - name: common-production
   type: cg-common
@@ -159,16 +154,6 @@ resources:
   type: bosh-io-stemcell
   source:
     name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
-
-- name: concourse-release
-  type: bosh-io-release
-  source:
-    repository: concourse/concourse
-
-- name: garden-runc-release
-  type: bosh-io-release
-  source:
-    repository: cloudfoundry/garden-runc-release
 
 - name: concourse-production-deployment
   type: bosh-deployment
