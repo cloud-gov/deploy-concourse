@@ -8,8 +8,7 @@ jobs:
       trigger: true
     - get: concourse-config
       trigger: true
-    - get: common
-      resource: common-staging
+    - get: common-staging
       trigger: true
     - get: terraform-yaml
     - get: concourse-stemcell
@@ -37,7 +36,7 @@ jobs:
       - concourse-config/variables/staging.yml
       - concourse-config/variables/postgres-tls.yml
       - terraform-yaml/state.yml
-      - common/secrets.yml
+      - common-staging/concourse-tooling-staging-decrypted.yml
   - task: smoke-test
     file: concourse-config/ci/smoke-test.yml
     params:
@@ -142,12 +141,12 @@ resources:
     secrets_passphrase: ((concourse-production-private-passphrase))
 
 - name: common-staging
-  type: cg-common
+  type: s3-iam
   source:
-    bucket_name: ((secrets-bucket))
-    region: ((aws-region))
-    secrets_file: concourse-tooling-staging.yml
-    secrets_passphrase: ((concourse-staging-private-passphrase))
+    bucket: ((secrets-bucket))
+    region_name: ((aws-region))
+    secrets_file: concourse-tooling-staging-decrypted.yml
+    
 
 - name: concourse-stemcell
   type: bosh-io-stemcell
