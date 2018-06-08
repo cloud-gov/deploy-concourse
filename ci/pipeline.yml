@@ -124,6 +124,7 @@ resources:
   source:
     uri: https://github.com/concourse/concourse-bosh-deployment
     branch: master
+    tag_filter: v*
 
 - name: concourse-config
   type: git
