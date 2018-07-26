@@ -3,9 +3,12 @@
   value:
     auth_url: https://opslogin.fr.cloud.gov/oauth/authorize
     token_url: https://opsuaa.fr.cloud.gov/oauth/token
+    userinfo_url: https://opsuaa.fr.cloud.gov/userinfo
+    scopes: [openid, concourse.admin]
+    groups_key: scope
     client_id: ((generic_oauth_client_id))
     client_secret: ((generic_oauth_client_secret))
-    auth_url_params:
-    - scope: openid,concourse.admin
-    scope: concourse.admin
-    display_name: UAA
+
+- type: replace
+  path: /instance_groups/name=web/jobs/name=atc/properties/main_team?/auth/oauth/groups
+  value: [concourse.admin]
