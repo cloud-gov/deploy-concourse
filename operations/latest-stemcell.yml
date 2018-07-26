@@ -1,3 +1,21 @@
+- type: remove
+  path: /stemcells/alias=xenial
+
 - type: replace
-  path: /stemcells/alias=trusty/version
-  value: latest
+  path: /stemcells/-
+  value:
+    alias: trusty
+    os: ubuntu-trusty
+    version: latest
+
+- type: replace
+  path: /instance_groups/name=web/stemcell
+  value: trusty
+
+- type: replace
+  path: /instance_groups/name=worker/stemcell
+  value: trusty
+
+- type: replace
+  path: /instance_groups/name=iaas-worker/stemcell
+  value: trusty
