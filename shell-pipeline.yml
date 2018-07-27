@@ -15,9 +15,9 @@ jobs:
       BOSH_CLIENT_SECRET: {{development-bosh-client-secret}}
       BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CLIENT: ((developmentbosh/credhub-admin-client))
-      CREDHUB_SECRET: ((developmentbosh/credhub-admin-secret))
-      CREDHUB_SERVER: ((developmentbosh/credhub-api-server))
+      CREDHUB_CLIENT: {{development-credhub-admin-client}}
+      CREDHUB_SECRET: {{development-credhub-admin-secret}}
+      CREDHUB_SERVER: {{development-credhub-api-server}}
       PROMPT_COLOR: "6" # cyan
 
 - name: container-bosh-staging
