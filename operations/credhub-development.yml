@@ -1,0 +1,16 @@
+- type: replace
+  path: /instance_groups/name=bosh/jobs/name=atc/properties/credhub?
+  value:
+    url: "https://((developmentbosh_target)):8844/api/"
+    tls:
+      insecure_skip_verify: true
+      ca_cert:
+        certificate: ((credhub_tls.ca))((uaa_ssl.ca))
+    client_id: concourse_to_credhub
+    client_secret: ((uaa_clients_concourse_to_dev_credhub))
+
+- type: replace
+  path: /variables/-
+  value:
+    name: uaa_clients_concourse_to_dev_credhub
+    type: password
