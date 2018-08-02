@@ -31,6 +31,10 @@ jobs:
       BOSH_CLIENT: {{staging-bosh-client}}
       BOSH_CLIENT_SECRET: {{staging-bosh-client-secret}}
       BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: {{staging-credhub-admin-client}}
+      CREDHUB_SECRET: {{staging-credhub-admin-secret}}
+      CREDHUB_SERVER: {{staging-credhub-api-server}}
       PROMPT_COLOR: "2" # green
 
 - name: container-bosh-production
@@ -44,6 +48,10 @@ jobs:
       BOSH_CLIENT: {{production-bosh-client}}
       BOSH_CLIENT_SECRET: {{production-bosh-client-secret}}
       BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: {{production-credhub-admin-client}}
+      CREDHUB_SECRET: {{production-credhub-admin-secret}}
+      CREDHUB_SERVER: {{production-credhub-api-server}}
       PROMPT_COLOR: "1" # red
 
 - name: container-bosh-tooling
@@ -57,6 +65,10 @@ jobs:
       BOSH_CLIENT: {{tooling-bosh-uaa-client}}
       BOSH_CLIENT_SECRET: {{tooling-bosh-uaa-client-secret}}
       BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: {{tooling-credhub-admin-client}}
+      CREDHUB_SECRET: {{tooling-credhub-admin-secret}}
+      CREDHUB_SERVER: {{tooling-credhub-api-server}}
       PROMPT_COLOR: "3" # yellow
 
 - name: container-bosh-master
