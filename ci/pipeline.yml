@@ -41,7 +41,7 @@ jobs:
   - task: smoke-test
     file: concourse-config/ci/smoke-test.yml
     params:
-      ATC_URL: http://0.web.staging-concourse.concourse-staging.toolingbosh:8080
+      ATC_URL: https://ci.fr-stage.cloud.gov
       BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
       BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
   - task: iptables-bosh-dns
