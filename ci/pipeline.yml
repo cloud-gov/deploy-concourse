@@ -63,12 +63,19 @@ jobs:
         - -exc
         - |
           bosh ssh worker "sudo sh -c 'iptables -D INPUT -s 10.254.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT || true'"
+          sleep 5
           bosh ssh worker "sudo sh -c 'iptables -D INPUT -s 10.254.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT || true'"
+          sleep 5
           bosh ssh iaas-worker "sudo sh -c 'iptables -D INPUT -s 10.254.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT || true'"
+          sleep 5
           bosh ssh iaas-worker "sudo sh -c 'iptables -D INPUT -s 10.254.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT || true'"
+          sleep 5
           bosh ssh worker "sudo sh -c 'iptables -I INPUT 1 -s 10.254.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT'"
+          sleep 5
           bosh ssh worker "sudo sh -c 'iptables -I INPUT 1 -s 10.254.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT'"
+          sleep 5
           bosh ssh iaas-worker "sudo sh -c 'iptables -I INPUT 1 -s 10.254.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT'"
+          sleep 5
           bosh ssh iaas-worker "sudo sh -c 'iptables -I INPUT 1 -s 10.254.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT'"
   on_failure:
     put: slack
