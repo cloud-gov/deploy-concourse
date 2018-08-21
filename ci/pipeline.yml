@@ -44,8 +44,31 @@ jobs:
       ATC_URL: https://ci.fr-stage.cloud.gov
       BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
       BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
-  - task: iptables-bosh-dns
-    config: &iptables-bosh-dns
+  - task: iptables-iaas-worker-bosh-dns
+    config: &iptables-iaas-worker-bosh-dns
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: 18fgsa/concourse-task
+      params:
+        BOSH_ENVIRONMENT: ((concourse-staging-deployment-bosh-target))
+        BOSH_CLIENT: ci
+        BOSH_CLIENT_SECRET: ((tooling_bosh_uaa_ci_client_secret))
+        BOSH_CA_CERT: ((common_ca_cert_store))
+        BOSH_DEPLOYMENT: concourse-staging
+      run:
+        path: sh
+        args:
+        - -exc
+        - |
+          bosh ssh iaas-worker "sudo sh -c 'iptables -D INPUT -s 10.254.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT || true'"
+          bosh ssh iaas-worker "sudo sh -c 'iptables -D INPUT -s 10.254.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT || true'"
+          bosh ssh iaas-worker "sudo sh -c 'iptables -I INPUT 1 -s 10.254.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT'"
+          bosh ssh iaas-worker "sudo sh -c 'iptables -I INPUT 1 -s 10.254.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT'"
+  - task: iptables-worker-bosh-dns
+    tags: [iaas]
+    config: &iptables-worker-bosh-dns
       platform: linux
       image_resource:
         type: docker-image
@@ -64,12 +87,8 @@ jobs:
         - |
           bosh ssh worker "sudo sh -c 'iptables -D INPUT -s 10.254.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT || true'"
           bosh ssh worker "sudo sh -c 'iptables -D INPUT -s 10.254.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT || true'"
-          bosh ssh iaas-worker "sudo sh -c 'iptables -D INPUT -s 10.254.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT || true'"
-          bosh ssh iaas-worker "sudo sh -c 'iptables -D INPUT -s 10.254.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT || true'"
           bosh ssh worker "sudo sh -c 'iptables -I INPUT 1 -s 10.254.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT'"
           bosh ssh worker "sudo sh -c 'iptables -I INPUT 1 -s 10.254.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT'"
-          bosh ssh iaas-worker "sudo sh -c 'iptables -I INPUT 1 -s 10.254.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT'"
-          bosh ssh iaas-worker "sudo sh -c 'iptables -I INPUT 1 -s 10.254.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT'"
   on_failure:
     put: slack
     params:
@@ -127,9 +146,19 @@ jobs:
       - concourse-config/variables/postgres-tls.yml
       - terraform-yaml/state.yml
       - common-production/concourse-tooling-prod.yml
-  - task: iptables-bosh-dns
+  - task: iptables-iaas-worker-bosh-dns
     config:
-      <<: *iptables-bosh-dns
+      <<: *iptables-iaas-worker-bosh-dns
+      params:
+        BOSH_ENVIRONMENT: ((concourse-production-deployment-bosh-target))
+        BOSH_CLIENT: ci
+        BOSH_CLIENT_SECRET: ((tooling_bosh_uaa_ci_client_secret))
+        BOSH_CA_CERT: ((common_ca_cert_store))
+        BOSH_DEPLOYMENT: concourse-production
+  - task: iptables-worker-bosh-dns
+    tags: [iaas]
+    config:
+      <<: *iptables-worker-bosh-dns
       params:
         BOSH_ENVIRONMENT: ((concourse-production-deployment-bosh-target))
         BOSH_CLIENT: ci
@@ -160,7 +189,7 @@ resources:
   type: git
   source:
     uri: https://github.com/concourse/concourse-bosh-deployment
-    branch: master
+    branch: develop
     tag_filter: v*
 
 - name: concourse-config
@@ -181,7 +210,7 @@ resources:
   source:
     bucket: ((secrets-bucket))
     region_name: ((aws-region))
-    versioned_file: concourse-tooling-staging.yml 
+    versioned_file: concourse-tooling-staging.yml
 
 - name: concourse-stemcell
   type: bosh-io-stemcell
