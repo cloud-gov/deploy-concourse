@@ -10,3 +10,8 @@ inputs:
 
 run:
   path: concourse-config/ci/smoke-test.sh
+
+params:
+  ATC_URL:
+  BASIC_AUTH_USERNAME:
+  BASIC_AUTH_PASSWORD:
