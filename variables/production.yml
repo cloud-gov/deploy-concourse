@@ -8,7 +8,7 @@ web_vm_extensions: [production-concourse-lb]
 worker_vm_extensions: [production-concourse-profile]
 iaas_worker_vm_extensions: [production-concourse-iaas-profile]
 network_name: production-concourse
-web_instances: 2
+web_instances: 3
 worker_instances: 5
 iaas_worker_instances: 2
 build_logs_default: 25
