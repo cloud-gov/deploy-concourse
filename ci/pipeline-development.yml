@@ -23,7 +23,6 @@ jobs:
       - concourse-deployment/cluster/operations/external-postgres-tls.yml
       - concourse-deployment/cluster/operations/scale.yml
       - concourse-config/operations/iaas-worker.yml
-      - concourse-config/operations/latest-stemcell.yml
       - concourse-config/operations/postgres-production.yml
       - concourse-config/operations/driver.yml
       - concourse-config/operations/config.yml

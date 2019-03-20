@@ -26,7 +26,6 @@ jobs:
       - concourse-deployment/cluster/operations/scale.yml
       - concourse-deployment/cluster/operations/debug-concourse.yml
       - concourse-config/operations/iaas-worker.yml
-      - concourse-config/operations/latest-stemcell.yml
       - concourse-config/operations/postgres-staging.yml
       - concourse-config/operations/driver.yml
       - concourse-config/operations/config.yml
@@ -135,7 +134,6 @@ jobs:
       - concourse-deployment/cluster/operations/scale.yml
       - concourse-deployment/cluster/operations/debug-concourse.yml
       - concourse-config/operations/iaas-worker.yml
-      - concourse-config/operations/latest-stemcell.yml
       - concourse-config/operations/postgres-production.yml
       - concourse-config/operations/driver.yml
       - concourse-config/operations/config.yml
