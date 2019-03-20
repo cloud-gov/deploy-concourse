@@ -5,7 +5,7 @@
     instances: ((iaas_worker_instances))
     azs: [z1]
     networks: [{name: ((network_name))}]
-    stemcell: trusty
+    stemcell: xenial
     vm_type: ((iaas_worker_vm_type))
     jobs:
     - release: concourse
