@@ -2,6 +2,7 @@
   path: /instance_groups/-
   value:
     name: iaas-worker
+    stemcell: xenial
     instances: ((iaas_worker_instances))
     azs: [z1]
     networks: [{name: ((network_name))}]
