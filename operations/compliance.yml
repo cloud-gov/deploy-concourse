@@ -1,7 +1,7 @@
 - type: replace
-  path: /instance_groups/name=web/jobs/name=web/properties/cookie_secure?
+  path: /instance_groups/name=web/jobs/name=atc/properties/cookie_secure?
   value: true
 
 - type: replace
-  path: /instance_groups/name=web/jobs/name=web/properties/intercept_idle_timeout?
+  path: /instance_groups/name=web/jobs/name=atc/properties/intercept_idle_timeout?
   value: 10m
