@@ -12,7 +12,7 @@ jobs:
     - get: common
       resource: common-production
       trigger: true
-    - get: concourse-stemcell
+    - get: concourse-stemcell-xenial
       trigger: true
   - put: concourse-production-deployment
     params:
@@ -76,10 +76,10 @@ resources:
     secrets_file: concourse-tooling-prod.yml
     secrets_passphrase: ((concourse-production-private-passphrase))
 
-- name: concourse-stemcell
+- name: concourse-stemcell-xenial
   type: bosh-io-stemcell
   source:
-    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    name: bosh-aws-xen-hvm-ubuntu-xenial-go_agent
 
 - name: concourse-production-deployment
   type: bosh-deployment
