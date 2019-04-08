@@ -11,13 +11,13 @@ jobs:
     - get: common-staging
       trigger: true
     - get: terraform-yaml
-    - get: concourse-stemcell
+    - get: concourse-stemcell-xenial
       trigger: true
   - put: concourse-staging-deployment
     params: &deploy-params
       manifest: concourse-deployment/cluster/concourse.yml
       stemcells:
-      - concourse-stemcell/*.tgz
+      - concourse-stemcell-xenial/*.tgz
       ops_files:
       - concourse-deployment/cluster/operations/basic-auth.yml
       - concourse-deployment/cluster/operations/external-postgres.yml
@@ -123,7 +123,7 @@ jobs:
     - get: terraform-yaml
     - get: common-production
       trigger: true
-    - get: concourse-stemcell
+    - get: concourse-stemcell-xenial
       trigger: true
       passed: [deploy-concourse-staging]
   - put: concourse-production-deployment
@@ -215,10 +215,10 @@ resources:
     region_name: ((aws-region))
     versioned_file: concourse-tooling-staging.yml
 
-- name: concourse-stemcell
+- name: concourse-stemcell-xenial
   type: bosh-io-stemcell
   source:
-    name: bosh-aws-xen-hvm-ubuntu-trusty-go_agent
+    name: bosh-aws-xen-hvm-ubuntu-xenial-go_agent
 
 - name: concourse-production-deployment
   type: bosh-deployment
