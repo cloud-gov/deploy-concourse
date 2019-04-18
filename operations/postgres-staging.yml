@@ -16,6 +16,3 @@
 
 - type: remove
   path: /variables/name=postgres_password
-
-- type: remove
-  path: /instance_groups/name=web/jobs/name=web/properties/postgresql?/client_cert
