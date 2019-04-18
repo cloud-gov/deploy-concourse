@@ -14,11 +14,6 @@
         drain_timeout: 10m
         worker_gateway: {worker_key: ((worker_key))}
 
-    - release: concourse
-      name: baggageclaim
-      properties: {log_level: debug}
-      provides: {baggageclaim: {as: iaas-worker-baggageclaim}}
-
 - type: replace
   path: /instance_groups/name=iaas-worker/jobs/name=worker/properties/team?
   value: main
