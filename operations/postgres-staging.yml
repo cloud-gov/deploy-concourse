@@ -1,21 +1,19 @@
 - type: replace
-  path: /instance_groups/name=web/jobs/name=atc/properties/postgresql?/host?
+  path: /instance_groups/name=web/jobs/name=web/properties/postgresql?/host?
   value: ((terraform_outputs.staging_concourse_rds_host))
 
 - type: replace
-  path: /instance_groups/name=web/jobs/name=atc/properties/postgresql?/port?
+  path: /instance_groups/name=web/jobs/name=web/properties/postgresql?/port?
   value: ((terraform_outputs.staging_concourse_rds_port))
 
 - type: replace
-  path: /instance_groups/name=web/jobs/name=atc/properties/postgresql?/role?/name?
+  path: /instance_groups/name=web/jobs/name=web/properties/postgresql?/role?/name?
   value: ((terraform_outputs.staging_concourse_rds_username))
 
 - type: replace
-  path: /instance_groups/name=web/jobs/name=atc/properties/postgresql?/role?/password?
+  path: /instance_groups/name=web/jobs/name=web/properties/postgresql?/role?/password?
   value: ((terraform_outputs.staging_concourse_rds_password))
 
 - type: remove
   path: /variables/name=postgres_password
 
-- type: remove
-  path: /instance_groups/name=web/jobs/name=atc/properties/postgresql?/client_cert

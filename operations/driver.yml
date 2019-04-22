@@ -1,6 +1,6 @@
 - type: replace
-  path: /instance_groups/name=worker/jobs/name=baggageclaim/properties/driver?
+  path: /instance_groups/name=worker/jobs/name=worker/properties/baggageclaim?/driver?
   value: overlay
 - type: replace
-  path: /instance_groups/name=iaas-worker/jobs/name=baggageclaim/properties/driver?
+  path: /instance_groups/name=iaas-worker/jobs/name=worker/properties/baggageclaim?/driver?
   value: overlay
