@@ -15,7 +15,7 @@
   value: ((terraform_outputs.staging_concourse_rds_password))
 
 - type: replace
-  path: /instance_groups/name=web/jobs/name=web/properties/postgresql?/ca_cert?
+  path: /instance_groups/name=web/jobs/name=web/properties/postgresql?/ca_cert?/certificate?
   value: ((postgres_ca_cert))
 
 - type: replace
