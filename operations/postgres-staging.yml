@@ -24,3 +24,6 @@
 
 - type: remove
   path: /variables/name=postgres_password
+
+- type: remove
+  path: /instance_groups/name=db
