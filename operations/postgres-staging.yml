@@ -14,16 +14,6 @@
   path: /instance_groups/name=web/jobs/name=web/properties/postgresql?/role?/password?
   value: ((terraform_outputs.staging_concourse_rds_password))
 
-- type: replace
-  path: /instance_groups/name=web/jobs/name=web/properties/postgresql?/ca_cert?/certificate?
-  value: ((postgres_ca_cert))
-
-- type: replace
-  path: /instance_groups/name=web/jobs/name=web/properties/postgresql?/sslmode?
-  value: verify-ca
-
 - type: remove
   path: /variables/name=postgres_password
 
-- type: remove
-  path: /instance_groups/name=db
