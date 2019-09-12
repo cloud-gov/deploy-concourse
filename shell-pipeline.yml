@@ -83,9 +83,9 @@ jobs:
       BOSH_CLIENT_SECRET: {{master-bosh-client-secret}}
       BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CLIENT: {{tooling-credhub-admin-client}}
-      CREDHUB_SECRET: {{tooling-credhub-admin-secret}}
-      CREDHUB_SERVER: {{tooling-credhub-api-server}}
+      CREDHUB_CLIENT: {{master-credhub-admin-client}}
+      CREDHUB_SECRET: {{master-credhub-admin-secret}}
+      CREDHUB_SERVER: {{master-credhub-api-server}}
       PROMPT_COLOR: "5" # magenta
 
 resources:
