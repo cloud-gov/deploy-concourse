@@ -2,7 +2,7 @@
 jobs:
 - name: container-bosh-development
   plan:
-  - aggregate: &resources
+  - in_parallel: &resources
     - get: cg-scripts
     - get: concourse-config
     - get: master-bosh-root-cert
@@ -10,90 +10,90 @@ jobs:
     file: concourse-config/jumpbox.yml
     params:
       BOSH_DIRECTOR_NAME: development
-      BOSH_ENVIRONMENT: {{development-bosh-target}}
-      BOSH_CLIENT: {{development-bosh-client}}
-      BOSH_CLIENT_SECRET: {{development-bosh-client-secret}}
+      BOSH_ENVIRONMENT: ((development-bosh-target))
+      BOSH_CLIENT: ((development-bosh-client))
+      BOSH_CLIENT_SECRET: ((development-bosh-client-secret))
       BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CLIENT: {{development-credhub-admin-client}}
-      CREDHUB_SECRET: {{development-credhub-admin-secret}}
-      CREDHUB_SERVER: {{development-credhub-api-server}}
+      CREDHUB_CLIENT: ((development-credhub-admin-client))
+      CREDHUB_SECRET: ((development-credhub-admin-secret))
+      CREDHUB_SERVER: ((development-credhub-api-server))
       PROMPT_COLOR: "6" # cyan
 
 - name: container-bosh-staging
   plan:
-  - aggregate: *resources
+  - in_parallel: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
       BOSH_DIRECTOR_NAME: staging
-      BOSH_ENVIRONMENT: {{staging-bosh-target}}
-      BOSH_CLIENT: {{staging-bosh-client}}
-      BOSH_CLIENT_SECRET: {{staging-bosh-client-secret}}
+      BOSH_ENVIRONMENT: ((staging-bosh-target))
+      BOSH_CLIENT: ((staging-bosh-client))
+      BOSH_CLIENT_SECRET: ((staging-bosh-client-secret))
       BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CLIENT: {{staging-credhub-admin-client}}
-      CREDHUB_SECRET: {{staging-credhub-admin-secret}}
-      CREDHUB_SERVER: {{staging-credhub-api-server}}
+      CREDHUB_CLIENT: ((staging-credhub-admin-client))
+      CREDHUB_SECRET: ((staging-credhub-admin-secret))
+      CREDHUB_SERVER: ((staging-credhub-api-server))
       PROMPT_COLOR: "2" # green
 
 - name: container-bosh-production
   plan:
-  - aggregate: *resources
+  - in_parallel: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
       BOSH_DIRECTOR_NAME: PRODUCTION
-      BOSH_ENVIRONMENT: {{production-bosh-target}}
-      BOSH_CLIENT: {{production-bosh-client}}
-      BOSH_CLIENT_SECRET: {{production-bosh-client-secret}}
+      BOSH_ENVIRONMENT: ((production-bosh-target))
+      BOSH_CLIENT: ((production-bosh-client))
+      BOSH_CLIENT_SECRET: ((production-bosh-client-secret))
       BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CLIENT: {{production-credhub-admin-client}}
-      CREDHUB_SECRET: {{production-credhub-admin-secret}}
-      CREDHUB_SERVER: {{production-credhub-api-server}}
+      CREDHUB_CLIENT: ((production-credhub-admin-client))
+      CREDHUB_SECRET: ((production-credhub-admin-secret))
+      CREDHUB_SERVER: ((production-credhub-api-server))
       PROMPT_COLOR: "1" # red
 
 - name: container-bosh-tooling
   plan:
-  - aggregate: *resources
+  - in_parallel: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
       BOSH_DIRECTOR_NAME: Tooling
-      BOSH_ENVIRONMENT: {{tooling-bosh-target}}
-      BOSH_CLIENT: {{tooling-bosh-uaa-client}}
-      BOSH_CLIENT_SECRET: {{tooling-bosh-uaa-client-secret}}
+      BOSH_ENVIRONMENT: ((tooling-bosh-target))
+      BOSH_CLIENT: ((tooling-bosh-uaa-client))
+      BOSH_CLIENT_SECRET: ((tooling-bosh-uaa-client-secret))
       BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CLIENT: {{tooling-credhub-admin-client}}
-      CREDHUB_SECRET: {{tooling-credhub-admin-secret}}
-      CREDHUB_SERVER: {{tooling-credhub-api-server}}
+      CREDHUB_CLIENT: ((tooling-credhub-admin-client))
+      CREDHUB_SECRET: ((tooling-credhub-admin-secret))
+      CREDHUB_SERVER: ((tooling-credhub-api-server))
       PROMPT_COLOR: "3" # yellow
 
 - name: container-bosh-master
   plan:
-  - aggregate: *resources
+  - in_parallel: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
       BOSH_DIRECTOR_NAME: Master
-      BOSH_ENVIRONMENT: {{master-bosh-target}}
-      BOSH_CLIENT: {{master-bosh-client}}
-      BOSH_CLIENT_SECRET: {{master-bosh-client-secret}}
+      BOSH_ENVIRONMENT: ((master-bosh-target))
+      BOSH_CLIENT: ((master-bosh-client))
+      BOSH_CLIENT_SECRET: ((master-bosh-client-secret))
       BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CLIENT: {{master-credhub-admin-client}}
-      CREDHUB_SECRET: {{master-credhub-admin-secret}}
-      CREDHUB_SERVER: {{master-credhub-api-server}}
+      CREDHUB_CLIENT: ((master-credhub-admin-client))
+      CREDHUB_SECRET: ((master-credhub-admin-secret))
+      CREDHUB_SERVER: ((master-credhub-api-server))
       PROMPT_COLOR: "5" # magenta
 
 resources:
 - name: concourse-config
   type: git
   source:
-    uri: {{concourse-config-git-url}}
-    branch: {{concourse-config-git-branch}}
+    uri: ((concourse-config-git-url))
+    branch: ((concourse-config-git-branch))
     paths:
     - jumpbox.yml
     - jumpbox.sh
@@ -101,8 +101,8 @@ resources:
 - name: master-bosh-root-cert
   type: s3-iam
   source:
-    bucket: {{production-bucket-name}}
-    region_name: {{aws-region}}
+    bucket: ((production-bucket-name))
+    region_name: ((aws-region))
     versioned_file: master-bosh.crt
 
 - name: cg-scripts
