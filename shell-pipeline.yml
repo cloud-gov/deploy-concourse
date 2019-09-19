@@ -2,7 +2,7 @@
 jobs:
 - name: container-bosh-development
   plan:
-  - aggregate: &resources
+  - in_parallel: &resources
     - get: cg-scripts
     - get: concourse-config
     - get: master-bosh-root-cert
@@ -22,7 +22,7 @@ jobs:
 
 - name: container-bosh-staging
   plan:
-  - aggregate: *resources
+  - in_parallel: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
@@ -39,7 +39,7 @@ jobs:
 
 - name: container-bosh-production
   plan:
-  - aggregate: *resources
+  - in_parallel: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
@@ -56,7 +56,7 @@ jobs:
 
 - name: container-bosh-tooling
   plan:
-  - aggregate: *resources
+  - in_parallel: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
@@ -73,7 +73,7 @@ jobs:
 
 - name: container-bosh-master
   plan:
-  - aggregate: *resources
+  - in_parallel: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:

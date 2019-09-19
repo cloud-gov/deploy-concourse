@@ -3,7 +3,7 @@ jobs:
 - name: deploy-concourse-staging
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: concourse-deployment
       trigger: true
     - get: concourse-config
@@ -111,7 +111,7 @@ jobs:
 - name: deploy-concourse-production
   serial: true
   plan:
-  - aggregate:
+  - in_parallel:
     - get: concourse-deployment
       passed: [deploy-concourse-staging]
       trigger: true
