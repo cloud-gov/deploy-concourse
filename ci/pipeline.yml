@@ -8,8 +8,6 @@ jobs:
       trigger: true
     - get: concourse-config
       trigger: true
-    - get: common-staging
-      trigger: true
     - get: terraform-yaml
     - get: concourse-stemcell-xenial
       trigger: true
@@ -36,7 +34,6 @@ jobs:
       - concourse-config/variables/staging.yml
       - concourse-config/variables/postgres-tls.yml
       - terraform-yaml/state.yml
-      - common-staging/concourse-tooling-staging.yml
   - task: smoke-test
     file: concourse-config/ci/smoke-test.yml
     params:
@@ -118,8 +115,6 @@ jobs:
       passed: [deploy-concourse-staging]
       trigger: true
     - get: terraform-yaml
-    - get: common-production
-      trigger: true
     - get: concourse-stemcell-xenial
       trigger: true
       passed: [deploy-concourse-staging]
@@ -143,7 +138,6 @@ jobs:
       - concourse-config/variables/production.yml
       - concourse-config/variables/postgres-tls.yml
       - terraform-yaml/state.yml
-      - common-production/concourse-tooling-prod.yml
   - task: iptables-iaas-worker-bosh-dns
     config:
       <<: *iptables-iaas-worker-bosh-dns
@@ -195,20 +189,6 @@ resources:
   source:
     uri: ((concourse-config-git-url))
     branch: ((concourse-config-git-branch))
-
-- name: common-production
-  type: s3-iam
-  source:
-    bucket: ((secrets-bucket))
-    region_name: ((aws-region))
-    versioned_file: concourse-tooling-prod.yml
-
-- name: common-staging
-  type: s3-iam
-  source:
-    bucket: ((secrets-bucket))
-    region_name: ((aws-region))
-    versioned_file: concourse-tooling-staging.yml
 
 - name: concourse-stemcell-xenial
   type: bosh-io-stemcell
