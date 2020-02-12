@@ -2,6 +2,7 @@
 jobs:
 - name: deploy-concourse-staging
   serial: true
+  interruptible: true
   plan:
   - in_parallel:
     - get: concourse-deployment
@@ -107,6 +108,7 @@ jobs:
 
 - name: deploy-concourse-production
   serial: true
+  interruptible: true
   plan:
   - in_parallel:
     - get: concourse-deployment
