@@ -30,8 +30,8 @@ jobs:
       - concourse-config/operations/compliance.yml
       - concourse-config/operations/external-postgres-tls.yml
       - concourse-config/operations/prometheus.yml
-      - concourse-config/operations/staging-disk-size.yml
       - concourse-config/operations/update-strategy.yml
+      # - concourse-config/operations/staging-disk-size.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/staging.yml
@@ -137,7 +137,7 @@ jobs:
       - concourse-config/operations/generic-oauth.yml
       - concourse-config/operations/compliance.yml
       - concourse-config/operations/prometheus.yml
-      - concourse-config/operations/production-disk-size.yml
+      # - concourse-config/operations/production-disk-size.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/production.yml
