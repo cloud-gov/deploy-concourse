@@ -1,9 +1,9 @@
 deployment_name: concourse-staging
 external_url: https://ci.fr-stage.cloud.gov
 azs: [z2]
-web_vm_type: t3.medium
-worker_vm_type: m5.large
-iaas_worker_vm_type: m5.large
+web_vm_type: staging-concourse-web
+worker_vm_type: staging-concourse-worker
+iaas_worker_vm_type: staging-concourse-iaas-worker
 web_vm_extensions: [staging-concourse-lb]
 worker_vm_extensions: [staging-concourse-profile]
 iaas_worker_vm_extensions: [staging-concourse-iaas-profile]
