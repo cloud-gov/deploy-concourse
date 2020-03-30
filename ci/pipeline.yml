@@ -136,6 +136,7 @@ jobs:
       - concourse-config/operations/generic-oauth.yml
       - concourse-config/operations/compliance.yml
       - concourse-config/operations/prometheus.yml
+      - concourse-config/operations/production-disk-size.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/production.yml

@@ -1,0 +1,14 @@
+# worker
+- type: replace
+  path: /vm_types/name=m5.xlarge/cloud_properties/ephemeral_disk?/size?
+  value: 300_000
+
+# iaas worker
+- type: replace
+  path: /vm_types/name=m5.xlarge/cloud_properties/ephemeral_disk?/size?
+  value: 300_000
+
+# web
+- type: replace
+  path: /vm_types/name=t3.xlarge/cloud_properties/ephemeral_disk?/size?
+  value: 45_000
