@@ -1,0 +1,7 @@
+- type: replace
+  path: /instance_groups/name=web/jobs/name=web/properties/gc?/
+  value:
+    missing_grace_period: 30s
+    hijack_grace_period: 11m # (mxplusb): this should not kick you out but I'm not sure yet.
+    one_off_grace_period: 10s
+    check_recycle_period: 10s
