@@ -33,7 +33,6 @@ jobs:
       - concourse-config/operations/prometheus.yml
       - concourse-config/operations/update-strategy.yml
       - concourse-config/operations/set-garbage-collection.yml
-      - concourse-config/operations/garden-ini.yml
       # - concourse-config/operations/staging-disk-size.yml
       vars_files:
       - concourse-deployment/versions.yml
@@ -145,7 +144,6 @@ jobs:
       - concourse-config/operations/prometheus.yml
       - concourse-config/operations/update-strategy.yml
       - concourse-config/operations/set-garbage-collection.yml
-      - concourse-config/operations/garden-ini.yml
       # - concourse-config/operations/production-disk-size.yml
       vars_files:
       - concourse-deployment/versions.yml
@@ -241,16 +239,22 @@ resources:
 
 resource_types:
 - name: slack-notification-docker
-  type: docker-image
+  type: registry-image
   source:
     repository: cfcommunity/slack-notification-resource
+    registry_mirror:
+      host: docker-registry-mirror.app.cloud.gov:443
 
 - name: bosh-deployment
-  type: docker-image
+  type: registry-image
   source:
     repository: cloudfoundry/bosh-deployment-resource
+    registry_mirror:
+      host: docker-registry-mirror.app.cloud.gov:443
 
 - name: s3-iam
-  type: docker-image
+  type: registry-image
   source:
     repository: 18fgsa/s3-resource
+    registry_mirror:
+      host: docker-registry-mirror.app.cloud.gov:443
