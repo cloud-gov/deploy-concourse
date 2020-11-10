@@ -1,4 +1,4 @@
 - type: replace
-  path: /instance_groups/name=worker/jobs/worker/properties/garden/config_ini?
+  path: /instance_groups/name=worker/jobs/name=worker/properties/garden/config_ini?
   value: >
     docker-registry = ((docker_registry_mirror))
