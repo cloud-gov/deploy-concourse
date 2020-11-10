@@ -32,6 +32,7 @@ jobs:
       - concourse-config/operations/prometheus.yml
       - concourse-config/operations/update-strategy.yml
       - concourse-config/operations/set-garbage-collection.yml
+      - concourse-config/operations/garden-ini.yml
       # - concourse-config/operations/staging-disk-size.yml
       vars_files:
       - concourse-deployment/versions.yml
@@ -46,6 +47,7 @@ jobs:
       BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
   - task: iptables-iaas-worker-bosh-dns
     config: &iptables-iaas-worker-bosh-dns
+      container_limits: {}
       platform: linux
       image_resource:
         type: docker-image
@@ -69,6 +71,7 @@ jobs:
   - task: iptables-worker-bosh-dns
     tags: [iaas]
     config: &iptables-worker-bosh-dns
+      container_limits: {}
       platform: linux
       image_resource:
         type: docker-image
