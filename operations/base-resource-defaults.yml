@@ -5,4 +5,4 @@
       registry_mirror:
         host: ((docker-registry-mirror))
     docker-image:
-      registry_mirror: https://((docker-registry-mirror))
+      registry_mirror: ((docker-registry-mirror))
