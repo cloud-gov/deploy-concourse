@@ -244,19 +244,13 @@ resource_types:
   type: registry-image
   source:
     repository: cfcommunity/slack-notification-resource
-    registry_mirror:
-      host: docker-registry-mirror.app.cloud.gov:443
 
 - name: bosh-deployment
   type: registry-image
   source:
     repository: cloudfoundry/bosh-deployment-resource
-    registry_mirror:
-      host: docker-registry-mirror.app.cloud.gov:443
 
 - name: s3-iam
   type: registry-image
   source:
     repository: 18fgsa/s3-resource
-    registry_mirror:
-      host: docker-registry-mirror.app.cloud.gov:443
