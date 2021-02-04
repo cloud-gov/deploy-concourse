@@ -22,7 +22,7 @@ Customize ops files (not included in actions below):
 
     - [ ] Terraform a VPC
     - [ ] Terraform an IAM User
-    - [ ] Install bosh
+    - [ ] Install bosh being sure to use our runtime config
 
 2. A postgres DB for Concourse
 
@@ -31,7 +31,7 @@ Customize ops files (not included in actions below):
 
 3. A secure credential store. We can deploy credhub collocated with concourse for this purpose based on this ops file: https://github.com/concourse/concourse-bosh-deployment/blob/master/cluster/operations/credhub-colocated.yml.  However, we need to use our hardened credhub release in place of the referenced URL.
 
-    - [ ] Build hardened credhub release in cg-harden-boshrelease
+    - [ ] Build credhub release
     - [ ] Add ops file to install colocated credhub
 
 4. Authentication via cloud.gov IDP. 
