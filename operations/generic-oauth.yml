@@ -8,6 +8,7 @@
     groups_key: scope
     client_id: ((generic_oauth_client_id))
     client_secret: ((generic_oauth_client_secret))
+    display_name: OpsLogin (platform operators)
 
 - type: replace
   path: /instance_groups/name=web/jobs/name=web/properties/main_team?/auth/oauth/groups
