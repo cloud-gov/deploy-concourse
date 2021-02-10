@@ -34,6 +34,10 @@ jobs:
       - concourse-config/operations/update-strategy.yml
       - concourse-config/operations/set-garbage-collection.yml
       - concourse-config/operations/base-resource-defaults.yml
+      # credhub
+      - concourse-deployment/cluster/operations/tls.yml
+      - concourse-deployment/cluster/operations/uaa.yml
+      - concourse-deployment/cluster/operations/credhub-colocated.yml
       # - concourse-config/operations/staging-disk-size.yml
       vars_files:
       - concourse-deployment/versions.yml
