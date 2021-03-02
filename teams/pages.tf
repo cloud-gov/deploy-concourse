@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    concourse = {
+      source  = "terraform-provider-concourse/concourse"
+      version = "~> 7.0"
+    }
+  }
+}
+
 provider "concourse" {
   url  = var.concourse_url
   team = "main"
