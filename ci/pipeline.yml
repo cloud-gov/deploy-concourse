@@ -112,6 +112,21 @@ jobs:
       username: ((slack-username))
       icon_url: ((slack-icon-url))
 
+- name: set-teams-staging
+  plan:
+  - get: team-source
+    params: {depth: 1}
+    trigger: true
+  - put: terraform
+    params:
+      env_name: staging
+      terraform_source: team-source/teams
+      plan_only: true
+      vars:
+        concourse_url: https://ci.fr-stage.cloud.gov
+        concourse_username: ((basic-auth-username-staging))
+        concourse_password: ((basic-auth-password-staging))
+
 - name: deploy-concourse-production
   serial: true
   interruptible: true
@@ -239,6 +254,23 @@ resources:
     versioned_file: ((tf-state-file))
     region_name: ((aws-region))
 
+- name: team-source
+  type: git 
+  source:
+    uri: ((concourse-config-git-url))
+    paths: [teams/*]
+
+- name: terraform
+  type: terraform
+  source:
+    backend_type: s3
+    backend_config:
+      bucket: ((aws_s3_tfstate_bucket))
+      key: concourse/terraform.tfstate
+      region: ((aws_s3_region))
+      access_key: ((aws_s3_access_key_id))
+      secret_key: ((aws_s3_secret_access_key))
+
 resource_types:
 - name: slack-notification-docker
   type: registry-image
@@ -260,3 +292,9 @@ resource_types:
     repository: 18fgsa/s3-resource
     registry_mirror:
       host: docker-registry-mirror.app.cloud.gov:443
+
+- name: terraform
+  type: docker-image
+  source:
+    repository: ljfranklin/terraform-resource
+    tag: latest
