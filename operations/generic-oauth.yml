@@ -4,7 +4,7 @@
     auth_url: https://opslogin.fr.cloud.gov/oauth/authorize
     token_url: https://opsuaa.fr.cloud.gov/oauth/token
     userinfo_url: https://opsuaa.fr.cloud.gov/userinfo
-    scopes: [openid, concourse.admin]
+    scopes: [openid, concourse.admin, concourse.pages]
     groups_key: scope
     client_id: ((generic_oauth_client_id))
     client_secret: ((generic_oauth_client_secret))
