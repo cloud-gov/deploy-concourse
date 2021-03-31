@@ -40,8 +40,14 @@ jobs:
       - concourse-config/variables/staging.yml
       - concourse-config/variables/postgres-tls.yml
       - terraform-yaml/state.yml
-  - task: smoke-test
-    file: concourse-config/ci/smoke-test.yml
+  - task: smoke-test-registry-image
+    file: concourse-config/ci/smoke-test-registry-image.yml
+    params:
+      ATC_URL: https://ci.fr-stage.cloud.gov
+      BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
+      BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
+  - task: smoke-test-docker-image
+    file: concourse-config/ci/smoke-test-docker-image.yml
     params:
       ATC_URL: https://ci.fr-stage.cloud.gov
       BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
@@ -217,7 +223,7 @@ resources:
   type: git
   source:
     uri: ((concourse-config-git-url))
-    branch: ((concourse-config-git-branch))
+    branch: registry-image
 
 - name: concourse-stemcell-xenial
   type: bosh-io-stemcell
