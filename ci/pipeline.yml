@@ -40,14 +40,8 @@ jobs:
       - concourse-config/variables/staging.yml
       - concourse-config/variables/postgres-tls.yml
       - terraform-yaml/state.yml
-  - task: smoke-test-registry-image
-    file: concourse-config/ci/smoke-test-registry-image.yml
-    params:
-      ATC_URL: https://ci.fr-stage.cloud.gov
-      BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
-      BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
-  - task: smoke-test-docker-image
-    file: concourse-config/ci/smoke-test-docker-image.yml
+  - task: smoke-test
+    file: concourse-config/ci/smoke-test.yml
     params:
       ATC_URL: https://ci.fr-stage.cloud.gov
       BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
@@ -127,7 +121,6 @@ jobs:
     params:
       env_name: staging
       terraform_source: team-source/teams
-      plan_only: true
       vars:
         concourse_url: https://ci.fr-stage.cloud.gov
         concourse_username: ((basic-auth-username-staging))
