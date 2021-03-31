@@ -121,7 +121,6 @@ jobs:
     params:
       env_name: staging
       terraform_source: team-source/teams
-      plan_only: true
       vars:
         concourse_url: https://ci.fr-stage.cloud.gov
         concourse_username: ((basic-auth-username-staging))
@@ -217,7 +216,6 @@ resources:
   type: git
   source:
     uri: ((concourse-config-git-url))
-    branch: ((concourse-config-git-branch))
 
 - name: concourse-stemcell-xenial
   type: bosh-io-stemcell
