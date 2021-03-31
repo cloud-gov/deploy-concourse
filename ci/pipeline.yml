@@ -216,7 +216,6 @@ resources:
   type: git
   source:
     uri: ((concourse-config-git-url))
-    branch: registry-image
 
 - name: concourse-stemcell-xenial
   type: bosh-io-stemcell
