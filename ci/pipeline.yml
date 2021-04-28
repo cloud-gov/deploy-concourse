@@ -22,6 +22,7 @@ jobs:
       - concourse-deployment/cluster/operations/build-log-retention.yml
       - concourse-deployment/cluster/operations/scale.yml
       - concourse-deployment/cluster/operations/enable-global-resources.yml
+      - concourse-deployment/cluster/operations/credhub.yml
       - concourse-config/operations/iaas-worker.yml
       - concourse-config/operations/postgres-staging.yml
       - concourse-config/operations/driver.yml
@@ -146,7 +147,6 @@ jobs:
       - concourse-deployment/cluster/operations/build-log-retention.yml
       - concourse-deployment/cluster/operations/scale.yml
       - concourse-deployment/cluster/operations/enable-global-resources.yml
-      - concourse-deployment/cluster/operations/credhub.yml
       - concourse-config/operations/iaas-worker.yml
       - concourse-config/operations/postgres-production.yml
       - concourse-config/operations/external-postgres-tls.yml
