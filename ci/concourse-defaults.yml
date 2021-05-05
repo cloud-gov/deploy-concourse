@@ -1,4 +1,4 @@
-concourse-config-git-branch: master
+concourse-config-git-branch: main
 concourse-config-git-url: https://github.com/18F/cg-deploy-concourse.git
 
 pipeline-tasks-git-branch: master
