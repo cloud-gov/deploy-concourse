@@ -1,0 +1,20 @@
+- type: replace
+  path: /instance_groups/name=worker/jobs/-
+  value:
+    name: bosh-dns-aliases
+    release: bosh-dns-aliases
+    properties:
+      aliases:
+      - domain: opsuaa.internal
+        targets:
+        - deployment: opsuaa
+          domain: bosh
+          instance_group: opsuaa
+          network: opsuaa
+          query: '*'
+        
+- type: replace
+  path: /releases/-
+  value:
+    name: bosh-dns-aliases  
+    version: latest
