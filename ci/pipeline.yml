@@ -34,6 +34,7 @@ jobs:
       - concourse-config/operations/update-strategy.yml
       - concourse-config/operations/set-garbage-collection.yml
       - concourse-config/operations/base-resource-defaults.yml
+      - concourse-config/operations/bosh-dns-aliases.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/staging.yml
@@ -158,6 +159,7 @@ jobs:
       - concourse-config/operations/update-strategy.yml
       - concourse-config/operations/set-garbage-collection.yml
       - concourse-config/operations/base-resource-defaults.yml
+      - concourse-config/operations/bosh-dns-aliases.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/production.yml
