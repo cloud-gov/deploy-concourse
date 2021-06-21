@@ -12,6 +12,21 @@
           instance_group: opsuaa
           network: opsuaa
           query: '*'
+
+- type: replace
+  path: /instance_groups/name=web/jobs/-
+  value:
+    name: bosh-dns-aliases
+    release: bosh-dns-aliases
+    properties:
+      aliases:
+      - domain: opsuaa.internal
+        targets:
+        - deployment: opsuaa
+          domain: bosh
+          instance_group: opsuaa
+          network: opsuaa
+          query: '*'
         
 - type: replace
   path: /releases/-
