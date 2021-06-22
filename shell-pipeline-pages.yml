@@ -2,7 +2,10 @@
 jobs:
 - name: container-bosh-staging
   plan:
-  - in_parallel: *resources
+  - in_parallel: &resources
+    - get: cg-scripts
+    - get: concourse-config
+    - get: master-bosh-root-cert
   - task: jumpbox
     file: concourse-config/jumpbox-pages.yml
     params:
@@ -17,7 +20,7 @@ resources:
   type: git
   source:
     uri: ((concourse-config-git-url))
-    branch: ((concourse-config-git-branch))
+    branch: main
     paths:
     - jumpbox-pages.yml
     - jumpbox-pages.sh
