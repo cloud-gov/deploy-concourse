@@ -35,7 +35,6 @@ jobs:
       - concourse-config/operations/set-garbage-collection.yml
       - concourse-config/operations/base-resource-defaults.yml
       - concourse-config/operations/bosh-dns-aliases.yml
-      - concourse-config/operations/use-bionic.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/staging.yml
@@ -161,7 +160,6 @@ jobs:
       - concourse-config/operations/set-garbage-collection.yml
       - concourse-config/operations/base-resource-defaults.yml
       - concourse-config/operations/bosh-dns-aliases.yml
-      - concourse-config/operations/use-bionic.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/production.yml
@@ -211,7 +209,7 @@ resources:
   source:
     uri: https://github.com/concourse/concourse-bosh-deployment
     branch: master
-    tag_filter: v6.*
+    tag_filter: v7.3.*
 
 - name: concourse-config
   type: git
