@@ -20,11 +20,50 @@ jobs:
       CREDHUB_SERVER: ((development-credhub-api-server))
       PROMPT_COLOR: "6" # cyan
 
+- name: bosh-release-dev
+  plan:
+  - in_parallel: &resources
+    - get: cg-scripts
+    - get: concourse-config
+    - get: master-bosh-root-cert
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    tags: [iaas]
+    params:
+      BOSH_DIRECTOR_NAME: development
+      BOSH_ENVIRONMENT: ((development-bosh-target))
+      BOSH_CLIENT: ((development-bosh-client))
+      BOSH_CLIENT_SECRET: ((development-bosh-client-secret))
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: ((development-credhub-admin-client))
+      CREDHUB_SECRET: ((development-credhub-admin-secret))
+      CREDHUB_SERVER: ((development-credhub-api-server))
+      PROMPT_COLOR: "6" # cyan
+
 - name: container-bosh-staging
   plan:
   - in_parallel: *resources
   - task: jumpbox
     file: concourse-config/jumpbox.yml
+    params:
+      BOSH_DIRECTOR_NAME: staging
+      BOSH_ENVIRONMENT: ((staging-bosh-target))
+      BOSH_CLIENT: ((staging-bosh-client))
+      BOSH_CLIENT_SECRET: ((staging-bosh-client-secret))
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: ((staging-credhub-admin-client))
+      CREDHUB_SECRET: ((staging-credhub-admin-secret))
+      CREDHUB_SERVER: ((staging-credhub-api-server))
+      PROMPT_COLOR: "2" # green
+
+- name: bosh-release-staging
+  plan:
+  - in_parallel: *resources
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    tags: [iaas]
     params:
       BOSH_DIRECTOR_NAME: staging
       BOSH_ENVIRONMENT: ((staging-bosh-target))
@@ -54,6 +93,24 @@ jobs:
       CREDHUB_SERVER: ((production-credhub-api-server))
       PROMPT_COLOR: "1" # red
 
+- name: bosh-release-tooling
+  plan:
+  - in_parallel: *resources
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    tags: [iaas]
+    params:
+      BOSH_DIRECTOR_NAME: Tooling
+      BOSH_ENVIRONMENT: ((tooling-bosh-target))
+      BOSH_CLIENT: ((tooling-bosh-uaa-client))
+      BOSH_CLIENT_SECRET: ((tooling-bosh-uaa-client-secret))
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: ((tooling-credhub-admin-client))
+      CREDHUB_SECRET: ((tooling-credhub-admin-secret))
+      CREDHUB_SERVER: ((tooling-credhub-api-server))
+      PROMPT_COLOR: "3" # yellow
+
 - name: container-bosh-tooling
   plan:
   - in_parallel: *resources
@@ -70,6 +127,40 @@ jobs:
       CREDHUB_SECRET: ((tooling-credhub-admin-secret))
       CREDHUB_SERVER: ((tooling-credhub-api-server))
       PROMPT_COLOR: "3" # yellow
+
+- name: container-bosh-tooling-west
+  plan:
+  - in_parallel: *resources
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    params:
+      BOSH_DIRECTOR_NAME: Tooling West
+      BOSH_ENVIRONMENT: ((tooling-west-bosh-target))
+      BOSH_CLIENT: ((tooling-west-bosh-uaa-client))
+      BOSH_CLIENT_SECRET: ((tooling-west-bosh-uaa-client-secret))
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: ((tooling-west-credhub-admin-client))
+      CREDHUB_SECRET: ((tooling-west-credhub-admin-secret))
+      CREDHUB_SERVER: ((tooling-west-credhub-api-server))
+      PROMPT_COLOR: "3" # yellow
+
+- name: container-bosh-master-west
+  plan:
+  - in_parallel: *resources
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    params:
+      BOSH_DIRECTOR_NAME: Master West
+      BOSH_ENVIRONMENT: ((master-west-bosh-target))
+      BOSH_CLIENT: ((master-west-bosh-client))
+      BOSH_CLIENT_SECRET: ((master-west-bosh-client-secret))
+      BOSH_CA_CERT: master-west-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: ((master-west-credhub-admin-client))
+      CREDHUB_SECRET: ((master-west-credhub-admin-secret))
+      CREDHUB_SERVER: ((master-west-credhub-api-server))
+      PROMPT_COLOR: "5" # magenta
 
 - name: container-bosh-master
   plan:
@@ -108,7 +199,7 @@ resources:
 - name: cg-scripts
   type: git
   source:
-    uri: https://github.com/18F/cg-scripts
+    uri: https://github.com/cloud-gov/cg-scripts
     branch: master
 
 resource_types:
