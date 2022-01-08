@@ -155,7 +155,7 @@ jobs:
       BOSH_ENVIRONMENT: ((master-west-bosh-target))
       BOSH_CLIENT: ((master-west-bosh-client))
       BOSH_CLIENT_SECRET: ((master-west-bosh-client-secret))
-      BOSH_CA_CERT: master-west-bosh-root-cert/master-bosh.crt
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
       CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
       CREDHUB_CLIENT: ((master-west-credhub-admin-client))
       CREDHUB_SECRET: ((master-west-credhub-admin-secret))
