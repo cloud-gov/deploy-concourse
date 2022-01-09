@@ -93,6 +93,23 @@ jobs:
       CREDHUB_SERVER: ((production-credhub-api-server))
       PROMPT_COLOR: "1" # red
 
+- name: container-bosh-westb
+  plan:
+  - in_parallel: *resources
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    params:
+      BOSH_DIRECTOR_NAME: West Bro
+      BOSH_ENVIRONMENT: ((westb-bosh-target))
+      BOSH_CLIENT: ((westb-bosh-uaa-client))
+      BOSH_CLIENT_SECRET: ((westb-bosh-uaa-client-secret))
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: ((westb-credhub-admin-client))
+      CREDHUB_SECRET: ((westb-credhub-admin-secret))
+      CREDHUB_SERVER: ((westb-credhub-api-server))
+      PROMPT_COLOR: "1" # red
+
 - name: bosh-release-tooling
   plan:
   - in_parallel: *resources
