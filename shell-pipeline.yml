@@ -179,6 +179,23 @@ jobs:
       CREDHUB_SERVER: ((master-west-credhub-api-server))
       PROMPT_COLOR: "5" # magenta
 
+- name: container-bosh-master-east
+  plan:
+  - in_parallel: *resources
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    params:
+      BOSH_DIRECTOR_NAME: Master East
+      BOSH_ENVIRONMENT: ((master-east-bosh-target))
+      BOSH_CLIENT: ((master-east-bosh-client))
+      BOSH_CLIENT_SECRET: ((master-east-bosh-client-secret))
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: ((master-east-credhub-admin-client))
+      CREDHUB_SECRET: ((master-east-credhub-admin-secret))
+      CREDHUB_SERVER: ((master-east-credhub-api-server))
+      PROMPT_COLOR: "5" # magenta
+
 - name: container-bosh-master
   plan:
   - in_parallel: *resources
