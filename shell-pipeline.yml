@@ -196,6 +196,23 @@ jobs:
       CREDHUB_SERVER: ((master-east-credhub-api-server))
       PROMPT_COLOR: "5" # magenta
 
+- name: container-bosh-tooling-east
+  plan:
+  - in_parallel: *resources
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    params:
+      BOSH_DIRECTOR_NAME: Tooling East
+      BOSH_ENVIRONMENT: ((tooling-east-bosh-target))
+      BOSH_CLIENT: ((tooling-east-bosh-client))
+      BOSH_CLIENT_SECRET: ((tooling-east-bosh-client-secret))
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: ((tooling-east-credhub-admin-client))
+      CREDHUB_SECRET: ((tooling-east-credhub-admin-secret))
+      CREDHUB_SERVER: ((tooling-east-credhub-api-server))
+      PROMPT_COLOR: "3" # magenta
+
 - name: container-bosh-master
   plan:
   - in_parallel: *resources
