@@ -110,6 +110,23 @@ jobs:
       CREDHUB_SERVER: ((westb-credhub-api-server))
       PROMPT_COLOR: "1" # red
 
+- name: container-bosh-easta
+  plan:
+  - in_parallel: *resources
+  - task: jumpbox
+    file: concourse-config/jumpbox.yml
+    params:
+      BOSH_DIRECTOR_NAME: East Adulting
+      BOSH_ENVIRONMENT: ((easta-bosh-target))
+      BOSH_CLIENT: ((easta-bosh-uaa-client))
+      BOSH_CLIENT_SECRET: ((easta-bosh-uaa-client-secret))
+      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: ((easta-credhub-admin-client))
+      CREDHUB_SECRET: ((easta-credhub-admin-secret))
+      CREDHUB_SERVER: ((easta-credhub-api-server))
+      PROMPT_COLOR: "1" # red
+
 - name: bosh-release-tooling
   plan:
   - in_parallel: *resources
