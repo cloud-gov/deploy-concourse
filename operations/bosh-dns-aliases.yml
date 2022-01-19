@@ -13,6 +13,7 @@
           network: opsuaa
           query: '*'
 
+
 - type: replace
   path: /instance_groups/name=web/jobs/-
   value:
@@ -27,6 +28,13 @@
           instance_group: opsuaa
           network: opsuaa
           query: '*'
+      - domain: ((deployment_name)).service.monitoring
+        targets:
+        - query: '*'
+          instance_group: web
+          deployment: ((deployment_name))
+          network: ((network_name))
+          domain: bosh
         
 - type: replace
   path: /releases/-
