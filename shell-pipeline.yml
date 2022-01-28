@@ -108,7 +108,7 @@ resources:
 - name: cg-scripts
   type: git
   source:
-    uri: https://github.com/18F/cg-scripts
+    uri: https://github.com/cloud-gov/cg-scripts
     branch: master
 
 resource_types:
