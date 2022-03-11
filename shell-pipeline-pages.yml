@@ -14,6 +14,21 @@ jobs:
       CREDHUB_SECRET: ((staging-credhub-admin-secret))
       CREDHUB_SERVER: ((staging-credhub-api-server))
       PROMPT_COLOR: "2" # green
+- name: container-bosh-production
+  plan:
+  - in_parallel: &resources
+    - get: cg-scripts
+    - get: concourse-config
+    - get: master-bosh-root-cert
+  - task: jumpbox
+    file: concourse-config/jumpbox-pages.yml
+    params:
+      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      CREDHUB_CLIENT: ((production-credhub-admin-client))
+      CREDHUB_SECRET: ((production-credhub-admin-secret))
+      CREDHUB_SERVER: ((production-credhub-api-server))
+      PROMPT_COLOR: "1" # red
+
 
 resources:
 - name: concourse-config
