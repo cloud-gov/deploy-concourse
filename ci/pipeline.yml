@@ -117,7 +117,7 @@ jobs:
   - get: team-source
     params: {depth: 1}
     trigger: true
-  - put: terraform
+  - put: terraform-staging
     params:
       env_name: staging
       terraform_source: team-source/teams
@@ -145,9 +145,11 @@ jobs:
     params:
       <<: *deploy-params
       ops_files:
+      - concourse-deployment/cluster/operations/basic-auth.yml
       - concourse-deployment/cluster/operations/build-log-retention.yml
       - concourse-deployment/cluster/operations/scale.yml
       - concourse-deployment/cluster/operations/enable-global-resources.yml
+      - concourse-config/operations/credhub.yml
       - concourse-config/operations/iaas-worker.yml
       - concourse-config/operations/postgres-production.yml
       - concourse-config/operations/external-postgres-tls.yml
@@ -203,6 +205,21 @@ jobs:
       username: ((slack-username))
       icon_url: ((slack-icon-url))
 
+- name: set-teams-production
+  plan:
+  - get: team-source
+    params: {depth: 1}
+    trigger: true
+    passed: [set-teams-staging]
+  - put: terraform-production
+    params:
+      env_name: production
+      terraform_source: team-source/teams
+      vars:
+        concourse_url: https://ci.fr.cloud.gov
+        concourse_username: ((basic-auth-username-production))
+        concourse_password: ((basic-auth-password-production))
+
 resources:
 - name: concourse-deployment
   type: git
@@ -257,13 +274,24 @@ resources:
     uri: ((concourse-config-git-url))
     paths: [teams/*]
 
-- name: terraform
+- name: terraform-staging
   type: terraform
   source:
     backend_type: s3
     backend_config:
       bucket: ((aws_s3_tfstate_bucket))
       key: concourse/terraform.tfstate
+      region: ((aws_s3_region))
+      access_key: ((aws_s3_access_key_id))
+      secret_key: ((aws_s3_secret_access_key))
+
+- name: terraform-production
+  type: terraform
+  source:
+    backend_type: s3
+    backend_config:
+      bucket: ((aws_s3_tfstate_bucket))
+      key: concourse-production/terraform.tfstate
       region: ((aws_s3_region))
       access_key: ((aws_s3_access_key_id))
       secret_key: ((aws_s3_secret_access_key))
