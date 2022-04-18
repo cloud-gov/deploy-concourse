@@ -226,7 +226,7 @@ resources:
   source:
     uri: https://github.com/concourse/concourse-bosh-deployment
     branch: master
-    tag_filter: v7.3.*
+    tag_filter: v7.*
 
 - name: concourse-config
   type: git
