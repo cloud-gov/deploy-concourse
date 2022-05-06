@@ -94,7 +94,7 @@ jobs:
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
-      BOSH_DIRECTOR_NAME: Tooling
+      BOSH_DIRECTOR_NAME: CREDHUB PROD STANDALONE
       BOSH_ENVIRONMENT: ((tooling-bosh-target))
       BOSH_CLIENT: ((tooling-bosh-uaa-client))
       BOSH_CLIENT_SECRET: ((tooling-bosh-uaa-client-secret))
