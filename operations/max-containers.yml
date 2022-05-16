@@ -1,3 +1,4 @@
-- type: replace
-  path: /instance_groups/name=worker/jobs/name=worker/properties/garden/max_containers?
-  value: 500
+ - type: replace
+  path: /instance_groups/name=worker/jobs/name=worker/properties/garden?
+  value:
+    max_containers: 500
