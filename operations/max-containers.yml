@@ -1,4 +1,4 @@
- - type: replace
+- type: replace
   path: /instance_groups/name=worker/jobs/name=worker/properties/garden?
   value:
     max_containers: 500
