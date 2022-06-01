@@ -69,7 +69,7 @@ jobs:
 
 - name: iptables-staging
   serial: true
-  interruptable: true
+  interruptible: true
   plan:
   - get: concourse-staging-deployment
   - task: iptables-iaas-worker-bosh-dns
@@ -206,7 +206,7 @@ jobs:
 # logs - but that's a fix for another day
 - name: iptables-production
   serial: true
-  interruptable: true
+  interruptible: true
   plan:
   - get: concourse-production-deployment
   - task: iptables-iaas-worker-bosh-dns
