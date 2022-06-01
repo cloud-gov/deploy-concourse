@@ -48,6 +48,30 @@ jobs:
       ATC_URL: https://ci.fr-stage.cloud.gov
       BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
       BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED to deploy Concourse on staging
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+  on_success:
+    put: slack
+    params:
+      text: |
+        :white_check_mark: Successfully deployed Concourse on staging
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+
+- name: iptables-staging
+  serial: true
+  interruptible: true
+  plan:
+  - get: concourse-staging-deployment
   - task: iptables-iaas-worker-bosh-dns
     config: &iptables-iaas-worker-bosh-dns
       container_limits: {}
@@ -95,24 +119,6 @@ jobs:
           bosh ssh worker "sudo sh -c 'iptables -D INPUT -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT || true'"
           bosh ssh worker "sudo sh -c 'iptables -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT'"
           bosh ssh worker "sudo sh -c 'iptables -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT'"
-  on_failure:
-    put: slack
-    params:
-      text: |
-        :x: FAILED to deploy Concourse on staging
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
-      username: ((slack-username))
-      icon_url: ((slack-icon-url))
-  on_success:
-    put: slack
-    params:
-      text: |
-        :white_check_mark: Successfully deployed Concourse on staging
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
-      username: ((slack-username))
-      icon_url: ((slack-icon-url))
 
 - name: set-teams-staging
   plan:
@@ -171,6 +177,38 @@ jobs:
       - concourse-config/variables/production.yml
       - concourse-config/variables/postgres-tls.yml
       - terraform-yaml/state.yml
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED to deploy Concourse on production
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+  on_success:
+    put: slack
+    params:
+      text: |
+        :white_check_mark: Successfully deployed Concourse on production
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+
+# by having a different job for iptables, we should work around the issue
+# where the concourse deployment seems to fail because we lose our worker
+# so the iptables job never runs and dns breaks until we re-run the whole
+# deployment job. By getting the production deployment we can be somewhat
+# sure that we'll notice the deployment finish asynchronously, then we'll
+# run these tasks before too long. There is a better solution - we should
+# really recover from the worker disappearing and resume tailing the task
+# logs - but that's a fix for another day
+- name: iptables-production
+  serial: true
+  interruptible: true
+  plan:
+  - get: concourse-production-deployment
   - task: iptables-iaas-worker-bosh-dns
     config:
       <<: *iptables-iaas-worker-bosh-dns
@@ -190,24 +228,6 @@ jobs:
         BOSH_CLIENT_SECRET: ((tooling_bosh_uaa_ci_client_secret))
         BOSH_CA_CERT: ((common_ca_cert_store))
         BOSH_DEPLOYMENT: concourse-production
-  on_failure:
-    put: slack
-    params:
-      text: |
-        :x: FAILED to deploy Concourse on production
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
-      username: ((slack-username))
-      icon_url: ((slack-icon-url))
-  on_success:
-    put: slack
-    params:
-      text: |
-        :white_check_mark: Successfully deployed Concourse on production
-        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
-      username: ((slack-username))
-      icon_url: ((slack-icon-url))
 
 - name: set-teams-production
   plan:
