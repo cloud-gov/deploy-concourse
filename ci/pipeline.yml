@@ -54,7 +54,7 @@ jobs:
       text: |
         :x: FAILED to deploy Concourse on staging
         <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
+      channel: '#cg-platform-news'
       username: ((slack-username))
       icon_url: ((slack-icon-url))
   on_success:
@@ -63,7 +63,7 @@ jobs:
       text: |
         :white_check_mark: Successfully deployed Concourse on staging
         <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
+      channel: '#cg-platform-news'
       username: ((slack-username))
       icon_url: ((slack-icon-url))
 
@@ -183,7 +183,7 @@ jobs:
       text: |
         :x: FAILED to deploy Concourse on production
         <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
+      channel: '#cg-platform'
       username: ((slack-username))
       icon_url: ((slack-icon-url))
   on_success:
@@ -192,7 +192,7 @@ jobs:
       text: |
         :white_check_mark: Successfully deployed Concourse on production
         <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: ((slack-channel))
+      channel: '#cg-platform-news'
       username: ((slack-username))
       icon_url: ((slack-icon-url))
 
@@ -255,6 +255,7 @@ resources:
 - name: concourse-config
   type: git
   source:
+    commit_verification_keys: ((cloud-gov-pgp-keys))
     uri: ((concourse-config-git-url))
 
 - name: concourse-stemcell-bionic
@@ -295,6 +296,7 @@ resources:
 - name: team-source
   type: git
   source:
+    commit_verification_keys: ((cloud-gov-pgp-keys))
     uri: ((concourse-config-git-url))
     paths: [teams/*]
 
