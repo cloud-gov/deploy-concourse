@@ -127,6 +127,7 @@ resources:
   source:
     uri: https://github.com/cloud-gov/cg-scripts
     branch: master
+    commit_verification_keys: ((cloud-gov-pgp-keys))
 
 resource_types:
 - name: s3-iam
