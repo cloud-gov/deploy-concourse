@@ -1,3 +1,8 @@
 - type: replace
   path: /instance_groups/name=web/jobs/name=web/properties/enable_across_step?
   value: true
+  
+  
+- type: replace
+  path: /instance_groups/name=web/jobs/name=web/properties/enable_pipeline_instances?
+  value: true
