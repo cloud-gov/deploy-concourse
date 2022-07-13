@@ -4,5 +4,5 @@
   
   
 - type: replace
-  path: /instance_groups/name=web/jobs/name=web/properties/nable_pipeline_instances?
+  path: /instance_groups/name=web/jobs/name=web/properties/enable_pipeline_instances?
   value: true
