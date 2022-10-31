@@ -1,0 +1,20 @@
+---
+jobs:
+- name: container-dorothy-task
+  plan:
+  - in_parallel: &resources
+    - get: concourse-config
+  - task: jumpbox
+    file: concourse-config/jumpbox.test.yml
+
+
+resources:
+- name: concourse-config
+  type: git
+  source:
+    uri: https://github.com/cloud-gov/cg-deploy-concourse
+    branch: deploy-vm
+    paths:
+    - jumpbox.test.yml
+    - jumpbox.test.sh
+

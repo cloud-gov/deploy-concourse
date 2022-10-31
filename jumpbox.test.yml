@@ -1,0 +1,15 @@
+---
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: 18fgsa/sql-clients
+    registry_mirror:
+      host: docker-registry-mirror.app.cloud.gov:443
+
+inputs:
+- name: concourse-config
+
+run:
+  path: concourse-config/jumpbox.test.sh
+
