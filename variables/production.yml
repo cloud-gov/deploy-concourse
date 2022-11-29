@@ -9,7 +9,7 @@ worker_vm_extensions: [production-concourse-profile]
 iaas_worker_vm_extensions: [production-concourse-iaas-profile]
 network_name: production-concourse
 web_instances: 4
-worker_instances: 9
+worker_instances: 10
 iaas_worker_instances: 2
 build_logs_default: 25
 build_logs_maximum: 0
