@@ -4,4 +4,12 @@
     config_ini: |
       [server]
       iptables-bin=/sbin/iptables
-      iptables-restor-bin=/sbin/iptables-restore
+      iptables-restore-bin=/sbin/iptables-restore
+
+- type: replace
+  path: /instance_groups/name=iaas-worker/jobs/name=worker/properties/garden?
+  value:
+    config_ini: |
+      [server]
+      iptables-bin=/sbin/iptables
+      iptables-restore-bin=/sbin/iptables-restore
