@@ -1,0 +1,7 @@
+- type: replace
+  path: /instance_groups/name=worker/jobs/name=worker/properties/garden?
+  value:
+    config_ini: |
+    [server]
+    iptables-bin=/sbin/iptables
+    iptables-restor-bin=/sbin/iptables-restore
