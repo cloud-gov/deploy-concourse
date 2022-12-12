@@ -37,7 +37,6 @@ jobs:
       - concourse-config/operations/max-containers.yml
       - concourse-config/operations/bosh-dns-aliases.yml
       - concourse-config/operations/enable-across-step.yml
-      - concourse-config/operations/garden-ini.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/staging.yml
