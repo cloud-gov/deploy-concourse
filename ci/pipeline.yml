@@ -266,6 +266,7 @@ resources:
   type: git
   source:
     commit_verification_keys: ((cloud-gov-pgp-keys))
+    branch: main
     uri: ((concourse-config-git-url))
 
 - name: concourse-stemcell-bionic
@@ -308,6 +309,7 @@ resources:
   source:
     commit_verification_keys: ((cloud-gov-pgp-keys))
     uri: ((concourse-config-git-url))
+    branch: main
     paths: [teams/*]
 
 - name: terraform-staging
