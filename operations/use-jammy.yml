@@ -1,0 +1,27 @@
+# Remove the old 6.x Concourse deployment stemcell value - this can be pulled once we get current with Concourse
+- type: remove
+  path: /stemcells/alias=xenial?
+
+- type: remove
+  path: /stemcells/alias=bionic?
+
+# Add in a stemcell defination for default
+- type: replace
+  path: /stemcells/-
+  value:
+    alias: default
+    os: ubuntu-jammy
+    version: latest
+
+# Set instance names to use default stemcell
+- type: replace
+  path: /instance_groups/name=web/stemcell
+  value: default
+
+- type: replace
+  path: /instance_groups/name=worker/stemcell
+  value: default
+
+- type: replace
+  path: /instance_groups/name=iaas-worker/stemcell
+  value: default
