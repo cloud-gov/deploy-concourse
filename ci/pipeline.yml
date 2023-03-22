@@ -268,7 +268,7 @@ resources:
   type: git
   source:
     commit_verification_keys: ((cloud-gov-pgp-keys))
-    branch: master
+    branch: main
     uri: ((concourse-config-git-url))
 
 - name: concourse-stemcell-jammy
