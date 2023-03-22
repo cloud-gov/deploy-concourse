@@ -38,6 +38,7 @@ jobs:
       - concourse-config/operations/bosh-dns-aliases.yml
       - concourse-config/operations/enable-across-step.yml
       - concourse-config/operations/container-placement.yml
+      - concourse-config/operations/use-jammy.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/staging.yml
@@ -182,6 +183,7 @@ jobs:
       - concourse-config/operations/bosh-dns-aliases.yml
       - concourse-config/operations/enable-across-step.yml
       - concourse-config/operations/container-placement.yml
+      - concourse-config/operations/use-jammy.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/production.yml
@@ -266,7 +268,7 @@ resources:
   type: git
   source:
     commit_verification_keys: ((cloud-gov-pgp-keys))
-    branch: main
+    branch: master
     uri: ((concourse-config-git-url))
 
 - name: concourse-stemcell-jammy
