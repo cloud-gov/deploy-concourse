@@ -51,7 +51,7 @@ resources:
   type: git
   source:
     uri: https://github.com/cloud-gov/cg-scripts
-    branch: master
+    branch: main
 
 resource_types:
 - name: s3-iam
