@@ -85,7 +85,7 @@ jobs:
           aws_secret_access_key: ((ecr_aws_secret))
           repository: harden-concourse-task
           aws_region: us-gov-west-1
-          tag: ((harden-concourse-task-tag))
+          semver_constraint: ">= 1.0.0"
       params:
         BOSH_ENVIRONMENT: ((concourse-staging-deployment-bosh-target))
         BOSH_CLIENT: ci
@@ -113,7 +113,7 @@ jobs:
           aws_secret_access_key: ((ecr_aws_secret))
           repository: harden-concourse-task
           aws_region: us-gov-west-1
-          tag: ((harden-concourse-task-tag))
+          semver_constraint: ">= 1.0.0"
       params:
         BOSH_ENVIRONMENT: ((concourse-staging-deployment-bosh-target))
         BOSH_CLIENT: ci
