@@ -151,7 +151,6 @@ jobs:
   - in_parallel:
     - get: concourse-deployment
       passed: [deploy-concourse-staging]
-      trigger: true
     - get: concourse-config
       passed: [deploy-concourse-staging]
       trigger: true
