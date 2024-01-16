@@ -348,7 +348,7 @@ resource_types:
     registry_mirror:
       host: docker-registry-mirror.app.cloud.gov:443
 
-- name: s3-iam
+- name: s3-iam 
   type: registry-image
   source:
     repository: 18fgsa/s3-resource
