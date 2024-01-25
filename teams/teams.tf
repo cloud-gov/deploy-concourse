@@ -15,21 +15,27 @@ provider "concourse" {
   password = var.concourse_password
 }
 
+resource "concourse_team" "main" {
+  team_name = "main"
+
+  owners = [
+    "group:oauth:concourse.admin",
+    "local:users:"admin""
+  ]
+
+  viewer = [
+    "group:oauth:concourse.viewer"
+  ]
+}
+
 resource "concourse_team" "pages" {
   team_name = "pages"
 
   members = [
     "group:oauth:concourse.pages"
   ]
-
-}
-
-resource "concourse_team" "support" {
-  team_name = "support"
-
   viewer = [
     "group:oauth:concourse.viewer"
   ]
 
 }
-
