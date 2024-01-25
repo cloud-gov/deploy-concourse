@@ -23,3 +23,13 @@ resource "concourse_team" "pages" {
   ]
 
 }
+
+resource "concourse_team" "support" {
+  team_name = "support"
+
+  viewer = [
+    "group:oauth:concourse.viewer"
+  ]
+
+}
+
