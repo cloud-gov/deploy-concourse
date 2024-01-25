@@ -20,7 +20,7 @@ resource "concourse_team" "main" {
 
   owners = [
     "group:oauth:concourse.admin",
-    "local:users:"admin""
+    "local:users:admin"
   ]
 
   viewer = [
