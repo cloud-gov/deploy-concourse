@@ -23,7 +23,7 @@ resource "concourse_team" "main" {
     "local:users:admin"
   ]
 
-  viewer = [
+  viewers = [
     "group:oauth:concourse.viewer"
   ]
 }
@@ -34,7 +34,7 @@ resource "concourse_team" "pages" {
   members = [
     "group:oauth:concourse.pages"
   ]
-  viewer = [
+  viewers = [
     "group:oauth:concourse.viewer"
   ]
 
