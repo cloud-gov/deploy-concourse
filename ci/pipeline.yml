@@ -152,10 +152,8 @@ jobs:
       passed: [deploy-concourse-staging]
     - get: concourse-config
       passed: [deploy-concourse-staging]
-      trigger: true
     - get: terraform-yaml
     - get: concourse-stemcell-jammy
-      trigger: true
       passed: [deploy-concourse-staging]
   - put: concourse-production-deployment
     params:
