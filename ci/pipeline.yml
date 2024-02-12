@@ -290,7 +290,7 @@ resources:
     ca_cert: ((common_ca_cert_store))
 
 - name: slack
-  type: slack-notification-docker
+  type: slack-notification
   source:
     url: ((slack-webhook-url))
 
@@ -332,12 +332,14 @@ resources:
       secret_key: ((aws_s3_secret_access_key))
 
 resource_types:
-- name: slack-notification-docker
+- name: slack-notification
   type: registry-image
   source:
-    repository: cfcommunity/slack-notification-resource
-    registry_mirror:
-      host: docker-registry-mirror.app.cloud.gov:443
+    aws_access_key_id: ((ecr_aws_key))
+    aws_secret_access_key: ((ecr_aws_secret))
+    repository: slack-notification-resource
+    aws_region: us-gov-west-1
+    tag: latest
 
 - name: bosh-deployment
   type: registry-image
@@ -346,7 +348,7 @@ resource_types:
     registry_mirror:
       host: docker-registry-mirror.app.cloud.gov:443
 
-- name: s3-iam 
+- name: s3-iam
   type: registry-image
   source:
     repository: 18fgsa/s3-resource
