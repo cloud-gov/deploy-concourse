@@ -73,6 +73,9 @@ jobs:
   interruptible: true
   plan:
   - get: concourse-staging-deployment
+    passed:
+    - deploy-concourse-staging
+    trigger: true
   - task: iptables-iaas-worker-bosh-dns
     config: &iptables-iaas-worker-bosh-dns
       container_limits: {}
@@ -216,6 +219,9 @@ jobs:
   interruptible: true
   plan:
   - get: concourse-production-deployment
+    passed:
+    - deploy-concourse-production
+    trigger: true
   - task: iptables-iaas-worker-bosh-dns
     config:
       <<: *iptables-iaas-worker-bosh-dns
