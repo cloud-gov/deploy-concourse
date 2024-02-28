@@ -136,6 +136,7 @@ jobs:
           bosh ssh worker "sudo sh -c 'iptables-legacy -D INPUT -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT || true'"
           bosh ssh worker "sudo sh -c 'iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT'"
           bosh ssh worker "sudo sh -c 'iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT'"
+          bosh ssh worker "sudo sh -c '/var/vcap/jobs/aide/bin/update-aide-db'"
 
 - name: set-teams-staging
   plan:
