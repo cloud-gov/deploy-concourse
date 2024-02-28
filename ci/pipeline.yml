@@ -72,10 +72,13 @@ jobs:
   serial: true
   interruptible: true
   plan:
-  - get: concourse-staging-deployment
-    passed:
-    - deploy-concourse-staging
-    trigger: true
+  - in_parallel:  
+    - get: concourse-staging-deployment
+      passed:
+      - deploy-concourse-staging
+      trigger: true
+    - get: hourly-timer
+      trigger: true
   - task: iptables-iaas-worker-bosh-dns
     config: &iptables-iaas-worker-bosh-dns
       container_limits: {}
@@ -218,10 +221,13 @@ jobs:
   serial: true
   interruptible: true
   plan:
-  - get: concourse-production-deployment
-    passed:
-    - deploy-concourse-production
-    trigger: true
+  - in_parallel:
+    - get: concourse-production-deployment
+      passed:
+      - deploy-concourse-production
+      trigger: true
+    - get: hourly-timer
+      trigger: true
   - task: iptables-iaas-worker-bosh-dns
     config:
       <<: *iptables-iaas-worker-bosh-dns
@@ -336,6 +342,11 @@ resources:
       region: ((aws_s3_region))
       access_key: ((aws_s3_access_key_id))
       secret_key: ((aws_s3_secret_access_key))
+
+- name: hourly-timer
+  type: time
+  source:
+    interval: 1h
 
 resource_types:
 - name: slack-notification
