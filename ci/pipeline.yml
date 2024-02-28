@@ -72,10 +72,13 @@ jobs:
   serial: true
   interruptible: true
   plan:
-  - get: concourse-staging-deployment
-    passed:
-    - deploy-concourse-staging
-    trigger: true
+  - in_parallel:  
+    - get: concourse-staging-deployment
+      passed:
+      - deploy-concourse-staging
+      trigger: true
+    - get: hourly-timer
+      trigger: true
   - task: iptables-iaas-worker-bosh-dns
     config: &iptables-iaas-worker-bosh-dns
       container_limits: {}
@@ -103,6 +106,8 @@ jobs:
           bosh ssh iaas-worker "sudo sh -c 'iptables-legacy -D INPUT -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT || true'"
           bosh ssh iaas-worker "sudo sh -c 'iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT'"
           bosh ssh iaas-worker "sudo sh -c 'iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT'"
+          bosh ssh iaas-worker "sudo sh -c '/var/vcap/jobs/aide/bin/update-aide-db'"
+        
   - task: iptables-worker-bosh-dns
     tags: [iaas]
     config: &iptables-worker-bosh-dns
@@ -131,6 +136,7 @@ jobs:
           bosh ssh worker "sudo sh -c 'iptables-legacy -D INPUT -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT || true'"
           bosh ssh worker "sudo sh -c 'iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT'"
           bosh ssh worker "sudo sh -c 'iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT'"
+          bosh ssh worker "sudo sh -c '/var/vcap/jobs/aide/bin/update-aide-db'"
 
 - name: set-teams-staging
   plan:
@@ -218,10 +224,13 @@ jobs:
   serial: true
   interruptible: true
   plan:
-  - get: concourse-production-deployment
-    passed:
-    - deploy-concourse-production
-    trigger: true
+  - in_parallel:
+    - get: concourse-production-deployment
+      passed:
+      - deploy-concourse-production
+      trigger: true
+    - get: hourly-timer
+      trigger: true
   - task: iptables-iaas-worker-bosh-dns
     config:
       <<: *iptables-iaas-worker-bosh-dns
@@ -336,6 +345,11 @@ resources:
       region: ((aws_s3_region))
       access_key: ((aws_s3_access_key_id))
       secret_key: ((aws_s3_secret_access_key))
+
+- name: hourly-timer
+  type: time
+  source:
+    interval: 1h
 
 resource_types:
 - name: slack-notification
