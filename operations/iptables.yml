@@ -1,0 +1,35 @@
+- type: replace
+  path: /instance_groups/name=worker/jobs/-
+  value: 
+    name: pre-start-script
+    release: os-conf
+    properties:
+      script: |
+        #!/bin/bash
+        iptables-legacy -D INPUT -s 10.80.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT
+        iptables-legacy -D INPUT -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT
+        iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT
+        iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT
+        /bin/true
+
+
+- type: replace
+  path: /instance_groups/name=iaas-worker/jobs/-
+  value: 
+    name: pre-start-script
+    release: os-conf
+    properties:
+      script: |
+        #!/bin/bash
+        iptables-legacy -D INPUT -s 10.80.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT
+        iptables-legacy -D INPUT -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT
+        iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p udp -m udp --dport 53 -j ACCEPT
+        iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT
+        /bin/true
+
+
+- type: replace
+  path: /releases/-
+  value:
+    name: os-conf  
+    version: latest

@@ -38,6 +38,7 @@ jobs:
       - concourse-config/operations/bosh-dns-aliases.yml
       - concourse-config/operations/enable-across-step.yml
       - concourse-config/operations/container-placement.yml
+      - concourse-config/operations/iptables.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/staging.yml
@@ -72,13 +73,6 @@ jobs:
   serial: true
   interruptible: true
   plan:
-  - in_parallel:  
-    - get: concourse-staging-deployment
-      passed:
-      - deploy-concourse-staging
-      trigger: true
-    - get: hourly-timer
-      trigger: true
   - task: iptables-iaas-worker-bosh-dns
     config: &iptables-iaas-worker-bosh-dns
       container_limits: {}
@@ -188,6 +182,7 @@ jobs:
       - concourse-config/operations/bosh-dns-aliases.yml
       - concourse-config/operations/enable-across-step.yml
       - concourse-config/operations/container-placement.yml
+      - concourse-config/operations/iptables.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/production.yml
@@ -224,13 +219,6 @@ jobs:
   serial: true
   interruptible: true
   plan:
-  - in_parallel:
-    - get: concourse-production-deployment
-      passed:
-      - deploy-concourse-production
-      trigger: true
-    - get: hourly-timer
-      trigger: true
   - task: iptables-iaas-worker-bosh-dns
     config:
       <<: *iptables-iaas-worker-bosh-dns
@@ -346,10 +334,6 @@ resources:
       access_key: ((aws_s3_access_key_id))
       secret_key: ((aws_s3_secret_access_key))
 
-- name: hourly-timer
-  type: time
-  source:
-    interval: 1h
 
 resource_types:
 - name: slack-notification
