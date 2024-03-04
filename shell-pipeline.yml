@@ -105,6 +105,23 @@ jobs:
       CREDHUB_SERVER: ((production-standalone-credhub.api-server))
       PROMPT_COLOR: "1" # red
 
+- name: container-bosh-credhub-staging
+  plan:
+    - in_parallel: *resources
+    - task: jumpbox
+      file: concourse-config/jumpbox.yml
+      params:
+        BOSH_DIRECTOR_NAME: CREDHUB STAGING STANDALONE
+        BOSH_ENVIRONMENT: ((tooling-bosh.target))
+        BOSH_CLIENT: ((tooling-bosh.uaa-client))
+        BOSH_CLIENT_SECRET: ((tooling-bosh.uaa-secret))
+        BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
+        CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+        CREDHUB_CLIENT: ((staging-standalone-credhub.admin-client))
+        CREDHUB_SECRET: ((staging-standalone-credhub.admin-secret))
+        CREDHUB_SERVER: ((staging-standalone-credhub.api-server))
+        PROMPT_COLOR: "2" # green
+
 
 - name: container-bosh-release-development
   plan:
