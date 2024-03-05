@@ -184,6 +184,7 @@ jobs:
       - concourse-config/operations/enable-across-step.yml
       - concourse-config/operations/container-placement.yml
       - concourse-config/operations/iptables.yml
+      - concourse-config/operations/redact-secrets.yml
       vars_files:
       - concourse-deployment/versions.yml
       - concourse-config/variables/production.yml
