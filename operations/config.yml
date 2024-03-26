@@ -25,3 +25,15 @@
 - type: replace
   path: /update/canary_watch_time?
   value: 120000
+
+- type: replace
+  path: /instance_groups/name=web/default_check_interval?
+  value: 3m
+
+- type: replace
+  path: /instance_groups/name=web/ddefault_check_interval_with_webhook?
+  value: 3m
+
+- type: replace
+  path: /instance_groups/name=web/lidar_scanner_interval?
+  value: 10m
