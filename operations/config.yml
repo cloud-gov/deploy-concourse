@@ -27,13 +27,13 @@
   value: 120000
 
 - type: replace
-  path: /instance_groups/name=web/properties/default_check_interval?
+  path: /instance_groups/name=web/jobs/name=web/properties/default_check_interval?
   value: 3m
 
 - type: replace
-  path: /instance_groups/name=web/properties/default_check_interval_with_webhook?
+  path: /instance_groups/name=web/jobs/name=web/properties/default_check_interval_with_webhook?
   value: 3m
 
 - type: replace
-  path: /instance_groups/name=web/properties/lidar_scanner_interval?
+  path: /instance_groups/name=web/jobs/name=web/properties/lidar_scanner_interval?
   value: 10m
