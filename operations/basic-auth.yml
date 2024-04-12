@@ -1,0 +1,13 @@
+- type: replace
+  path: /instance_groups/name=web/jobs/name=web/properties/main_team?/auth/local/users
+  value: [admin]
+
+- type: replace
+  path: /instance_groups/name=web/jobs/name=web/properties/add_local_users?
+  value: ['admin:((basic_auth_password))']
+
+- type: replace
+  path: /variables?/-
+  value:
+    name: basic_auth_password
+    type: password
