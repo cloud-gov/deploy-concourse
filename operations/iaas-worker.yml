@@ -17,6 +17,6 @@
 - type: replace
   path: /instance_groups/name=iaas-worker/jobs/name=worker/properties/team?
   value: main
-# - type: replace
-#   path: /instance_groups/name=iaas-worker/jobs/name=worker/properties/tags?
-#   value: [iaas]
+- type: replace
+  path: /instance_groups/name=iaas-worker/jobs/name=worker/properties/tags?
+  value: [iaas]
