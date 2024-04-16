@@ -1,7 +1,10 @@
+- type: remove
+  path: /instance_groups/name=worker
+
 - type: replace
   path: /instance_groups/-
   value:
-    name: iaas-worker
+    name: worker
     instances: ((iaas_worker_instances))
     azs: [z1]
     networks: [{name: ((network_name))}]
