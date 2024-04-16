@@ -10,7 +10,7 @@
 
 - type: replace
   path: /instance_groups/name=web/vm_extensions?
-  value: ((web_vm_extensions))
+  value: ((iaas_web_vm_extensions))
 - type: replace
   path: /instance_groups/name=worker/vm_extensions?
   value: ((worker_vm_extensions))

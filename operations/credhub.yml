@@ -3,7 +3,7 @@
   value:
     url: ((credhub.url))
     client_id: ((credhub.client_id))
-    client_secret: ((credhub_client_secret))
+    client_secret: (( ))
     tls:
       ca_cert:
         certificate: ((/root-ca.certificate))
