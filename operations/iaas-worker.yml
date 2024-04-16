@@ -1,18 +1,18 @@
 - type: replace
-  path: /instance_groups/
+  path: /instance_groups/-
   value:
-    - name: worker
-      instances: ((iaas_worker_instances))
-      azs: [z1]
-      networks: [{name: ((network_name))}]
-      stemcell: jammy
-      vm_type: ((iaas_worker_vm_type))
-      jobs:
-      - release: concourse
-        name: worker
-        properties:
-          drain_timeout: 10m
-          worker_gateway: {worker_key: ((worker_key))}
+    name: iaas-worker
+    instances: ((iaas_worker_instances))
+    azs: [z1]
+    networks: [{name: ((network_name))}]
+    stemcell: jammy
+    vm_type: ((iaas_worker_vm_type))
+    jobs:
+    - release: concourse
+      name: worker
+      properties:
+        drain_timeout: 10m
+        worker_gateway: {worker_key: ((worker_key))}
 
 # - type: replace
 #   path: /instance_groups/name=iaas-worker/jobs/name=worker/properties/team?
