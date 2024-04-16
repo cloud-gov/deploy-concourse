@@ -1,5 +1,5 @@
 - type: replace
-  path: /instance_groups/-
+  path: /instance_groups/
   value:
     name: worker
     instances: ((iaas_worker_instances))
