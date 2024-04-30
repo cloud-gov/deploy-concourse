@@ -382,6 +382,15 @@ resources:
     deployment: ((concourse-production-deployment-bosh-deployment))
     ca_cert: ((common_ca_cert_store))
 
+- name: concourse-production-pages-deployment
+  type: bosh-deployment
+  source:
+    target: ((concourse-production-deployment-bosh-target))
+    client: ci
+    client_secret: ((tooling_bosh_uaa_ci_client_secret))
+    deployment: ((concourse-production-deployment-bosh-deployment))
+    ca_cert: ((common_ca_cert_store))
+
 - name: concourse-staging-deployment
   type: bosh-deployment
   source:
