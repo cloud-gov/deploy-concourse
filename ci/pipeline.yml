@@ -232,7 +232,7 @@ jobs:
       - concourse-config/operations/postgres-production-pages.yml
       - concourse-config/operations/external-postgres-tls.yml
       - concourse-config/operations/driver.yml
-      - concourse-config/operations/config.yml
+      - concourse-config/operations/config-pages.yml
       - concourse-config/operations/generic-oauth.yml
       - concourse-config/operations/compliance.yml
       - concourse-config/operations/prometheus.yml
