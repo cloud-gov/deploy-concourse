@@ -7,7 +7,7 @@ iaas_worker_vm_type: m6i.xlarge.concourse.worker
 web_vm_extensions: [production-concourse-pages-lb]
 worker_vm_extensions: [production-concourse-profile]
 iaas_worker_vm_extensions: [production-concourse-iaas-profile]
-network_name: production-concourse_pages
+network_name: production-concourse-pages
 web_instances: 2
 worker_instances: 2
 iaas_worker_instances: 1
