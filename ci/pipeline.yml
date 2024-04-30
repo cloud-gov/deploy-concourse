@@ -388,7 +388,7 @@ resources:
     target: ((concourse-production-deployment-bosh-target))
     client: ci
     client_secret: ((tooling_bosh_uaa_ci_client_secret))
-    deployment: ((concourse-production-deployment-bosh-deployment))
+    deployment: ((concourse-production-pages-deployment-bosh-deployment))
     ca_cert: ((common_ca_cert_store))
 
 - name: concourse-staging-deployment
