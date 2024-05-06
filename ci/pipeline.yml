@@ -346,7 +346,7 @@ jobs:
     passed: [set-teams-staging]
   - put: terraform-production
     params:
-      env_name: production
+      env_name: production-pages
       terraform_source: team-source/teams
       vars:
         concourse_url: https://ci-pages.fr.cloud.gov
