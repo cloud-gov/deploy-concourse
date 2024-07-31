@@ -132,20 +132,6 @@ jobs:
           bosh ssh worker "sudo sh -c 'iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT'"
           bosh ssh worker "sudo sh -c '/var/vcap/jobs/aide/bin/update-aide-db'"
 
-- name: set-teams-staging
-  plan:
-  - get: team-source
-    params: {depth: 1}
-    trigger: true
-  - put: terraform-staging
-    params:
-      env_name: staging
-      terraform_source: team-source/teams
-      vars:
-        concourse_url: https://ci.fr-stage.cloud.gov
-        concourse_username: ((basic-auth-username-staging))
-        concourse_password: ((basic-auth-password-staging))
-
 - name: deploy-concourse-production
   serial: true
   interruptible: true
@@ -239,21 +225,6 @@ jobs:
         BOSH_CA_CERT: ((common_ca_cert_store))
         BOSH_DEPLOYMENT: concourse-production
 
-- name: set-teams-production
-  plan:
-  - get: team-source
-    params: {depth: 1}
-    trigger: true
-    passed: [set-teams-staging]
-  - put: terraform-production
-    params:
-      env_name: production
-      terraform_source: team-source/teams
-      vars:
-        concourse_url: https://ci.fr.cloud.gov
-        concourse_username: ((basic-auth-username-production))
-        concourse_password: ((basic-auth-password-production))
-
 resources:
 - name: concourse-deployment
   type: git
@@ -312,29 +283,6 @@ resources:
     branch: main
     paths: [teams/*]
 
-- name: terraform-staging
-  type: terraform
-  source:
-    backend_type: s3
-    backend_config:
-      bucket: ((aws_s3_tfstate_bucket))
-      key: concourse/terraform.tfstate
-      region: ((aws_s3_region))
-      access_key: ((aws_s3_access_key_id))
-      secret_key: ((aws_s3_secret_access_key))
-
-- name: terraform-production
-  type: terraform
-  source:
-    backend_type: s3
-    backend_config:
-      bucket: ((aws_s3_tfstate_bucket))
-      key: concourse-production/terraform.tfstate
-      region: ((aws_s3_region))
-      access_key: ((aws_s3_access_key_id))
-      secret_key: ((aws_s3_secret_access_key))
-
-
 resource_types:
 - name: registry-image
   type: registry-image
@@ -388,10 +336,4 @@ resource_types:
     aws_secret_access_key: ((ecr_aws_secret))
     repository: bosh-io-stemcell-resource
     aws_region: us-gov-west-1
-    tag: latest
-
-- name: terraform
-  type: docker-image
-  source:
-    repository: ljfranklin/terraform-resource
     tag: latest
