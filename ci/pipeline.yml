@@ -275,14 +275,6 @@ resources:
     versioned_file: ((tf-state-file))
     region_name: ((aws-region))
 
-- name: team-source
-  type: git
-  source:
-    commit_verification_keys: ((cloud-gov-pgp-keys))
-    uri: ((concourse-config-git-url))
-    branch: main
-    paths: [teams/*]
-
 resource_types:
 - name: registry-image
   type: registry-image
