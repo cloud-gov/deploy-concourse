@@ -12,6 +12,9 @@ jobs:
           - get: terraform-yaml
           - get: concourse-stemcell-jammy
             trigger: true
+          - put: stemcell-lock-pool
+            params:
+              claim: updating-stemcells
       - put: concourse-staging-deployment
         params: &deploy-params
           manifest: concourse-deployment/cluster/concourse.yml
@@ -50,15 +53,27 @@ jobs:
           ATC_URL: https://ci.fr-stage.cloud.gov
           BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
           BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
-    on_failure:
-      put: slack
+    on_error:
+      put: stemcell-lock-pool
       params:
-        text: |
-          :x: FAILED to deploy Concourse on staging
-          <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-        channel: "#cg-platform-news"
-        username: ((slack-username))
-        icon_url: ((slack-icon-url))
+        release: stemcell-lock-pool
+    on_abort:
+      put: stemcell-lock-pool
+      params:
+        release: stemcell-lock-pool
+    on_failure:
+      do:
+        - put: slack
+          params:
+            text: |
+              :x: FAILED to deploy Concourse on staging
+              <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+            channel: "#cg-platform-news"
+            username: ((slack-username))
+            icon_url: ((slack-icon-url))
+        - put: stemcell-lock-pool
+          params:
+            release: stemcell-lock-pool
     on_success:
       put: slack
       params:
@@ -192,6 +207,10 @@ jobs:
         channel: "#cg-platform-news"
         username: ((slack-username))
         icon_url: ((slack-icon-url))
+    ensure:
+      put: stemcell-lock-pool
+      params:
+        release: stemcell-lock-pool
 
   # by having a different job for iptables, we should work around the issue
   # where the concourse deployment seems to fail because we lose our worker
@@ -275,6 +294,20 @@ resources:
       versioned_file: ((tf-state-file))
       region_name: ((aws-region))
 
+  - name: stemcell-lock-pool
+    type: pool
+    source:
+      uri: git@github.com:cloud-gov/concourse-locks.git
+      branch: concourse # main is protected, so use a topic branch
+      pool: stemcell
+      username: cg-ci-bot
+      private_key: ((cg-ci-bot-sshkey.private_key))
+      git_config:
+        - name: "user.name"
+          value: "cg-ci-bot"
+        - name: "user.email"
+          value: "no-reply@cloud.gov"
+
 resource_types:
   - name: registry-image
     type: registry-image
@@ -327,5 +360,14 @@ resource_types:
       aws_access_key_id: ((ecr_aws_key))
       aws_secret_access_key: ((ecr_aws_secret))
       repository: bosh-io-stemcell-resource
+      aws_region: us-gov-west-1
+      tag: latest
+
+  - name: pool
+    type: registry-image
+    source:
+      aws_access_key_id: ((ecr_aws_key))
+      aws_secret_access_key: ((ecr_aws_secret))
+      repository: pool-resource
       aws_region: us-gov-west-1
       tag: latest
