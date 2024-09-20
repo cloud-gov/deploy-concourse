@@ -46,6 +46,7 @@ resources:
     bucket: ((production-bucket-name))
     region_name: ((aws-region))
     versioned_file: master-bosh.crt
+    endpoint: ((aws-s3-endpoint))
 
 - name: cg-scripts
   type: git
