@@ -274,7 +274,7 @@ resources:
     bucket: ((tf-state-bucket))
     versioned_file: ((tf-state-file))
     region_name: ((aws-region))
-    endpoint: ((aws-s3-endpoint))
+    endpoint: s3-fips.((aws-region)).amazonaws.com
 
 resource_types:
 - name: registry-image

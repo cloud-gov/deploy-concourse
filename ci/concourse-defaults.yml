@@ -15,7 +15,6 @@ slack-icon-url: http://cl.ly/image/3e1h0H3H2s0P/concourse-logo.png
 slack-username: concourse
 
 aws-region: us-gov-west-1
-aws-s3-endpoint: s3-fips.us-gov-west-1.amazonaws.com
 
 concourse-production-deployment-bosh-uaa-client-id: ci
 concourse-staging-deployment-bosh-uaa-client-id: ci
