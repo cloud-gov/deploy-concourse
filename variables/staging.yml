@@ -6,8 +6,8 @@ web_vm_type: t3.medium.concourse.web
 worker_vm_type: m5.xlarge.concourse.worker
 iaas_worker_vm_type: m5.xlarge.concourse.worker
 web_vm_extensions: [staging-concourse-lb]
-worker_vm_extensions: [staging-concourse-profile, meta-data-v2]
-iaas_worker_vm_extensions: [staging-concourse-iaas-profile, meta-data-v2]
+worker_vm_extensions: [staging-concourse-profile]
+iaas_worker_vm_extensions: [staging-concourse-iaas-profile]
 network_name: staging-concourse
 web_instances: 1
 worker_instances: 2
