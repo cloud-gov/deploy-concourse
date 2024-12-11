@@ -1,7 +1,17 @@
 - type: replace
   path: /instance_groups/name=web/jobs/name=web/properties/container_placement_strategies?
-  value: [limit-active-containers,volume-locality,fewest-build-containers]
+  value:
+    [
+      limit-active-containers,
+      limit-active-volumes,
+      volume-locality,
+      fewest-build-containers,
+    ]
 
 - type: replace
   path: /instance_groups/name=web/jobs/name=web/properties/max_active_containers_per_worker?
   value: ((max_active_containers_per_worker))
+
+- type: replace
+  path: /instance_groups/name=web/jobs/name=web/properties/max_active_volumes_per_worker?
+  value: ((max_active_volumes_per_worker))
