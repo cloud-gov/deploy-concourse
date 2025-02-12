@@ -2,7 +2,8 @@
   path: /instance_groups/name=web/jobs/name=web/properties/base_resource_type_defaults?
   value: >
     registry-image:
-      registry_mirror:
-        host: ((docker-registry-mirror))
-    docker-image:
-      registry_mirror: https://((docker-registry-mirror))
+      aws_access_key_id: ((ecr_aws_key))
+      aws_secret_access_key: ((ecr_aws_secret))
+      repository: registry-image-resource
+      aws_region: us-gov-west-1
+      tag: latest
