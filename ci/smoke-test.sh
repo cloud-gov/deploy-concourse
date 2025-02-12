@@ -14,7 +14,7 @@ chmod +x ./fly
 )
 
 
-# be sure the registry-image type works through the mirror config
+# be sure the registry-image type works
 cat > registry-image-config.yml << EOF
 platform: linux
 
