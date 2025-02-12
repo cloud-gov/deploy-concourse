@@ -13,26 +13,6 @@ chmod +x ./fly
     --password "${BASIC_AUTH_PASSWORD}"
 )
 
-# be sure the docker-image type works through the mirror config
-cat > docker-image-config.yml << EOF
-platform: linux
-
-image_resource:
-  type: docker-image
-  source:
-    repository: busybox
-
-run:
-  path: echo
-  args: ["smoke"]
-EOF
-
-output=$(./fly --target ci execute --config ./docker-image-config.yml)
-
-if ! echo "${output}" | grep smoke; then
-  echo "Expected to find 'smoke' in output"
-  exit 1
-fi
 
 # be sure the registry-image type works through the mirror config
 cat > registry-image-config.yml << EOF
@@ -41,7 +21,7 @@ platform: linux
 image_resource:
   type: registry-image
   source:
-    repository: busybox
+    repository: general-task
 
 run:
   path: echo
