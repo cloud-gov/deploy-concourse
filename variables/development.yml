@@ -14,3 +14,4 @@ iaas_worker_instances: 1
 build_logs_default: 25
 build_logs_maximum: 0
 max_active_containers_per_worker: 50
+max_active_volumes_per_worker: 100
