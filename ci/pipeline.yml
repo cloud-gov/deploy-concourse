@@ -73,6 +73,9 @@ jobs:
   serial: true
   interruptible: true
   plan:
+  - in_parallel:
+    - get: bi-daily
+      trigger: true
   - task: iptables-iaas-worker-bosh-dns
     config: &iptables-iaas-worker-bosh-dns
       container_limits: {}
@@ -205,6 +208,9 @@ jobs:
   serial: true
   interruptible: true
   plan:
+  - in_parallel:
+    - get: bi-daily
+      trigger: true
   - task: iptables-iaas-worker-bosh-dns
     config:
       <<: *iptables-iaas-worker-bosh-dns
@@ -275,6 +281,14 @@ resources:
     versioned_file: ((tf-state-file))
     region_name: ((aws-region))
 
+- name: bi-daily
+  type: time
+  source:
+    interval: 12h
+    start: 3:30 AM
+    stop: 4:30 PM
+    location: America/New_York
+
 resource_types:
 - name: registry-image
   type: registry-image
@@ -327,5 +341,14 @@ resource_types:
     aws_access_key_id: ((ecr_aws_key))
     aws_secret_access_key: ((ecr_aws_secret))
     repository: bosh-io-stemcell-resource
+    aws_region: us-gov-west-1
+    tag: latest
+
+- name: time
+  type: registry-image
+  source:
+    aws_access_key_id: ((ecr_aws_key))
+    aws_secret_access_key: ((ecr_aws_secret))
+    repository: time-resource
     aws_region: us-gov-west-1
     tag: latest
