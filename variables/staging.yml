@@ -1,7 +1,7 @@
 deployment_name: concourse-staging
 external_url: https://ci.fr-stage.cloud.gov
 credhub_url: https://credhub.fr-stage.cloud.gov
-azs: [z1,z2]
+azs: [z2]
 web_vm_type: t3.medium.concourse.web
 worker_vm_type: m6i.xlarge.concourse.worker
 iaas_worker_vm_type: m6i.xlarge.concourse.worker
