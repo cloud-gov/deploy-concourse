@@ -1,6 +1,6 @@
 deployment_name: concourse-production
 external_url: https://ci.fr.cloud.gov
-azs: [z1]
+azs: [z1,z2]
 web_vm_type: m6i.large.concourse.web
 worker_vm_type: m6i.xlarge.concourse.worker
 iaas_worker_vm_type: m6i.xlarge.concourse.worker
