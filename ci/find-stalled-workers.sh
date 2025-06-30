@@ -17,7 +17,7 @@ chmod +x ./fly
 # Get list of workers
 output=$(./fly --target ci workers)
 
-if echo "${output}" | grep "the following workers have not checked in recently:"; then
+if echo "${output}" | grep "stalled"; then
   echo "Found a stalled worker..."
   echo $output
   exit 1
