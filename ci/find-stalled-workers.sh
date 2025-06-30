@@ -18,7 +18,14 @@ chmod +x ./fly
 output=$(./fly --target ci workers)
 
 if echo "${output}" | grep "stalled"; then
-  echo "Found a stalled worker..."
+  echo "Found a stalled worker, will attempt to fix but will report this as an error..."
   echo $output
+  
+  echo "Attempting prune-worker command..."
+  fix_output=$(./fly --target ci prune-worker --all-stalled)
+  echo $fix_output
+  
   exit 1
+else
+  echo "No stalled workers found."
 fi
