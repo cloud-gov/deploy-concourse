@@ -68,6 +68,29 @@ jobs:
       username: ((slack-username))
       icon_url: ((slack-icon-url))
 
+- name: find-stalled-workers-prod
+  serial: true
+  interruptible: true
+  plan:
+#  - in_parallel:
+#    - get: bi-daily
+#      trigger: true
+  - task: find-stalled-workers
+    file: concourse-config/ci/find-stalled-workers.yml
+    params:
+      ATC_URL: https://ci.fr-stage.cloud.gov
+      BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
+      BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED, found stalled Concourse worker
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: '#cg-platform-news'
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+
 - name: iptables-staging
   serial: true
   interruptible: true
@@ -241,7 +264,7 @@ resources:
   type: git
   source:
     commit_verification_keys: ((cloud-gov-pgp-keys))
-    branch: main
+    branch: stalled-workers #main
     uri: ((concourse-config-git-url))
 
 - name: concourse-stemcell-jammy
