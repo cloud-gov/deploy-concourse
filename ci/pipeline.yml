@@ -2,6 +2,7 @@
 jobs:
 - name: deploy-concourse-staging
   serial: true
+  serial_groups: [staging]
   interruptible: true
   plan:
   - in_parallel:
@@ -55,7 +56,7 @@ jobs:
       text: |
         :x: FAILED to deploy Concourse on staging
         <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: '#cg-platform-news'
+      channel: ((slack-channel-failure))
       username: ((slack-username))
       icon_url: ((slack-icon-url))
   on_success:
@@ -68,8 +69,61 @@ jobs:
       username: ((slack-username))
       icon_url: ((slack-icon-url))
 
+- name: find-stalled-workers-staging
+  serial: true
+  serial_groups: [staging]
+  interruptible: true
+  plan:
+  - in_parallel:
+    - get: hourly-timer
+      trigger: true
+    - get: concourse-config
+  - task: find-stalled-workers
+    file: concourse-config/ci/find-stalled-workers.yml
+    params:
+      ATC_URL: https://ci.fr-stage.cloud.gov
+      BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
+      BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED, found stalled Concourse worker in staging
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel-failure))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+
+
+- name: find-stalled-workers-production
+  serial: true
+  serial_groups: [production]
+  interruptible: true
+  plan:
+  - in_parallel:
+    - get: hourly-timer
+      trigger: true
+    - get: concourse-config
+  - task: find-stalled-workers
+    file: concourse-config/ci/find-stalled-workers.yml
+    params:
+      ATC_URL: https://ci.fr.cloud.gov
+      BASIC_AUTH_USERNAME: ((basic-auth-username-production))
+      BASIC_AUTH_PASSWORD: ((basic-auth-password-production))
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED, found stalled Concourse worker in production
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel-failure))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+
+
 - name: iptables-staging
   serial: true
+  serial_groups: [staging]
   interruptible: true
   plan:
   - in_parallel:
@@ -136,6 +190,7 @@ jobs:
 
 - name: deploy-concourse-production
   serial: true
+  serial_groups: [production]
   interruptible: true
   plan:
   - in_parallel:
@@ -181,7 +236,7 @@ jobs:
       text: |
         :x: FAILED to deploy Concourse on production
         <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
-      channel: '#cg-platform'
+      channel: ((slack-channel-failure))
       username: ((slack-username))
       icon_url: ((slack-icon-url))
   on_success:
@@ -204,6 +259,7 @@ jobs:
 # logs - but that's a fix for another day
 - name: iptables-production
   serial: true
+  serial_groups: [production]
   interruptible: true
   plan:
   - in_parallel:
@@ -286,6 +342,11 @@ resources:
     start: 3:30 AM
     stop: 4:30 PM
     location: America/New_York
+
+- name: hourly-timer
+  type: time
+  source:
+    interval: 1h
 
 resource_types:
 - name: registry-image
