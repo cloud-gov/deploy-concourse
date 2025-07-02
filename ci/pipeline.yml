@@ -7,11 +7,14 @@ jobs:
   plan:
   - in_parallel:
     - get: concourse-deployment
+      passed: [plan-concourse-staging]
       trigger: true
     - get: concourse-config
+      passed: [plan-concourse-staging]
       trigger: true
     - get: terraform-yaml
     - get: concourse-stemcell-jammy
+      passed: [plan-concourse-staging]
       trigger: true
   - put: concourse-staging-deployment
     params: &deploy-params
@@ -68,6 +71,24 @@ jobs:
       channel: '#cg-platform-news'
       username: ((slack-username))
       icon_url: ((slack-icon-url))
+
+- name: plan-concourse-staging
+  serial: true
+  serial_groups: [staging]
+  interruptible: true
+  plan:
+  - in_parallel:
+    - get: concourse-deployment
+      trigger: true
+    - get: concourse-config
+      trigger: true
+    - get: terraform-yaml
+    - get: concourse-stemcell-jammy
+      trigger: true
+  - put: concourse-staging-deployment
+    params:
+      <<: *deploy-params
+      dry_run: true
 
 - name: find-stalled-workers-staging
   serial: true
@@ -188,7 +209,7 @@ jobs:
           bosh ssh worker "sudo sh -c 'iptables-legacy -I INPUT 1 -s 10.80.0.0/16 -d 169.254.0.2/32 -p tcp -m tcp --dport 53 -j ACCEPT'"
           bosh ssh worker "sudo sh -c '/var/vcap/jobs/aide/bin/update-aide-db'"
 
-- name: deploy-concourse-production
+- name: plan-concourse-production
   serial: true
   serial_groups: [production]
   interruptible: true
@@ -196,11 +217,59 @@ jobs:
   - in_parallel:
     - get: concourse-deployment
       passed: [deploy-concourse-staging]
+      trigger: true
     - get: concourse-config
       passed: [deploy-concourse-staging]
+      trigger: true
     - get: terraform-yaml
     - get: concourse-stemcell-jammy
       passed: [deploy-concourse-staging]
+      trigger: true
+  - put: concourse-production-deployment
+    params:
+      <<: *deploy-params
+      dry_run: true
+      ops_files:
+      - concourse-deployment/cluster/operations/basic-auth.yml
+      - concourse-deployment/cluster/operations/build-log-retention.yml
+      - concourse-deployment/cluster/operations/scale.yml
+      - concourse-deployment/cluster/operations/enable-global-resources.yml
+      - concourse-config/operations/credhub.yml
+      - concourse-config/operations/iaas-worker.yml
+      - concourse-config/operations/postgres-production.yml
+      - concourse-config/operations/external-postgres-tls.yml
+      - concourse-config/operations/driver.yml
+      - concourse-config/operations/config.yml
+      - concourse-config/operations/generic-oauth.yml
+      - concourse-config/operations/compliance.yml
+      - concourse-config/operations/prometheus.yml
+      - concourse-config/operations/set-garbage-collection.yml
+      - concourse-config/operations/base-resource-defaults.yml
+      - concourse-config/operations/max-containers.yml
+      - concourse-config/operations/bosh-dns-aliases.yml
+      - concourse-config/operations/enable-across-step.yml
+      - concourse-config/operations/container-placement.yml
+      - concourse-config/operations/iptables.yml
+      vars_files:
+      - concourse-deployment/versions.yml
+      - concourse-config/variables/production.yml
+      - concourse-config/variables/postgres-tls.yml
+      - terraform-yaml/state.yml
+
+
+- name: deploy-concourse-production
+  serial: true
+  serial_groups: [production]
+  interruptible: true
+  plan:
+  - in_parallel:
+    - get: concourse-deployment
+      passed: [plan-concourse-production]
+    - get: concourse-config
+      passed: [plan-concourse-production]
+    - get: terraform-yaml
+    - get: concourse-stemcell-jammy
+      passed: [plan-concourse-production]
   - put: concourse-production-deployment
     params:
       <<: *deploy-params
@@ -411,3 +480,27 @@ resource_types:
     repository: time-resource
     aws_region: us-gov-west-1
     tag: latest
+
+groups:
+  - name: all
+    jobs:
+      - plan-concourse-staging
+      - plan-concourse-production
+      - deploy-concourse-production
+      - deploy-concourse-staging
+      - find-stalled-workers-staging
+      - find-stalled-workers-production
+      - iptables-staging
+      - iptables-production
+  - name: deployments
+    jobs:
+      - plan-concourse-staging
+      - plan-concourse-production
+      - deploy-concourse-production
+      - deploy-concourse-staging
+  - name: timers
+    jobs:
+      - find-stalled-workers-staging
+      - find-stalled-workers-production
+      - iptables-staging
+      - iptables-production
