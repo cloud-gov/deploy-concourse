@@ -475,6 +475,7 @@ resource_types:
 groups:
   - name: all
     jobs:
+      - set-self
       - plan-concourse-staging
       - plan-concourse-production
       - deploy-concourse-production
