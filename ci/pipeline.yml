@@ -1,5 +1,13 @@
 ---
 jobs:
+
+- name: set-self
+  plan:
+    - get: concourse-config
+      trigger: true
+    - set_pipeline: self
+      file: concourse-config/ci/pipeline.yml
+
 - name: deploy-concourse-staging
   serial: true
   serial_groups: [staging]
@@ -73,6 +81,7 @@ jobs:
       trigger: true
     - get: concourse-config
       trigger: true
+      passed: [set-self]
     - get: terraform-yaml
     - get: concourse-stemcell-jammy
       trigger: true
@@ -466,6 +475,7 @@ resource_types:
 groups:
   - name: all
     jobs:
+      - set-self
       - plan-concourse-staging
       - plan-concourse-production
       - deploy-concourse-production
