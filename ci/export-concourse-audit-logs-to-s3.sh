@@ -26,7 +26,7 @@ filename="concourse-audit${epoch_time}.txt.gz"
 s3_path="s3://${BUCKET_NAME}/${current_time}/${filename}"
 
 # Compress and write output to S3 with error handling
-if echo "$output" | gzip | aws s3 cp - "$s3_path" --content-encoding gzip; then
+if echo "$output" | gzip | aws s3 cp - "$s3_path" --content-encoding gzip --sse AES256; then
     echo "Successfully uploaded compressed audit data to: $s3_path"
 else
     echo "Failed to upload audit data to S3" >&2
