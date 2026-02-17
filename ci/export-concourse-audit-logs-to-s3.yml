@@ -14,7 +14,7 @@ inputs:
 - name: concourse-config
 
 run:
-  path: concourse-config/ci/export-concourse-audit-logs-to-s3.yml
+  path: concourse-config/ci/export-concourse-audit-logs-to-s3.sh
 
 params:
   ATC_URL:
