@@ -90,6 +90,62 @@ jobs:
       <<: *deploy-params
       dry_run: true
 
+- name: export-audit-logs-staging
+  serial: true
+  serial_groups: [staging]
+  interruptible: true
+  plan:
+  - in_parallel:
+    - get: hourly-timer
+      trigger: true
+    - get: concourse-config
+  - task: export-concourse-audit-logs-to-s3
+    tags: [iaas]
+    file: concourse-config/ci/export-concourse-audit-logs-to-s3.yml
+    params:
+      ATC_URL: https://ci.fr-stage.cloud.gov
+      BASIC_AUTH_USERNAME: ((basic-auth-username-staging))
+      BASIC_AUTH_PASSWORD: ((basic-auth-password-staging))
+      BUCKET_NAME: ((logs_concourse_audit_events_bucket_name-staging))
+      AWS_DEFAULT_REGION: us-gov-west-1
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED, could not export Concourse audit logs to s3 in staging
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel-failure))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+
+- name: export-audit-logs-production
+  serial: true
+  serial_groups: [production]
+  interruptible: true
+  plan:
+  - in_parallel:
+    - get: hourly-timer
+      trigger: true
+    - get: concourse-config
+  - task: export-concourse-audit-logs-to-s3
+    tags: [iaas]
+    file: concourse-config/ci/export-concourse-audit-logs-to-s3.yml
+    params:
+      ATC_URL: https://ci.fr.cloud.gov
+      BASIC_AUTH_USERNAME: ((basic-auth-username-production))
+      BASIC_AUTH_PASSWORD: ((basic-auth-password-production))
+      BUCKET_NAME: ((logs_concourse_audit_events_bucket_name-production))
+      AWS_DEFAULT_REGION: us-gov-west-1
+  on_failure:
+    put: slack
+    params:
+      text: |
+        :x: FAILED, could not export Concourse audit logs to s3 in production
+        <$ATC_EXTERNAL_URL/teams/$BUILD_TEAM_NAME/pipelines/$BUILD_PIPELINE_NAME/jobs/$BUILD_JOB_NAME/builds/$BUILD_NAME|View build details>
+      channel: ((slack-channel-failure))
+      username: ((slack-username))
+      icon_url: ((slack-icon-url))
+
 - name: find-stalled-workers-staging
   serial: true
   serial_groups: [staging]
@@ -484,6 +540,8 @@ groups:
       - find-stalled-workers-production
       - iptables-staging
       - iptables-production
+      - export-audit-logs-staging
+      - export-audit-logs-production
   - name: deployments
     jobs:
       - plan-concourse-staging
@@ -496,3 +554,6 @@ groups:
       - find-stalled-workers-production
       - iptables-staging
       - iptables-production
+      - export-audit-logs-staging
+      - export-audit-logs-production
+
