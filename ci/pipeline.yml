@@ -407,7 +407,7 @@ resources:
   source:
     uri: https://github.com/concourse/concourse-bosh-deployment
     branch: master
-    tag_filter: v7.*
+    tag_filter: v8.*
 
 - name: concourse-config
   type: git
@@ -556,4 +556,3 @@ groups:
       - iptables-production
       - export-audit-logs-staging
       - export-audit-logs-production
-
