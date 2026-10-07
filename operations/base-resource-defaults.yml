@@ -7,3 +7,5 @@
       repository: registry-image-resource
       aws_region: us-gov-west-1
       tag: latest
+    git:
+      version_depth: 5
