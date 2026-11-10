@@ -219,10 +219,10 @@ jobs:
           aws_region: us-gov-west-1
           tag: latest
       params:
-        BOSH_ENVIRONMENT: ((concourse-staging-deployment-bosh-target))
-        BOSH_CLIENT: ci
-        BOSH_CLIENT_SECRET: ((tooling_bosh_uaa_ci_client_secret))
-        BOSH_CA_CERT: ((common_ca_cert_store))
+        BOSH_CA_CERT: ((bosh-director-info.tooling.ca_cert))
+        BOSH_CLIENT: ((bosh-director-info.tooling.client))
+        BOSH_CLIENT_SECRET: ((bosh-director-info.tooling.client_secret))
+        BOSH_ENVIRONMENT: ((bosh-director-info.tooling.environment))
         BOSH_DEPLOYMENT: concourse-staging
       run:
         path: sh
@@ -246,10 +246,10 @@ jobs:
           aws_region: us-gov-west-1
           tag: latest
       params:
-        BOSH_ENVIRONMENT: ((concourse-staging-deployment-bosh-target))
-        BOSH_CLIENT: ci
-        BOSH_CLIENT_SECRET: ((tooling_bosh_uaa_ci_client_secret))
-        BOSH_CA_CERT: ((common_ca_cert_store))
+        BOSH_CA_CERT: ((bosh-director-info.tooling.ca_cert))
+        BOSH_CLIENT: ((bosh-director-info.tooling.client))
+        BOSH_CLIENT_SECRET: ((bosh-director-info.tooling.client_secret))
+        BOSH_ENVIRONMENT: ((bosh-director-info.tooling.environment))
         BOSH_DEPLOYMENT: concourse-staging
       run:
         path: sh
@@ -379,20 +379,20 @@ jobs:
     config:
       <<: *iptables-iaas-worker-bosh-dns
       params:
-        BOSH_ENVIRONMENT: ((concourse-production-deployment-bosh-target))
-        BOSH_CLIENT: ci
-        BOSH_CLIENT_SECRET: ((tooling_bosh_uaa_ci_client_secret))
-        BOSH_CA_CERT: ((common_ca_cert_store))
+        BOSH_CA_CERT: ((bosh-director-info.tooling.ca_cert))
+        BOSH_CLIENT: ((bosh-director-info.tooling.client))
+        BOSH_CLIENT_SECRET: ((bosh-director-info.tooling.client_secret))
+        BOSH_ENVIRONMENT: ((bosh-director-info.tooling.environment))
         BOSH_DEPLOYMENT: concourse-production
   - task: iptables-worker-bosh-dns
     tags: [iaas]
     config:
       <<: *iptables-worker-bosh-dns
       params:
-        BOSH_ENVIRONMENT: ((concourse-production-deployment-bosh-target))
-        BOSH_CLIENT: ci
-        BOSH_CLIENT_SECRET: ((tooling_bosh_uaa_ci_client_secret))
-        BOSH_CA_CERT: ((common_ca_cert_store))
+        BOSH_CA_CERT: ((bosh-director-info.tooling.ca_cert))
+        BOSH_CLIENT: ((bosh-director-info.tooling.client))
+        BOSH_CLIENT_SECRET: ((bosh-director-info.tooling.client_secret))
+        BOSH_ENVIRONMENT: ((bosh-director-info.tooling.environment))
         BOSH_DEPLOYMENT: concourse-production
 
 resources:
@@ -418,20 +418,21 @@ resources:
 - name: concourse-production-deployment
   type: bosh-deployment
   source:
-    target: ((concourse-production-deployment-bosh-target))
-    client: ci
-    client_secret: ((tooling_bosh_uaa_ci_client_secret))
+    ca_cert: ((bosh-director-info.tooling.ca_cert))
+    client: ((bosh-director-info.tooling.client))
+    client_secret: ((bosh-director-info.tooling.client_secret))
+    target: ((bosh-director-info.tooling.environment))
     deployment: ((concourse-production-deployment-bosh-deployment))
-    ca_cert: ((common_ca_cert_store))
+
 
 - name: concourse-staging-deployment
   type: bosh-deployment
   source:
-    target: ((concourse-staging-deployment-bosh-target))
-    client: ci
-    client_secret: ((tooling_bosh_uaa_ci_client_secret))
+    ca_cert: ((bosh-director-info.tooling.ca_cert))
+    client: ((bosh-director-info.tooling.client))
+    client_secret: ((bosh-director-info.tooling.client_secret))
+    target: ((bosh-director-info.tooling.environment))
     deployment: ((concourse-staging-deployment-bosh-deployment))
-    ca_cert: ((common_ca_cert_store))
 
 - name: slack
   type: slack-notification
