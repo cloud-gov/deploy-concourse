@@ -27,6 +27,7 @@ jobs:
   - put: concourse-staging-deployment
     params: &deploy-params
       manifest: concourse-deployment/cluster/concourse.yml
+      no_redact: true
       stemcells:
       - concourse-stemcell-jammy/*.tgz
       ops_files:
@@ -402,6 +403,7 @@ resources:
     uri: https://github.com/concourse/concourse-bosh-deployment
     branch: master
     tag_filter: v8.*
+    version_depth: 3
 
 - name: concourse-config
   type: git
