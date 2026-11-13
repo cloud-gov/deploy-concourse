@@ -16,7 +16,7 @@
 
 - type: replace
   path: /instance_groups/name=web/jobs/name=web/properties/main_team/auth/config?
-  value:
+  value: |
     roles:
     - name: owner
       oauth:
