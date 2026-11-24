@@ -5,7 +5,6 @@ jobs:
   - in_parallel: &resources
     - get: cg-scripts
     - get: concourse-config
-    - get: master-bosh-root-cert
   - task: jumpbox
     file: concourse-config/jumpbox.yml
     params:
@@ -13,8 +12,8 @@ jobs:
       BOSH_ENVIRONMENT: ((development-bosh.target))
       BOSH_CLIENT: ((development-bosh.uaa-client))
       BOSH_CLIENT_SECRET: ((development-bosh.uaa-secret))
-      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      BOSH_CA_CERT: ((bosh-director-info.development.ca_cert))
+      CREDHUB_CA_CERT: ((bosh-director-info.development.ca_cert))
       CREDHUB_CLIENT: ((development-credhub.admin-client))
       CREDHUB_SECRET: ((development-credhub.admin-secret))
       CREDHUB_SERVER: ((development-credhub.api-server))
@@ -30,8 +29,8 @@ jobs:
       BOSH_ENVIRONMENT: ((staging-bosh.target))
       BOSH_CLIENT: ((staging-bosh.uaa-client))
       BOSH_CLIENT_SECRET: ((staging-bosh.uaa-secret))
-      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      BOSH_CA_CERT: ((bosh-director-info.staging.ca_cert))
+      CREDHUB_CA_CERT: ((bosh-director-info.staging.ca_cert))
       CREDHUB_CLIENT: ((staging-credhub.admin-client))
       CREDHUB_SECRET: ((staging-credhub.admin-secret))
       CREDHUB_SERVER: ((staging-credhub.api-server))
@@ -47,8 +46,8 @@ jobs:
       BOSH_ENVIRONMENT: ((production-bosh.target))
       BOSH_CLIENT: ((production-bosh.uaa-client))
       BOSH_CLIENT_SECRET: ((production-bosh.uaa-secret))
-      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      BOSH_CA_CERT: ((bosh-director-info.production.ca_cert))
+      CREDHUB_CA_CERT: ((bosh-director-info.production.ca_cert))
       CREDHUB_CLIENT: ((production-credhub.admin-client))
       CREDHUB_SECRET: ((production-credhub.admin-secret))
       CREDHUB_SERVER: ((production-credhub.api-server))
@@ -64,8 +63,8 @@ jobs:
       BOSH_ENVIRONMENT: ((tooling-bosh.target))
       BOSH_CLIENT: ((tooling-bosh.uaa-client))
       BOSH_CLIENT_SECRET: ((tooling-bosh.uaa-secret))
-      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      BOSH_CA_CERT: ((bosh-director-info.tooling.ca_cert))
+      CREDHUB_CA_CERT: ((bosh-director-info.tooling.ca_cert))
       CREDHUB_CLIENT: ((tooling-credhub.admin-client))
       CREDHUB_SECRET: ((tooling-credhub.admin-secret))
       CREDHUB_SERVER: ((tooling-credhub.api-server))
@@ -81,8 +80,8 @@ jobs:
       BOSH_ENVIRONMENT: ((master-bosh.target))
       BOSH_CLIENT: ((master-bosh.uaa-client))
       BOSH_CLIENT_SECRET: ((master-bosh.uaa-secret))
-      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      BOSH_CA_CERT: ((bosh-director-info.master.ca_cert))
+      CREDHUB_CA_CERT: ((bosh-director-info.master.ca_cert))
       CREDHUB_CLIENT: ((master-credhub.admin-client))
       CREDHUB_SECRET: ((master-credhub.admin-secret))
       CREDHUB_SERVER: ((master-credhub.api-server))
@@ -98,8 +97,8 @@ jobs:
       BOSH_ENVIRONMENT: ((tooling-bosh.target))
       BOSH_CLIENT: ((tooling-bosh.uaa-client))
       BOSH_CLIENT_SECRET: ((tooling-bosh.uaa-secret))
-      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      BOSH_CA_CERT: ((bosh-director-info.tooling.ca_cert))
+      CREDHUB_CA_CERT: ((bosh-director-info.tooling.ca_cert))
       CREDHUB_CLIENT: ((production-standalone-credhub.admin-client))
       CREDHUB_SECRET: ((production-standalone-credhub.admin-secret))
       CREDHUB_SERVER: ((production-standalone-credhub.api-server))
@@ -115,8 +114,8 @@ jobs:
         BOSH_ENVIRONMENT: ((tooling-bosh.target))
         BOSH_CLIENT: ((tooling-bosh.uaa-client))
         BOSH_CLIENT_SECRET: ((tooling-bosh.uaa-secret))
-        BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
-        CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+        BOSH_CA_CERT: ((bosh-director-info.tooling.ca_cert))
+        CREDHUB_CA_CERT: ((bosh-director-info.tooling.ca_cert))
         CREDHUB_CLIENT: ((staging-standalone-credhub.admin-client))
         CREDHUB_SECRET: ((staging-standalone-credhub.admin-secret))
         CREDHUB_SERVER: ((staging-standalone-credhub.api-server))
@@ -133,8 +132,8 @@ jobs:
       BOSH_ENVIRONMENT: ((development-bosh.target))
       BOSH_CLIENT: ((development-bosh.uaa-client))
       BOSH_CLIENT_SECRET: ((development-bosh.uaa-secret))
-      BOSH_CA_CERT: master-bosh-root-cert/master-bosh.crt
-      CREDHUB_CA_CERT: master-bosh-root-cert/master-bosh.crt
+      BOSH_CA_CERT: ((bosh-director-info.development.ca_cert))
+      CREDHUB_CA_CERT: ((bosh-director-info.development.ca_cert))
       CREDHUB_CLIENT: ((development-credhub.admin-client))
       CREDHUB_SECRET: ((development-credhub.admin-secret))
       CREDHUB_SERVER: ((development-credhub.api-server))
@@ -149,13 +148,6 @@ resources:
     paths:
     - jumpbox.yml
     - jumpbox.sh
-
-- name: master-bosh-root-cert
-  type: s3-iam
-  source:
-    bucket: ((production-bucket-name))
-    region_name: ((aws-region))
-    versioned_file: master-bosh.crt
 
 - name: cg-scripts
   type: git
